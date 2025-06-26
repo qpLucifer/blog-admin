@@ -1,0 +1,13 @@
+.root {
+  text-align: center;
+  margin-top: 100px;
+}
+.title {
+  font-size: 64px;
+  color: #a18cd1;
+  margin-bottom: 16px;
+}
+.desc {
+  font-size: 20px;
+  color: #888;
+} 

@@ -1,0 +1,29 @@
+.bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card {
+  width: 380px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  border-radius: 16px;
+  padding: 32px 24px 24px 24px;
+}
+.logoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.logo {
+  width: 48px;
+  margin-right: 12px;
+}
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #6a4bc6;
+  letter-spacing: 2px;
+} 

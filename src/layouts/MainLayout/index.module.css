@@ -1,0 +1,37 @@
+.layoutRoot {
+  min-height: 100vh;
+}
+.siderLogo {
+  height: 48px;
+  margin: 16px;
+  background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%);
+  color: #fff;
+  text-align: center;
+  line-height: 48px;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 8px;
+  letter-spacing: 2px;
+}
+.header {
+  background: #fff;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  box-shadow: 0 2px 8px #f0f1f2;
+}
+.avatar {
+  margin-left: 16px;
+  cursor: pointer;
+}
+.content {
+  margin: 16px;
+}
+.innerContent {
+  padding: 24px;
+  background: #fff;
+  min-height: 360px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(160,140,209,0.08);
+} 

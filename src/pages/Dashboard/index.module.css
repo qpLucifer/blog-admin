@@ -1,0 +1,21 @@
+.root {
+  padding: 0 16px;
+  font-family: var(--font-family, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif);
+}
+.title {
+  margin-bottom: 32px;
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--text-title, #2d2350);
+  text-align: left;
+  letter-spacing: 1px;
+}
+.card {
+  border-radius: var(--card-radius, 12px);
+  box-shadow: var(--card-shadow, 0 2px 16px rgba(160,140,209,0.08));
+  background: #fff;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 8px 32px rgba(106,75,198,0.12);
+} 

@@ -1,3 +1,17 @@
+@import './styles/theme.less';
+
+:root {
+  --primary-color: @primary-color;
+  --secondary-color: @secondary-color;
+  --card-radius: @card-radius;
+  --card-shadow: @card-shadow;
+  --font-family: @font-family;
+  --bg-gradient: @bg-gradient;
+  --text-title: @text-title;
+  --text-sub: @text-sub;
+  --border-color: @border-color;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
