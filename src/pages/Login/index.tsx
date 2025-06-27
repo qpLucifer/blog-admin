@@ -2,8 +2,12 @@ import React from 'react';
 import { Form, Input, Button, Card, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import styles from './index.module.css';
-// import logo from '../../assets/logo.svg';
 
+/**
+ * 登录页面
+ * @description 这是一个简单的登录页面，包含用户名和密码输入框，以及登录按钮。
+ * @returns {JSX.Element} 返回登录页面组件。
+ */
 const Login: React.FC = () => {
   const onFinish = (values: any) => {
     // TODO: 调用登录接口
@@ -14,7 +18,6 @@ const Login: React.FC = () => {
     <div className={styles.bg}>
       <Card className={styles.card}>
         <div className={styles.logoWrap}>
-          {/* <img src={logo} alt="logo" className={styles.logo} /> */}
           <span className={styles.title}>博客后台管理</span>
         </div>
         <Form name="login" onFinish={onFinish}>
