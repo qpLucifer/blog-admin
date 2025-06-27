@@ -2,9 +2,9 @@ import React from 'react';
 import { Card, Row, Col, Statistic } from 'antd';
 import { UserOutlined, TeamOutlined, FileTextOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
-// 用 require 方式引入，避免类型报错
-const ReactECharts = require('echarts-for-react');
 import styles from './index.module.css';
+// 用 require 方式引入，避免类型报错
+import ReactECharts from 'echarts-for-react';
 
 const Dashboard: React.FC = () => {
   // 示例数据
