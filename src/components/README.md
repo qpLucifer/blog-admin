@@ -307,3 +307,281 @@ Redux状态会自动与localStorage同步：
 2. **权限缓存**: 可以添加权限缓存和定期同步机制
 3. **动态路由**: 可以根据用户权限动态生成路由配置
 4. **状态持久化**: 可以使用redux-persist进行更完善的状态持久化 
+
+# 组件库说明
+
+本项目包含了一系列可复用的组件，用于快速构建后台管理系统。
+
+## 弹窗组件
+
+### FormModal - 通用表单弹窗
+
+用于新增和编辑操作的表单弹窗组件。
+
+```tsx
+import { FormModal } from '../components';
+import { Input, Select } from 'antd';
+
+const MyComponent = () => {
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (values: any) => {
+    setLoading(true);
+    try {
+      // 处理表单提交
+      await submitData(values);
+      setVisible(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <FormModal
+      title="新增用户"
+      visible={visible}
+      loading={loading}
+      onCancel={() => setVisible(false)}
+      onSubmit={handleSubmit}
+    >
+      <Form.Item name="username" label="用户名" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item name="email" label="邮箱" rules={[{ type: 'email' }]}>
+        <Input />
+      </Form.Item>
+    </FormModal>
+  );
+};
+```
+
+### DeleteModal - 删除确认弹窗
+
+用于删除操作的确认弹窗组件。
+
+```tsx
+import { DeleteModal } from '../components';
+
+const MyComponent = () => {
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [record, setRecord] = useState(null);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      await deleteRecord(record.id);
+      setVisible(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <DeleteModal
+      visible={visible}
+      loading={loading}
+      recordName={record?.name}
+      onCancel={() => setVisible(false)}
+      onConfirm={handleDelete}
+    />
+  );
+};
+```
+
+## 操作组件
+
+### ActionButtons - 操作按钮组
+
+通用的编辑和删除按钮组件。
+
+```tsx
+import { ActionButtons } from '../components';
+
+const MyComponent = () => {
+  const handleEdit = (record: any) => {
+    // 处理编辑
+  };
+
+  const handleDelete = (record: any) => {
+    // 处理删除
+  };
+
+  return (
+    <ActionButtons
+      record={record}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      editText="编辑"
+      deleteText="删除"
+    />
+  );
+};
+```
+
+## CRUD Hook
+
+### useCrud - CRUD 管理 Hook
+
+用于管理新增、编辑、删除操作的状态和逻辑。
+
+```tsx
+import { useCrud } from '../hooks/useCrud';
+import { createUser, updateUser, deleteUser } from '../api/user';
+
+const UsersPage = () => {
+  const {
+    modalVisible,
+    deleteModalVisible,
+    loading,
+    currentRecord,
+    isEdit,
+    showCreateModal,
+    showEditModal,
+    showDeleteModal,
+    hideModal,
+    hideDeleteModal,
+    handleCreate,
+    handleUpdate,
+    handleDelete
+  } = useCrud({
+    createApi: createUser,
+    updateApi: updateUser,
+    deleteApi: deleteUser,
+    createSuccessMessage: '用户创建成功',
+    updateSuccessMessage: '用户更新成功',
+    deleteSuccessMessage: '用户删除成功',
+    onSuccess: () => {
+      // 操作成功后刷新列表
+      fetchUsers();
+    }
+  });
+
+  return (
+    <div>
+      <Button onClick={showCreateModal}>新增用户</Button>
+      
+      {/* 表格 */}
+      <Table
+        columns={[
+          // ... 其他列
+          {
+            title: '操作',
+            render: (_, record) => (
+              <ActionButtons
+                record={record}
+                onEdit={showEditModal}
+                onDelete={showDeleteModal}
+              />
+            )
+          }
+        ]}
+      />
+
+      {/* 新增/编辑弹窗 */}
+      <FormModal
+        title={isEdit ? '编辑用户' : '新增用户'}
+        visible={modalVisible}
+        loading={loading}
+        initialValues={currentRecord}
+        onCancel={hideModal}
+        onSubmit={isEdit ? handleUpdate : handleCreate}
+      >
+        <UserForm isEdit={isEdit} />
+      </FormModal>
+
+      {/* 删除确认弹窗 */}
+      <DeleteModal
+        visible={deleteModalVisible}
+        loading={loading}
+        recordName={currentRecord?.username}
+        onCancel={hideDeleteModal}
+        onConfirm={handleDelete}
+      />
+    </div>
+  );
+};
+```
+
+## 路由守卫组件
+
+### PrivateRoute - 私有路由
+
+用于保护需要登录才能访问的路由。
+
+```tsx
+import { PrivateRoute } from '../components';
+
+<Route path="/dashboard" element={
+  <PrivateRoute>
+    <Dashboard />
+  </PrivateRoute>
+} />
+```
+
+### PublicRoute - 公共路由
+
+用于公共页面，已登录用户会被重定向。
+
+```tsx
+import { PublicRoute } from '../components';
+
+<Route path="/login" element={
+  <PublicRoute>
+    <Login />
+  </PublicRoute>
+} />
+```
+
+### PermissionRoute - 权限路由
+
+用于需要特定权限才能访问的路由。
+
+```tsx
+import { PermissionRoute } from '../components';
+
+<Route path="/admin" element={
+  <PermissionRoute requiredPermission="admin:access">
+    <AdminPanel />
+  </PermissionRoute>
+} />
+```
+
+## 认证组件
+
+### AuthInitializer - 认证初始化
+
+用于初始化认证状态，通常在应用根组件中使用。
+
+```tsx
+import { AuthInitializer } from '../components';
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <AuthInitializer />
+      <Router>
+        {/* 路由配置 */}
+      </Router>
+    </Provider>
+  );
+};
+```
+
+## 使用建议
+
+1. **组件复用**：优先使用通用组件，减少重复代码
+2. **类型安全**：使用 TypeScript 确保类型安全
+3. **错误处理**：所有异步操作都应该有适当的错误处理
+4. **用户体验**：提供加载状态和操作反馈
+5. **权限控制**：合理使用权限守卫组件
+
+## 扩展指南
+
+如需添加新的通用组件：
+
+1. 在 `src/components/` 目录下创建新组件
+2. 添加 TypeScript 类型定义
+3. 在 `src/components/index.ts` 中导出
+4. 更新此文档说明使用方法 

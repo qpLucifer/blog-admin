@@ -22,11 +22,22 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   response => {
-    // 如果需要处理响应数据，可以在这里进行处理
-    const data = response.data as { code?: number; data?: any };
-    if (data.code === 200) {
-      return data.data;
+    // 处理响应数据
+    const data: any = response.data;
+    
+    // 如果后端返回的是标准格式 { code: 200, data: xxx, message: xxx }
+    if (data && typeof data === 'object' && 'code' in data) {
+      if (data.code === 200) {
+        return data.data;
+      } else {
+        // 业务错误，抛出异常
+        const error = new Error(data.message || '请求失败');
+        (error as any).response = { data };
+        return Promise.reject(error);
+      }
     }
+    
+    // 直接返回数据
     return data;
   },
   error => {
@@ -35,6 +46,13 @@ instance.interceptors.response.use(
       store.dispatch({ type: 'auth/logoutUser/fulfilled', payload: true });
       window.location.href = '/login';
     }
+    
+    // 确保错误信息能正确传递
+    if (error.response && error.response.data) {
+      const errorMessage = error.response.data.message || error.response.data.error || '请求失败';
+      error.message = errorMessage;
+    }
+    
     return Promise.reject(error);
   }
 );
