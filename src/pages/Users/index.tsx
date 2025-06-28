@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Card } from 'antd';
 import styles from './index.module.css';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, UserAddOutlined } from '@ant-design/icons';
+import { getUsers } from '../../api/user';
 
 const columns = [
   { title: 'ID', dataIndex: 'id' },
@@ -19,23 +20,32 @@ const columns = [
   }
 ];
 
-const data = [
-  { id: 1, username: 'admin', roles: ['admin'] },
-  { id: 2, username: 'editor', roles: ['editor'] }
-];
+const Users: React.FC = () => {
+  const [data, setData] = useState<any[]>([]);
 
-const Users: React.FC = () => (
-  <div className={styles.root}>
-    <h2 className={styles.title}>用户管理</h2>
-    <Card style={{ borderRadius: 16 }}>
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="id"
-        pagination={{ pageSize: 10 }}
-      />
-    </Card>
-  </div>
-);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const res: any = await getUsers();
+    setData([]);
+  };
+
+  return (
+    <div className={styles.root}>
+      <h2 className={styles.title}>用户管理</h2>
+      <Card style={{ borderRadius: 16 }}>
+        <Button type="link" icon={<UserAddOutlined />} size="small">新增</Button>
+        <Table
+          columns={columns}
+          dataSource={data}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+        />
+      </Card>
+    </div>
+  );
+};
 
 export default Users; 

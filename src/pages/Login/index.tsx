@@ -21,7 +21,6 @@ const Login: React.FC = () => {
   
   // 获取重定向地址，如果没有则默认到dashboard
   const from = (location.state as any)?.from?.pathname || '/dashboard';
-
   // 监听错误信息变化
   useEffect(() => {
     if (error) {
@@ -33,8 +32,8 @@ const Login: React.FC = () => {
   const onFinish = async (values: any) => {
     try {
       console.log('登录信息:', values);
-      const result = await dispatch(loginUser(values)).unwrap();
-      
+      //unwrap 用于等待异步操作完成并返回结果
+      await dispatch(loginUser(values)).unwrap();
       message.success('登录成功');
       
       // 重定向到之前的页面或dashboard
