@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Row, Col, Statistic } from 'antd';
-import { UserOutlined, TeamOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic, Button, message } from 'antd';
+import { UserOutlined, TeamOutlined, FileTextOutlined, EyeOutlined, LikeOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import styles from './index.module.css';
 // 用 require 方式引入，避免类型报错
@@ -60,9 +60,27 @@ const Dashboard: React.FC = () => {
     ]
   };
 
+  const testMessage = () => {
+    message.success('测试成功消息');
+    setTimeout(() => {
+      message.error('测试错误消息');
+    }, 1000);
+    setTimeout(() => {
+      message.warning('测试警告消息');
+    }, 2000);
+    setTimeout(() => {
+      message.info('测试信息消息');
+    }, 3000);
+  };
+
   return (
     <div className={styles.root}>
       <h2 className={styles.title}>欢迎来到博客后台管理系统</h2>
+      
+      <Button type="primary" onClick={testMessage} style={{ marginBottom: 16 }}>
+        测试 Message 组件
+      </Button>
+      
       <Row gutter={24}>
         <Col span={8}>
           <Card className={styles.card}>

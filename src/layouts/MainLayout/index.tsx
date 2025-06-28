@@ -10,6 +10,8 @@ import {
   FileTextOutlined,
   UserSwitchOutlined
 } from '@ant-design/icons';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { logoutUser, selectUser } from '../../store/slices/authSlice';
 import styles from './index.module.css';
 
 const { Header, Sider, Content } = Layout;
@@ -24,22 +26,33 @@ const menuItems = [
   { key: 'profile', icon: <UserSwitchOutlined />, label: '个人中心' }
 ];
 
-const userMenu = (
-  <Menu
-    items={[{ key: 'logout', label: '退出登录' }]}
-    onClick={({ key }) => {
-      if (key === 'logout') {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      }
-    }}
-  />
-);
-
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  
   const selectedKey = location.pathname.split('/')[1] || 'dashboard';
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      // 登出成功后会自动清除状态，AuthInitializer会处理重定向
+    } catch (error) {
+      console.error('登出失败:', error);
+    }
+  };
+
+  const userMenu = (
+    <Menu
+      items={[{ key: 'logout', label: '退出登录' }]}
+      onClick={({ key }) => {
+        if (key === 'logout') {
+          handleLogout();
+        }
+      }}
+    />
+  );
 
   return (
     <Layout className={styles.layoutRoot}>
@@ -56,7 +69,9 @@ const MainLayout: React.FC = () => {
       <Layout>
         <Header className={styles.header}>
           <Dropdown overlay={userMenu} placement="bottomRight">
-            <Avatar className={styles.avatar} size={36} style={{ background: '#a18cd1' }}>A</Avatar>
+            <Avatar className={styles.avatar} size={36} style={{ background: '#a18cd1' }}>
+              {user?.username?.charAt(0)?.toUpperCase() || 'A'}
+            </Avatar>
           </Dropdown>
         </Header>
         <Content className={styles.content}>
