@@ -1,28 +1,5 @@
 import api from './index';
-
-export interface User {
-  id: number;
-  username: string;
-  roles: string[];
-  email?: string;
-  status?: number;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface CreateUserData {
-  username: string;
-  password: string;
-  email?: string;
-  role_ids?: number[];
-}
-
-export interface UpdateUserData {
-  username?: string;
-  email?: string;
-  role_ids?: number[];
-  status?: number;
-}
+import { User, CreateUserData, UpdateUserData } from '../types';
 
 // 获取用户列表
 export const getUsers = () => {

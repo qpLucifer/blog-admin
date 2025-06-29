@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { store } from '../store';
+import { API_BASE_URL, API_TIMEOUT, API_STATUS } from '../constants';
 
 const instance = axios.create({
   // 使用相对路径，通过代理转发到后端
-  baseURL: process.env.REACT_APP_BASIC_API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: API_TIMEOUT,
 });
 
 instance.interceptors.request.use(
@@ -27,7 +28,7 @@ instance.interceptors.response.use(
     
     // 如果后端返回的是标准格式 { code: 200, data: xxx, message: xxx }
     if (data && typeof data === 'object' && 'code' in data) {
-      if (data.code === 200) {
+      if (data.code === API_STATUS.SUCCESS) {
         return data.data;
       } else {
         // 业务错误，抛出异常
@@ -41,7 +42,7 @@ instance.interceptors.response.use(
     return data;
   },
   error => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === API_STATUS.UNAUTHORIZED) {
       // 401错误时，清除认证状态并重定向到登录页
       store.dispatch({ type: 'auth/logoutUser/fulfilled', payload: true });
       window.location.href = '/login';

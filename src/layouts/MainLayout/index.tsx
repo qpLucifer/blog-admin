@@ -1,16 +1,19 @@
-import React from 'react';
-import { Layout, Menu, Dropdown, Avatar } from 'antd';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import {
+import React, { useState } from 'react';
+import { Layout, Menu, Button, Avatar, Dropdown, Space } from 'antd';
+import { 
+  MenuFoldOutlined, 
+  MenuUnfoldOutlined, 
   DashboardOutlined,
   UserOutlined,
   TeamOutlined,
-  LockOutlined,
+  SafetyOutlined,
   MenuOutlined,
   FileTextOutlined,
-  UserSwitchOutlined
+  UserSwitchOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { logoutUser, selectUser } from '../../store/slices/authSlice';
 import styles from './index.module.css';
 
@@ -20,7 +23,7 @@ const menuItems = [
   { key: 'dashboard', icon: <DashboardOutlined />, label: '首页' },
   { key: 'users', icon: <UserOutlined />, label: '用户管理' },
   { key: 'roles', icon: <TeamOutlined />, label: '角色管理' },
-  { key: 'permissions', icon: <LockOutlined />, label: '权限管理' },
+  { key: 'permissions', icon: <SafetyOutlined />, label: '权限管理' },
   { key: 'menus', icon: <MenuOutlined />, label: '菜单管理' },
   { key: 'day-sentence', icon: <FileTextOutlined />, label: '每日一句' },
   { key: 'profile', icon: <UserSwitchOutlined />, label: '个人中心' }

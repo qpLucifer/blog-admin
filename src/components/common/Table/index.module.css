@@ -1,0 +1,39 @@
+.tableContainer {
+  width: 100%;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 0;
+  text-align: center;
+}
+
+.loadingText {
+  margin-top: 16px;
+  color: #666;
+  font-size: 14px;
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.errorTitle {
+  color: #ff4d4f;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.errorMessage {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.reloadButton {
+  margin-top: 8px;
+} 

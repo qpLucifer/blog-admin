@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Select, Switch } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TeamOutlined } from '@ant-design/icons';
-import { User } from '../../api/user';
+import { User } from '../../../types';
 
 const { Option } = Select;
 

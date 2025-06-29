@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
-import { selectUser } from '../../store/slices/authSlice';
+import { useAppSelector } from '../../../hooks';
+import { selectUser } from '../../../store/slices/authSlice';
 
 interface PermissionRouteProps {
   children: React.ReactNode;

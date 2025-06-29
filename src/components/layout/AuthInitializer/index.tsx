@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useAppDispatch } from '../../store/hooks';
-import { initializeAuth } from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../../hooks';
+import { initializeAuth } from '../../../store/slices/authSlice';
 
 const AuthInitializer: React.FC = () => {
   const dispatch = useAppDispatch();

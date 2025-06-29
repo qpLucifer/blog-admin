@@ -2,14 +2,10 @@ import React from 'react';
 import { Table, Button, Space, Card, Empty, Spin, Tag } from 'antd';
 import styles from './index.module.css';
 import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
-import { getUsers, createUser, updateUser, deleteUser, User } from '../../api/user';
-import { useApi } from '../../hooks/useApi';
-import { useMountAsyncEffect } from '../../hooks/useMountEffect';
-import { useCrud } from '../../hooks/useCrud';
-import FormModal from '../../components/FormModal';
-import DeleteModal from '../../components/DeleteModal';
-import ActionButtons from '../../components/ActionButtons';
-import UserForm from '../../components/UserForm';
+import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
+import { User } from '../../types';
+import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
+import { FormModal, DeleteModal, ActionButtons, UserForm } from '../../components';
 
 // 模拟角色数据，实际项目中应该从API获取
 const mockRoles = [

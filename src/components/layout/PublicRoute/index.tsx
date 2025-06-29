@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../../store/hooks';
-import { selectIsAuthenticated } from '../../store/slices/authSlice';
+import { useAppSelector } from '../../../hooks';
+import { selectIsAuthenticated } from '../../../store/slices/authSlice';
 
 interface PublicRouteProps {
   children: React.ReactNode;
