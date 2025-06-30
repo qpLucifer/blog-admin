@@ -1,5 +1,5 @@
 // API 相关常量
-export const API_BASE_URL = process.env.REACT_APP_BASIC_API_URL || '';
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 
 // API 超时时间
 export const API_TIMEOUT = 10000;

@@ -81,7 +81,7 @@ const FormModal: React.FC<FormModalProps> = ({
           {okText}
         </Button>
       ]}
-      destroyOnClose
+      destroyOnHidden
       maskClosable={false}
     >
       <Spin spinning={loading}>

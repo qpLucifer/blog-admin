@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { store } from '../store';
 import { API_BASE_URL, API_TIMEOUT, API_STATUS } from '../constants';
+import { logoutUser } from '../store/slices/authSlice';
+
 
 const instance = axios.create({
   // 使用相对路径，通过代理转发到后端
@@ -41,10 +43,11 @@ instance.interceptors.response.use(
     // 直接返回数据
     return data;
   },
-  error => {
+  async error => {
     if (error.response && error.response.status === API_STATUS.UNAUTHORIZED) {
       // 401错误时，清除认证状态并重定向到登录页
-      store.dispatch({ type: 'auth/logoutUser/fulfilled', payload: true });
+      await store.dispatch(logoutUser());
+
       window.location.href = '/login';
     }
     

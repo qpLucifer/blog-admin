@@ -69,7 +69,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
           {okText}
         </Button>
       ]}
-      destroyOnClose
+      destroyOnHidden
       maskClosable={false}
     >
       <p>{getContent()}</p>

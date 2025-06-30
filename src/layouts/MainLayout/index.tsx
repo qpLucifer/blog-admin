@@ -46,16 +46,16 @@ const MainLayout: React.FC = () => {
     }
   };
 
-  const userMenu = (
-    <Menu
-      items={[{ key: 'logout', label: '退出登录' }]}
-      onClick={({ key }) => {
-        if (key === 'logout') {
-          handleLogout();
-        }
-      }}
-    />
-  );
+  const userMenuItems = [
+    { key: 'logout', label: '退出登录' }
+  ];
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    if (key === 'logout') {
+      handleLogout();
+    }
+  };
+
 
   return (
     <Layout className={styles.layoutRoot}>
@@ -71,7 +71,7 @@ const MainLayout: React.FC = () => {
       </Sider>
       <Layout>
         <Header className={styles.header}>
-          <Dropdown overlay={userMenu} placement="bottomRight">
+          <Dropdown menu={{ items: userMenuItems, onClick: handleMenuClick }} placement="bottomRight">
             <Avatar className={styles.avatar} size={36} style={{ background: '#a18cd1' }}>
               {user?.username?.charAt(0)?.toUpperCase() || 'A'}
             </Avatar>

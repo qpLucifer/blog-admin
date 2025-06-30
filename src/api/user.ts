@@ -8,7 +8,7 @@ export const getUsers = () => {
 
 // 创建用户
 export const createUser = (data: CreateUserData) => {
-  return api.post('/admin/users', data);
+  return api.post('/register', data);
 };
 
 // 更新用户
