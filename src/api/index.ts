@@ -47,10 +47,11 @@ instance.interceptors.response.use(
     if (error.response && error.response.status === API_STATUS.UNAUTHORIZED) {
       // 401错误时，清除认证状态并重定向到登录页
       await store.dispatch(logoutUser());
-
-      window.location.href = '/login';
+      // 如果当前页面不是登录页，重定向到登录页
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
-    
     // 确保错误信息能正确传递
     if (error.response && error.response.data) {
       const errorMessage = error.response.data.message || error.response.data.error || '请求失败';

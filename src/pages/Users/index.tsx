@@ -9,9 +9,9 @@ import { FormModal, DeleteModal, ActionButtons, UserForm } from '../../component
 
 // 模拟角色数据，实际项目中应该从API获取
 const mockRoles = [
-  { id: 1, name: '管理员' },
-  { id: 2, name: '编辑' },
-  { id: 3, name: '访客' }
+  { id: 10, name: '管理员' },
+  { id: 11, name: '编辑' },
+  { id: 12, name: '访客' }
 ];
 
 interface Role {

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { login as loginApi } from '../../api/login';
+import { handleLogin, clearAuth } from '../../utils/auth';
 
 // 用户信息接口
 export interface UserInfo {
@@ -46,13 +47,10 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await loginApi(credentials);
       const loginData = response as unknown as LoginResponse;
-      
-      // 保存token到localStorage
-      localStorage.setItem('token', loginData.token);
-      
+      handleLogin(loginData); // 用工具函数
       return loginData;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || '登录失败');
+      return rejectWithValue(error?.message || '登录失败');
     }
   }
 );
@@ -62,14 +60,7 @@ export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      // 这里可以调用后端的登出API
-      // await logoutApi();
-      
-      // 清除localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
-      localStorage.removeItem('userPermissions');
-      
+      clearAuth(); // 用工具函数
       return true;
     } catch (error: any) {
       return rejectWithValue('登出失败');
@@ -143,12 +134,6 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
-        
-        // 保存用户信息到localStorage
-        localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
-        if (action.payload.user.permissions) {
-          localStorage.setItem('userPermissions', JSON.stringify(action.payload.user.permissions));
-        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
