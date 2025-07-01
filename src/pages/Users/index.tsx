@@ -3,21 +3,10 @@ import { Table, Button, Space, Card, Empty, Spin, Tag } from 'antd';
 import styles from './index.module.css';
 import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
-import { User } from '../../types';
+import { getRoles } from '../../api/role';
+import { User, TableColumn, Role } from '../../types';
 import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
-import { FormModal, DeleteModal, ActionButtons, UserForm } from '../../components';
-
-// 模拟角色数据，实际项目中应该从API获取
-const mockRoles = [
-  { id: 10, name: '管理员' },
-  { id: 11, name: '编辑' },
-  { id: 12, name: '访客' }
-];
-
-interface Role {
-  id: number;
-  name: string;
-}
+import { FormModal, DeleteModal, ActionButtons, UserForm, CommonTableButton, CommonTable } from '../../components';
 
 interface UserWithRoles {
   roles: Role[];
@@ -27,6 +16,14 @@ const Users: React.FC = () => {
   const { data, loading, error, execute: fetchUsers } = useApi<User[]>(getUsers, {
     showError: false,
   });
+
+  const { data: roles, loading: rolesLoading, error: rolesError, execute: fetchRoles } = useApi<Role[]>(getRoles, {
+    showError: true,
+  });
+
+   // 只在组件挂载时调用一次
+   useMountAsyncEffect(fetchUsers);
+   useMountAsyncEffect(fetchRoles);
 
   // CRUD 管理
   const {
@@ -56,9 +53,6 @@ const Users: React.FC = () => {
     }
   });
 
-  // 只在组件挂载时调用一次
-  useMountAsyncEffect(fetchUsers);
-
   // 处理编辑
   function handleEdit(record: User) {
     showEditModal(record);
@@ -86,12 +80,11 @@ const Users: React.FC = () => {
   // 获取表单初始值
   const getInitialValues = () => {
     if (!currentRecord) return {};
-    
     return {
       username: currentRecord.username,
       email: currentRecord.email,
       role_ids: currentRecord.roles?.map(role => 
-        mockRoles.find(r => r.name === role)?.id
+        roles?.find(r => r.name === role)?.id
       ).filter(Boolean),
       status: currentRecord.status === 1
     };
@@ -100,15 +93,15 @@ const Users: React.FC = () => {
   const columns = [
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '用户名', dataIndex: 'username', width: 120 },
-    // { 
-    //   title: '邮箱', 
-    //   dataIndex: 'email', 
-    //   width: 200,
-    //   render: (email: string) => email || '-'
-    // },
+    { 
+      title: '邮箱', 
+      dataIndex: 'email', 
+      width: 200,
+      render: (email: string) => email || '-'
+    },
     { 
       title: '角色', 
-      dataIndex: 'Roles', 
+      dataIndex: 'roles', 
       width: 150,
       render: (roles: UserWithRoles['roles']) => (
         <Space>
@@ -120,11 +113,11 @@ const Users: React.FC = () => {
     },
     { 
       title: '状态', 
-      dataIndex: 'status', 
+      dataIndex: 'is_active', 
       width: 100,
       render: (status: number) => (
-        <Tag color={status === 1 ? 'green' : 'red'}>
-          {status === 1 ? '启用' : '禁用'}
+        <Tag color={status ? 'green' : 'red'}>
+          {status ? '启用' : '禁用'}
         </Tag>
       )
     },
@@ -143,81 +136,25 @@ const Users: React.FC = () => {
     }
   ];
 
-  // 渲染表格内容
-  const renderTable = () => {
-    if (loading) {
-      return (
-        <div style={{ textAlign: 'center', padding: '50px 0' }}>
-          <Spin size="large" />
-          <div style={{ marginTop: 16 }}>加载中...</div>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div style={{ textAlign: 'center', padding: '50px 0' }}>
-          <Empty 
-            description={
-              <div>
-                <div style={{ color: '#ff4d4f', marginBottom: 8 }}>加载失败</div>
-                <div style={{ color: '#666', fontSize: '14px', marginBottom: 16 }}>{error}</div>
-                <Button type="primary" icon={<ReloadOutlined />} onClick={fetchUsers}>
-                  重新加载
-                </Button>
-              </div>
-            }
-          />
-        </div>
-      );
-    }
-
-    if (!data || data.length === 0) {
-      return (
-        <Empty 
-          description="暂无用户数据"
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-        />
-      );
-    }
-
-    return (
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey="id"
-        pagination={{ 
-          pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`
-        }}
-        loading={loading}
-        scroll={{ x: 800 }}
-      />
-    );
-  };
-
   return (
     <div className={styles.root}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className={styles.title}>用户管理</h2>
-        <Space>
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={fetchUsers}
-            loading={loading}
-          >
-            刷新
-          </Button>
-          <Button type="primary" icon={<UserAddOutlined />} onClick={showCreateModal}>
-            新增用户
-          </Button>
-        </Space>
-      </div>
-      
+      <CommonTableButton
+        addButtonText="新增用户"
+        onAdd={showCreateModal}
+        title="用户管理"
+        onReload={fetchUsers}
+        loading={loading || rolesLoading}
+      />
       <Card style={{ borderRadius: 16 }}>
-        {renderTable()}
+        <CommonTable
+          columns={columns as TableColumn[]}
+          dataSource={data || []}
+          rowKey="id"
+          pagination={{}}
+          loading={loading || rolesLoading}
+          error={error || rolesError}
+          scroll={{ x: 800 }}
+        />
       </Card>
 
       {/* 新增/编辑弹窗 */}
@@ -230,7 +167,7 @@ const Users: React.FC = () => {
         onSubmit={handleSubmit}
         width={600}
       >
-        <UserForm isEdit={isEdit} roles={mockRoles} />
+        <UserForm isEdit={isEdit} roles={roles || []} />
       </FormModal>
 
       {/* 删除确认弹窗 */}

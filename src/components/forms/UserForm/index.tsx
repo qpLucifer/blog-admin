@@ -1,13 +1,12 @@
 import React from 'react';
 import { Form, Input, Select, Switch } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TeamOutlined } from '@ant-design/icons';
-import { User } from '../../../types';
-
+import { User, TableColumn, Role } from '../../../types';
 const { Option } = Select;
 
 interface UserFormProps {
   isEdit?: boolean;
-  roles?: Array<{ id: number; name: string }>;
+  roles?: Role[];
 }
 
 /**
@@ -78,7 +77,7 @@ const UserForm: React.FC<UserFormProps> = ({ isEdit = false, roles = [] }) => {
         >
           {roles.map(role => (
             <Option key={role.id} value={role.id}>
-              {role.name}
+              {role.description}
             </Option>
           ))}
         </Select>

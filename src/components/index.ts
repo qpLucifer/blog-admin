@@ -1,5 +1,6 @@
 // 通用组件
 export { default as CommonTable } from './common/Table';
+export { default as CommonTableButton } from './common/TableButton';
 
 // 弹窗组件
 export { default as FormModal } from './FormModal';
@@ -10,6 +11,7 @@ export { default as ActionButtons } from './ActionButtons';
 
 // 表单组件
 export { default as UserForm } from './forms/UserForm';
+export { default as RoleForm } from './forms/RoleForm';
 
 // 布局组件
 export { default as AuthInitializer } from './layout/AuthInitializer';

@@ -31,6 +31,18 @@ export interface Role {
   permissions?: string[];
 }
 
+export interface CreateRoleData {
+  name: string;
+  description?: string;
+  permission_ids?: number[];
+}
+
+export interface UpdateRoleData {
+  name?: string;
+  description?: string;
+  permission_ids?: number[];
+}
+
 export interface Permission {
   id: number;
   name: string;
