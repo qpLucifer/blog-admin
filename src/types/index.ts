@@ -3,8 +3,8 @@ export interface User {
   id: number;
   username: string;
   email?: string;
-  roles?: string[];
-  status: number;
+  roles?: { id: number; name: string }[];
+  is_active: boolean;
   created_at?: string;
   updated_at?: string;
 }
@@ -25,7 +25,7 @@ export interface UpdateUserData {
 }
 
 export interface Role {
-  id: number;
+  id: number | string;
   name: string;
   description?: string;
   permissions?: string[];

@@ -88,7 +88,7 @@ const FormModal: React.FC<FormModalProps> = ({
         <Form
           form={currentForm}
           layout="vertical"
-          preserve={false}
+          preserve={true}
         >
           {children}
         </Form>

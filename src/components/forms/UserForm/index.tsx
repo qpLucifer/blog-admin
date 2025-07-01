@@ -62,7 +62,7 @@ const UserForm: React.FC<UserFormProps> = ({ isEdit = false, roles = [] }) => {
       </Form.Item>
 
       <Form.Item
-        name="role_ids"
+        name="roles"
         label="角色"
         rules={[
           { required: true, message: '请选择角色' }
@@ -84,7 +84,7 @@ const UserForm: React.FC<UserFormProps> = ({ isEdit = false, roles = [] }) => {
       </Form.Item>
 
       <Form.Item
-        name="status"
+        name="is_active"
         label="状态"
         valuePropName="checked"
         initialValue={true}

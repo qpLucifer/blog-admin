@@ -83,10 +83,8 @@ const Users: React.FC = () => {
     return {
       username: currentRecord.username,
       email: currentRecord.email,
-      role_ids: currentRecord.roles?.map(role => 
-        roles?.find(r => r.name === role)?.id
-      ).filter(Boolean),
-      status: currentRecord.status === 1
+      roles: currentRecord?.roles?.map(role => role.id),
+      is_active: currentRecord.is_active,
     };
   };
 
