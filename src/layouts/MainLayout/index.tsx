@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Avatar, Dropdown, Space } from 'antd';
+import { Layout, Menu, Button, Avatar, Dropdown, Space, message } from 'antd';
 import { 
   MenuFoldOutlined, 
   MenuUnfoldOutlined, 
@@ -40,8 +40,9 @@ const MainLayout: React.FC = () => {
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
-      // 登出成功后会自动清除状态，AuthInitializer会处理重定向
+      message.success('登出成功');
     } catch (error) {
+      message.error('登出失败');
       console.error('登出失败:', error);
     }
   };

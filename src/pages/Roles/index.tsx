@@ -22,13 +22,27 @@ const Roles: React.FC = () => {
   // 只在组件挂载时调用一次
   useMountAsyncEffect(fetchRoles);  
 
+  const permission_ids = [{
+    id: 1,
+    name: '查看用户',
+    description: '查看用户列表',
+  },{
+    id: 2,
+    name: '查看角色',
+    description: '查看角色列表',
+  },{
+    id: 3,
+    name: '查看权限',
+    description: '查看权限列表',
+
+  }];
   const columns = [
     { title: "ID", dataIndex: "id" },
     { title: "角色名", dataIndex: "name" },
     { title: "描述", dataIndex: "description" },
     {
       title: "权限",
-      dataIndex: "Permissions",
+      dataIndex: "permissions",
       render: (permissions: Permission[]) => (
         <Space>
           {permissions?.map((permissions) => (
@@ -111,14 +125,11 @@ const Roles: React.FC = () => {
     const getInitialValues = () => {
       if (!currentRecord) return {};
       
-      // return {
-      //   username: currentRecord.username,
-      //   email: currentRecord.email,
-      //   role_ids: currentRecord.roles?.map(role => 
-      //     mockRoles.find(r => r.name === role)?.id
-      //   ).filter(Boolean),
-      //   status: currentRecord.status === 1
-      // };
+      return {
+        name: currentRecord.name,
+        description: currentRecord.description,
+        permissions: currentRecord.permissions?.map(permission => permission.id),
+      };
     };
 
   return (
@@ -151,7 +162,7 @@ const Roles: React.FC = () => {
         onSubmit={handleSubmit}
         width={600}
       >
-        <RoleForm isEdit={isEdit} />
+        <RoleForm isEdit={isEdit} permission_ids={permission_ids}/>
       </FormModal>
 
       {/* 删除确认弹窗 */}

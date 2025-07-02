@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { login as loginApi } from '../../api/login';
+import { login as loginApi, logout } from '../../api/login';
 import { handleLogin, clearAuth } from '../../utils/auth';
 
 // 用户信息接口
@@ -60,6 +60,7 @@ export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
+      await logout(); // 用工具函数
       clearAuth(); // 用工具函数
       return true;
     } catch (error: any) {
