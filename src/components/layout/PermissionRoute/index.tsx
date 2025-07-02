@@ -2,10 +2,11 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import { selectUser } from '../../../store/slices/authSlice';
+import { Permission } from '../../../types';
 
 interface PermissionRouteProps {
   children: React.ReactNode;
-  requiredPermission?: string;
+  requiredPermission?: Permission;
   fallbackPath?: string;
 }
 

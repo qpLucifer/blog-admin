@@ -14,7 +14,11 @@ export const createUser = (data: CreateUserData) => {
 // 更新用户
 export const updateUser = (id: number | string, data: UpdateUserData) => {
   return api.put(`/api/admin/users/${id}`, data);
+};
 
+// 更新用户个人信息
+export const updateUserProfile = (id: number | string, data: { mood?: string; signature?: string }) => {
+  return api.put(`/api/admin/users/${id}/profile`, data);
 };
 
 // 删除用户

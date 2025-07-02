@@ -12,6 +12,7 @@ export { default as ActionButtons } from './ActionButtons';
 // 表单组件
 export { default as UserForm } from './forms/UserForm';
 export { default as RoleForm } from './forms/RoleForm';
+export { default as PermissionForm } from './forms/PermissionForm';
 
 // 布局组件
 export { default as AuthInitializer } from './layout/AuthInitializer';

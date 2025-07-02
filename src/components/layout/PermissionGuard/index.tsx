@@ -1,11 +1,12 @@
 import React from 'react';
 import { useAppSelector } from '../../../hooks';
 import { selectUser } from '../../../store/slices/authSlice';
+import { Permission, Role } from '../../../types';
 
 interface PermissionGuardProps {
   children: React.ReactNode;
-  permission?: string;
-  role?: string;
+  permission?: Permission;
+  role?: Role;
   fallback?: React.ReactNode;
 }
 

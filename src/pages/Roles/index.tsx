@@ -1,13 +1,18 @@
-import React from 'react';
-import { Table, Button, Space, Card, Form ,Tag} from 'antd';
-import styles from './index.module.css';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Role, TableColumn, CreateRoleData, Permission } from '../../types';
-import { getRoles, createRole, updateRole, deleteRole } from '../../api/role';
-import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
-import { CommonTable, CommonTableButton, FormModal, DeleteModal, RoleForm } from '../../components';
-
-
+import React from "react";
+import { Table, Button, Space, Card, Form, Tag } from "antd";
+import styles from "./index.module.css";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Role, TableColumn, CreateRoleData, Permission } from "../../types";
+import { getRoles, createRole, updateRole, deleteRole } from "../../api/role";
+import { getPermissions } from "../../api/permissions";
+import { useApi, useCrud, useMountAsyncEffect } from "../../hooks";
+import {
+  CommonTable,
+  CommonTableButton,
+  FormModal,
+  DeleteModal,
+  RoleForm,
+} from "../../components";
 
 const Roles: React.FC = () => {
   const {
@@ -19,23 +24,19 @@ const Roles: React.FC = () => {
     showError: false,
   });
 
+  const {
+    data: permissions,
+    loading: permissionsLoading,
+    error: permissionsError,
+    execute: fetchPermissions,
+  } = useApi<Permission[]>(getPermissions, {
+    showError: false,
+  });
+
   // 只在组件挂载时调用一次
-  useMountAsyncEffect(fetchRoles);  
+  useMountAsyncEffect(fetchRoles);
+  useMountAsyncEffect(fetchPermissions);
 
-  const permission_ids = [{
-    id: 1,
-    name: '查看用户',
-    description: '查看用户列表',
-  },{
-    id: 2,
-    name: '查看角色',
-    description: '查看角色列表',
-  },{
-    id: 3,
-    name: '查看权限',
-    description: '查看权限列表',
-
-  }];
   const columns = [
     { title: "ID", dataIndex: "id" },
     { title: "角色名", dataIndex: "name" },
@@ -58,10 +59,21 @@ const Roles: React.FC = () => {
       key: "action",
       render: (_: any, record: Role) => (
         <Space>
-          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)} size="small">
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+            size="small"
+          >
             编辑
           </Button>
-          <Button type="link" icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(record)}>
+          <Button
+            type="link"
+            icon={<DeleteOutlined />}
+            size="small"
+            danger
+            onClick={() => handleDelete(record)}
+          >
             删除
           </Button>
         </Space>
@@ -69,68 +81,70 @@ const Roles: React.FC = () => {
     },
   ];
 
-    // CRUD 管理
-    const {
-      modalVisible,
-      deleteModalVisible,
-      loading: crudLoading,
-      currentRecord,
-      isEdit,
-      showCreateModal,
-      showEditModal,
-      showDeleteModal,
-      hideModal,
-      hideDeleteModal,
-      handleCreate,
-      handleUpdate,
-      handleDelete: handleDeleteConfirm
-    } = useCrud<Role>({
-      createApi: createRole,
-      updateApi: updateRole,
-      deleteApi: deleteRole,
-      createSuccessMessage: '角色创建成功',
-      updateSuccessMessage: '角色更新成功',
-      deleteSuccessMessage: '角色删除成功',
-      onSuccess: () => {
-        // 操作成功后刷新列表
-        getRoles();
-      }
-    });
-  
-    // 处理编辑
-    function handleEdit(record: Role) {
-      showEditModal(record);
+  // CRUD 管理
+  const {
+    modalVisible,
+    deleteModalVisible,
+    loading: crudLoading,
+    currentRecord,
+    isEdit,
+    showCreateModal,
+    showEditModal,
+    showDeleteModal,
+    hideModal,
+    hideDeleteModal,
+    handleCreate,
+    handleUpdate,
+    handleDelete: handleDeleteConfirm,
+  } = useCrud<Role>({
+    createApi: createRole,
+    updateApi: updateRole,
+    deleteApi: deleteRole,
+    createSuccessMessage: "角色创建成功",
+    updateSuccessMessage: "角色更新成功",
+    deleteSuccessMessage: "角色删除成功",
+    onSuccess: () => {
+      // 操作成功后刷新列表
+      fetchRoles();
+    },
+  });
+
+  // 处理编辑
+  function handleEdit(record: Role) {
+    showEditModal(record);
+  }
+
+  // 处理删除
+  function handleDelete(record: Role) {
+    showDeleteModal(record);
+  }
+
+  // 处理表单提交
+  const handleSubmit = async (values: any) => {
+    if (isEdit) {
+      await handleUpdate(values);
+    } else {
+      await handleCreate(values);
     }
-  
-    // 处理删除
-    function handleDelete(record: Role) {
-      showDeleteModal(record);
-    }
-  
-    // 处理表单提交
-    const handleSubmit = async (values: any) => {
-      if (isEdit) {
-        await handleUpdate(values);
-      } else {
-        await handleCreate(values);
-      }
+  };
+
+  // 处理删除确认
+  const handleDeleteConfirmAction = async () => {
+    await handleDeleteConfirm();
+  };
+
+  // 获取表单初始值
+  const getInitialValues = () => {
+    if (!currentRecord) return {};
+
+    return {
+      name: currentRecord.name,
+      description: currentRecord.description,
+      permissions: currentRecord.permissions?.map(
+        (permission) => permission.id
+      ),
     };
-  
-    // 处理删除确认
-    const handleDeleteConfirmAction = async () => {
-      await handleDeleteConfirm();
-    };
-  
-    // 获取表单初始值
-    const getInitialValues = () => {
-      if (!currentRecord) return {};
-      
-      return {
-        name: currentRecord.name,
-        description: currentRecord.description,
-        permissions: currentRecord.permissions?.map(permission => permission.id),
-      };
-    };
+  };
 
   return (
     <div className={styles.root}>
@@ -139,22 +153,22 @@ const Roles: React.FC = () => {
         onAdd={showCreateModal}
         title="角色管理"
         onReload={fetchRoles}
-        loading={loading}
+        loading={loading || permissionsLoading}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable
           onReload={fetchRoles}
           columns={columns as TableColumn[]}
           dataSource={data || []}
-          error={error}
-          loading={loading}
+          error={error || permissionsError}
+          loading={loading || permissionsLoading}
           pagination={{}}
         />
       </Card>
 
-       {/* 新增/编辑弹窗 */}
-       <FormModal
-        title={isEdit ? '编辑角色' : '新增角色'}
+      {/* 新增/编辑弹窗 */}
+      <FormModal
+        title={isEdit ? "编辑角色" : "新增角色"}
         visible={modalVisible}
         loading={crudLoading}
         initialValues={getInitialValues()}
@@ -162,14 +176,14 @@ const Roles: React.FC = () => {
         onSubmit={handleSubmit}
         width={600}
       >
-        <RoleForm isEdit={isEdit} permission_ids={permission_ids}/>
+        <RoleForm isEdit={isEdit} permission_ids={permissions || []} />
       </FormModal>
 
       {/* 删除确认弹窗 */}
       <DeleteModal
         visible={deleteModalVisible}
         loading={crudLoading}
-        // recordName={currentRecord?.username}
+        recordName={currentRecord?.name}
         onCancel={hideDeleteModal}
         onConfirm={handleDeleteConfirmAction}
       />
@@ -177,4 +191,4 @@ const Roles: React.FC = () => {
   );
 };
 
-export default Roles; 
+export default Roles;

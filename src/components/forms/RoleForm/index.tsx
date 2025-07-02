@@ -1,12 +1,13 @@
 import React from 'react';
 import { Form, Input, Select, } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TeamOutlined } from '@ant-design/icons';
+import { Permission } from '../../../types';
 
 const { Option } = Select;
 
 interface UserFormProps {
   isEdit?: boolean;
-  permission_ids?: Array<{ id: number; name: string }>;
+  permission_ids?: Permission[];
 }
 
 /**
@@ -48,7 +49,7 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, permission_ids = []
         >
           {permission_ids.map(permission => (
             <Option key={permission.id} value={permission.id}>
-              {permission.name}
+              {permission.description}
             </Option>
           ))}
         </Select>

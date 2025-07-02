@@ -1,11 +1,7 @@
 // 认证相关的工具函数
 
-export interface UserInfo {
-  id: number;
-  username: string;
-  roles: string[];
-  permissions?: string[];
-}
+import { Role, UserInfo, Permission } from '../types';
+
 
 /**
  * 获取当前token
@@ -61,7 +57,7 @@ export const getUserPermissions = (): string[] => {
 /**
  * 设置用户权限
  */
-export const setUserPermissions = (permissions: string[]): void => {
+export const setUserPermissions = (permissions: Permission[]): void => {
   localStorage.setItem('userPermissions', JSON.stringify(permissions));
 };
 
@@ -76,7 +72,7 @@ export const hasPermission = (permission: string): boolean => {
 /**
  * 检查用户是否有指定角色
  */
-export const hasRole = (role: string): boolean => {
+export const hasRole = (role: Role): boolean => {
   const userInfo = getUserInfo();
   return userInfo?.roles.includes(role) || false;
 };

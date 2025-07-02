@@ -1,26 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { login as loginApi, logout } from '../../api/login';
 import { handleLogin, clearAuth } from '../../utils/auth';
+import { UserInfo, LoginCredentials, LoginResponse, Permission } from '../../types';
 
-// 用户信息接口
-export interface UserInfo {
-  id: number;
-  username: string;
-  roles: string[];
-  permissions?: string[];
-}
-
-// 登录请求参数接口
-interface LoginCredentials {
-  username: string;
-  password: string;
-}
-
-// 登录响应接口
-interface LoginResponse {
-  token: string;
-  user: UserInfo;
-}
 
 // 认证状态接口
 interface AuthState {
@@ -114,7 +96,7 @@ const authSlice = createSlice({
     },
     
     // 更新用户权限
-    updateUserPermissions: (state, action: PayloadAction<string[]>) => {
+    updateUserPermissions: (state, action: PayloadAction<Permission[]>) => {
       if (state.user) {
         state.user.permissions = action.payload;
         // 同步到localStorage

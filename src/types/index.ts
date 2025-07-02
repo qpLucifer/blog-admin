@@ -7,6 +7,8 @@ export interface User {
   is_active: boolean;
   created_at?: string;
   updated_at?: string;
+  signature?: string;
+  mood?: string;
 }
 
 export interface CreateUserData {
@@ -51,12 +53,33 @@ export interface Permission {
   action?: string;
 }
 
+export interface CreatePermissionData {
+  name: string;
+  description?: string;
+  resource?: string;
+  action?: string;
+}
+
+export interface UpdatePermissionData {
+  name?: string;
+  description?: string;
+  resource?: string;
+  action?: string;
+}
+
+
 // 认证相关类型
 export interface UserInfo {
   id: number;
   username: string;
-  roles: string[];
-  permissions?: string[];
+  roles: Role[];
+  email?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+  permissions?: Permission[];
+  signature?: string;
+  mood?: string;
 }
 
 export interface LoginCredentials {
@@ -108,3 +131,10 @@ export interface TableColumn {
   render?: (value: any, record: any) => React.ReactNode;
   fixed?: 'left' | 'right';
 } 
+
+export interface authReducer {
+  auth: {
+    user: UserInfo | null;
+    token: string | null;
+  };
+}

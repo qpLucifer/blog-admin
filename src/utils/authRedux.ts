@@ -2,6 +2,7 @@
 
 import { store } from '../store';
 import { selectUser, selectToken, selectIsAuthenticated } from '../store/slices/authSlice';
+import { Permission,Role } from '../types';
 
 /**
  * 获取当前token
@@ -27,7 +28,7 @@ export const getUserInfo = () => {
 /**
  * 获取用户权限
  */
-export const getUserPermissions = (): string[] => {
+export const getUserPermissions = (): Permission[] => {
   const user = selectUser(store.getState());
   return user?.permissions || [];
 };
@@ -35,7 +36,7 @@ export const getUserPermissions = (): string[] => {
 /**
  * 检查用户是否有指定权限
  */
-export const hasPermission = (permission: string): boolean => {
+export const hasPermission = (permission: Permission): boolean => {
   const permissions = getUserPermissions();
   return permissions.includes(permission);
 };
@@ -43,7 +44,7 @@ export const hasPermission = (permission: string): boolean => {
 /**
  * 检查用户是否有指定角色
  */
-export const hasRole = (role: string): boolean => {
+export const hasRole = (role: Role): boolean => {
   const user = getUserInfo();
   return user?.roles.includes(role) || false;
 };
