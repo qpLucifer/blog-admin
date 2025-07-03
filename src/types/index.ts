@@ -138,3 +138,31 @@ export interface authReducer {
     token: string | null;
   };
 }
+
+export interface Menu {
+  id: number;
+  name: string;
+  icon?: string;
+  path: string;
+  order: number;
+  parent_id: number;
+  created_at?: string;
+  updated_at?: string;
+  children?: Menu[];
+}
+
+export interface CreateMenuData {
+  name: string;
+  icon?: string;
+  path: string;
+  parent_id: number;
+  order: number;
+}
+
+export interface UpdateMenuData {
+  name?: string;
+  icon?: string;
+  path?: string;
+  parent_id?: number;
+  order?: number;
+}

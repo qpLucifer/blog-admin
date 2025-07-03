@@ -1,6 +1,7 @@
 import api from './index';
+import { LoginCredentials } from '../types';
 
-export const login = (data: { username: string; password: string }) => {
+export const login = (data: LoginCredentials) => {
   return api.post('/api/login', data);
 };
 

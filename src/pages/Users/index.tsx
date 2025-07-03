@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table, Button, Space, Card, Empty, Spin, Tag } from 'antd';
 import styles from './index.module.css';
-import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
 import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
 import { getRoles } from '../../api/role';
 import { User, TableColumn, Role } from '../../types';
