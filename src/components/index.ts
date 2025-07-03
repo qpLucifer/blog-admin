@@ -14,6 +14,7 @@ export { default as UserForm } from './forms/UserForm';
 export { default as RoleForm } from './forms/RoleForm';
 export { default as PermissionForm } from './forms/PermissionForm';
 export { default as MenuForm } from './forms/MenuForm';
+export { default as DaySentenceForm } from './forms/DaySentenceForm';
 
 // 布局组件
 export { default as AuthInitializer } from './layout/AuthInitializer';

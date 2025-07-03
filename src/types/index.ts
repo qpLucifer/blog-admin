@@ -166,3 +166,21 @@ export interface UpdateMenuData {
   parent_id?: number;
   order?: number;
 }
+
+export interface DaySentence {
+  id: number;
+  day_sentence: string;
+  auth: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateDaySentenceData {
+  day_sentence: string;
+  auth: string;
+}
+
+export interface UpdateDaySentenceData {
+  day_sentence?: string;
+  auth?: string;
+}

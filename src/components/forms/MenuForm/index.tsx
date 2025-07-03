@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Checkbox } from "antd";
 import {
   NumberOutlined,
   CrownOutlined,
@@ -50,17 +50,20 @@ const MenuForm: React.FC = () => {
         label="图标"
         rules={[{ required: true, message: "请选择图标" }]}
       >
-        <Select
-          prefix={<CrownOutlined />}
-          placeholder="请选择图标"
-        >
-          {Object.keys(AllIcons).map((key) => (
-            <Option key={key} value={key}>
-              {/* <NumberOutlined /> */}
-              <CrownOutlined />
-            </Option>
-          ))}
-        </Select>
+        <Input prefix={<CrownOutlined />} placeholder="请选择图标" />
+      </Form.Item>
+            {/* 增删改查权限多选框 */}
+      <Form.Item
+        name="permissions"
+        label="权限"
+        rules={[{ required: true, message: "请选择权限" }]}
+      >
+        <Checkbox.Group options={[
+          { label: '新增', value: 'create' },
+          { label: '删除', value: 'delete' },
+          { label: '修改', value: 'update' },
+          { label: '查询', value: 'read' },
+        ]} />
       </Form.Item>
     </>
   );
