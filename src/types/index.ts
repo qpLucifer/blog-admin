@@ -30,7 +30,7 @@ export interface Role {
   id: number | string;
   name: string;
   description?: string;
-  permissions?: Permission[];
+  menus?: Menu[];
 }
 
 export interface CreateRoleData {

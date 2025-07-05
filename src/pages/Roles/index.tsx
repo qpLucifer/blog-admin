@@ -2,9 +2,9 @@ import React from "react";
 import { Table, Button, Space, Card, Form, Tag } from "antd";
 import styles from "./index.module.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Role, TableColumn, CreateRoleData, Permission } from "../../types";
+import { Role, TableColumn, CreateRoleData, Permission, Menu } from "../../types";
 import { getRoles, createRole, updateRole, deleteRole } from "../../api/role";
-import { getPermissions } from "../../api/permissions";
+import { getMenuList } from "../../api/menu";
 import { useApi, useCrud, useMountAsyncEffect } from "../../hooks";
 import {
   CommonTable,
@@ -25,35 +25,35 @@ const Roles: React.FC = () => {
   });
 
   const {
-    data: permissions,
-    loading: permissionsLoading,
-    error: permissionsError,
-    execute: fetchPermissions,
-  } = useApi<Permission[]>(getPermissions, {
+    data: menus,
+    loading: menusLoading,
+    error: menusError,
+    execute: fetchMenus,
+  } = useApi<Menu[]>(getMenuList, {
     showError: false,
   });
 
   // 只在组件挂载时调用一次
   useMountAsyncEffect(fetchRoles);
-  useMountAsyncEffect(fetchPermissions);
+  useMountAsyncEffect(fetchMenus);
 
   const columns = [
     { title: "ID", dataIndex: "id" },
     { title: "角色名", dataIndex: "name" },
     { title: "描述", dataIndex: "description" },
-    {
-      title: "权限",
-      dataIndex: "permissions",
-      render: (permissions: Permission[]) => (
-        <Space>
-          {permissions?.map((permissions) => (
-            <Tag key={permissions.id} color="blue">
-              {permissions.description}
-            </Tag>
-          )) || "-"}
-        </Space>
-      ),
-    },
+    // {
+    //   title: "权限",
+    //   dataIndex: "permissions",
+    //   render: (permissions: Permission[]) => (
+    //     <Space>
+    //       {permissions?.map((permissions) => (
+    //         <Tag key={permissions.id} color="blue">
+    //           {permissions.description}
+    //         </Tag>
+    //       )) || "-"}
+    //     </Space>
+    //   ),
+    // },
     {
       title: "操作",
       key: "action",
@@ -136,12 +136,11 @@ const Roles: React.FC = () => {
   // 获取表单初始值
   const getInitialValues = () => {
     if (!currentRecord) return {};
-
     return {
       name: currentRecord.name,
       description: currentRecord.description,
-      permissions: currentRecord.permissions?.map(
-        (permission) => permission.id
+      menus: currentRecord.menus?.map(
+        (menu) => menu.id
       ),
     };
   };
@@ -153,15 +152,15 @@ const Roles: React.FC = () => {
         onAdd={showCreateModal}
         title="角色管理"
         onReload={fetchRoles}
-        loading={loading || permissionsLoading}
+        loading={loading || menusLoading}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable
           onReload={fetchRoles}
           columns={columns as TableColumn[]}
           dataSource={data || []}
-          error={error || permissionsError}
-          loading={loading || permissionsLoading}
+          error={error || menusError}
+          loading={loading || menusLoading}
           pagination={{}}
         />
       </Card>
@@ -176,7 +175,7 @@ const Roles: React.FC = () => {
         onSubmit={handleSubmit}
         width={600}
       >
-        <RoleForm isEdit={isEdit} permission_ids={permissions || []} />
+        <RoleForm isEdit={isEdit} menus={menus || []} />
       </FormModal>
 
       {/* 删除确认弹窗 */}
