@@ -8,7 +8,6 @@ const Login = lazy(() => import('../pages/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Users = lazy(() => import('../pages/Users'));
 const Roles = lazy(() => import('../pages/Roles'));
-const Permissions = lazy(() => import('../pages/Permissions'));
 const Menus = lazy(() => import('../pages/Menus'));
 const DaySentence = lazy(() => import('../pages/DaySentence'));
 const Profile = lazy(() => import('../pages/Profile'));
@@ -36,7 +35,6 @@ const AppRouter = () => (
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="roles" element={<Roles />} />
-          <Route path="permissions" element={<Permissions />} />
           <Route path="menus" element={<Menus />} />
           <Route path="day-sentence" element={<DaySentence />} />
           <Route path="profile" element={<Profile />} />

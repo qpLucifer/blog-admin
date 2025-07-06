@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Button, Avatar, Dropdown, Space, message } from 'antd';
 import { 
-  MenuFoldOutlined, 
-  MenuUnfoldOutlined, 
   DashboardOutlined,
   UserOutlined,
   TeamOutlined,
-  SafetyOutlined,
   MenuOutlined,
   FileTextOutlined,
   UserSwitchOutlined,
-  LogoutOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -23,7 +19,6 @@ const menuItems = [
   { key: 'dashboard', icon: <DashboardOutlined />, label: '首页' },
   { key: 'users', icon: <UserOutlined />, label: '用户管理' },
   { key: 'roles', icon: <TeamOutlined />, label: '角色管理' },
-  { key: 'permissions', icon: <SafetyOutlined />, label: '权限管理' },
   { key: 'menus', icon: <MenuOutlined />, label: '菜单管理' },
   { key: 'day-sentence', icon: <FileTextOutlined />, label: '每日一句' },
   { key: 'profile', icon: <UserSwitchOutlined />, label: '个人中心' }

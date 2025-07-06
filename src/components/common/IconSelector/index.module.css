@@ -1,0 +1,45 @@
+.iconSelector {
+  width: 100%;
+}
+
+.iconCard {
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.iconCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.iconCard.selected {
+  border: 2px solid #1890ff !important;
+  background-color: #f0f8ff;
+}
+
+.iconName {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.searchInput {
+  margin-bottom: 8px;
+}
+
+.iconGrid {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  margin-bottom: 4px;
+} 

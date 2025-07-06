@@ -1,13 +1,11 @@
 import React from "react";
-import { Form, Input, Select, Checkbox } from "antd";
+import { Form, Input, Select } from "antd";
 import {
   NumberOutlined,
-  CrownOutlined,
   LinkOutlined,
   MenuOutlined,
 } from "@ant-design/icons";
-import * as AllIcons from "@ant-design/icons";
-const { Option } = Select;
+import { IconSelector } from "../../index";
 
 /**
  * 菜单表单组件
@@ -50,20 +48,7 @@ const MenuForm: React.FC = () => {
         label="图标"
         rules={[{ required: true, message: "请选择图标" }]}
       >
-        <Input prefix={<CrownOutlined />} placeholder="请选择图标" />
-      </Form.Item>
-            {/* 增删改查权限多选框 */}
-      <Form.Item
-        name="permissions"
-        label="权限"
-        rules={[{ required: true, message: "请选择权限" }]}
-      >
-        <Checkbox.Group options={[
-          { label: '新增', value: 'create' },
-          { label: '删除', value: 'delete' },
-          { label: '修改', value: 'update' },
-          { label: '查询', value: 'read' },
-        ]} />
+        <IconSelector placeholder="请选择图标" />
       </Form.Item>
     </>
   );
