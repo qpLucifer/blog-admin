@@ -149,6 +149,14 @@ export interface Menu {
   created_at?: string;
   updated_at?: string;
   children?: Menu[];
+  roleMenu?: RoleMenu;
+}
+
+export interface RoleMenu {
+  can_create: boolean;
+  can_read: boolean;
+  can_update: boolean;
+  can_delete: boolean;
 }
 
 export interface CreateMenuData {

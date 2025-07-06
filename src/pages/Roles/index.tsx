@@ -140,7 +140,11 @@ const Roles: React.FC = () => {
       name: currentRecord.name,
       description: currentRecord.description,
       menus: currentRecord.menus?.map(
-        (menu) => menu.id
+        (menu) => ({
+          name: menu.name,
+          menuId: menu.id,
+          roleMenu: menu.roleMenu,
+        })
       ),
     };
   };

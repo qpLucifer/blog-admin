@@ -27,7 +27,7 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
       // 创建新值结构：{ menuId, permissions: [] }
       const newValue = selectedMenuIds.map((menuId) => {
         const existing = value.find((item: any) => item.menuId === menuId);
-        return existing || { menuId, permissions: [] };
+        return existing || { menuId, name:menus.find((item:any)=>item.id===menuId)?.name, roleMenu: {} };
       });
       onChange(newValue);
     };
@@ -35,11 +35,16 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
     // 处理权限变化
     const handlePermissionChange = (
       menuId: number,
-      checkedPermissions: string[]
+      checkedPermissions: {
+        can_create: boolean;
+        can_read: boolean;
+        can_update: boolean;
+        can_delete: boolean;
+      }
     ) => {
       const newValue = value.map((item: any) =>
         item.menuId === menuId
-          ? { ...item, permissions: checkedPermissions }
+          ? { ...item, roleMenu: checkedPermissions }
           : item
       );
       onChange(newValue);
@@ -54,15 +59,15 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
       },
       {
         title: "新增",
-        key: "add",
+        key: "create",
         render: (_: any, record: any) => (
           <Checkbox
-            checked={record.permissions.includes("add")}
+            checked={record.roleMenu.can_create}
             onChange={(e) => {
               const newPermissions = e.target.checked
-                ? [...record.permissions, "add"]
-                : record.permissions.filter((p: string) => p !== "add");
-              handlePermissionChange(record.id, newPermissions);
+                ? { ...record.roleMenu, can_create: true }
+                : { ...record.roleMenu, can_create: false };
+              handlePermissionChange(record.menuId, newPermissions);
             }}
           />
         ),
@@ -72,12 +77,12 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
         key: "delete",
         render: (_: any, record: any) => (
           <Checkbox
-            checked={record.permissions.includes("delete")}
+            checked={record.roleMenu.can_delete}
             onChange={(e) => {
               const newPermissions = e.target.checked
-                ? [...record.permissions, "delete"]
-                : record.permissions.filter((p: string) => p !== "delete");
-              handlePermissionChange(record.id, newPermissions);
+                ? { ...record.roleMenu, can_delete: true }
+                : { ...record.roleMenu, can_delete: false };
+              handlePermissionChange(record.menuId, newPermissions);
             }}
           />
         ),
@@ -87,27 +92,27 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
         key: "update",
         render: (_: any, record: any) => (
           <Checkbox
-            checked={record.permissions.includes("update")}
+            checked={record.roleMenu.can_update}
             onChange={(e) => {
               const newPermissions = e.target.checked
-                ? [...record.permissions, "update"]
-                : record.permissions.filter((p: string) => p !== "update");
-              handlePermissionChange(record.id, newPermissions);
+                ? { ...record.roleMenu, can_update: true }
+                : { ...record.roleMenu, can_update: false };
+              handlePermissionChange(record.menuId, newPermissions);
             }}
           />
         ),
       },
       {
         title: "查询",
-        key: "query",
+        key: "read",
         render: (_: any, record: any) => (
           <Checkbox
-            checked={record.permissions.includes("query")}
+            checked={record.roleMenu.can_read}
             onChange={(e) => {
               const newPermissions = e.target.checked
-                ? [...record.permissions, "query"]
-                : record.permissions.filter((p: string) => p !== "query");
-              handlePermissionChange(record.id, newPermissions);
+                ? { ...record.roleMenu, can_read: true }
+                : { ...record.roleMenu, can_read: false };
+              handlePermissionChange(record.menuId, newPermissions);
             }}
           />
         ),
@@ -138,18 +143,9 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
 
         <Table
           columns={columns}
-          dataSource={menus
-            .filter((menu) => selectedMenuIds.includes(menu.id))
-            .map((menu) => ({
-              id: menu.id,
-              name: menu.name,
-              permissions: (
-                value.find((item: any) => item.menuId === menu.id) || {
-                  permissions: [],
-                }
-              ).permissions,
-            }))}
-          rowKey="id"
+          dataSource={value
+            .filter((menu:any) => selectedMenuIds.includes(menu.menuId))}
+          rowKey="menuId"
           pagination={false}
           bordered
           size="small"
@@ -191,15 +187,19 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
                 return Promise.reject(new Error("请至少选择一个菜单"));
               }
               // 检查是否所有选中的菜单都至少有一个权限
-              const hasEmptyPermissions = value.some(
-                (item: any) =>
-                  !item.permissions || item.permissions.length === 0
-              );
-              if (hasEmptyPermissions) {
-                return Promise.reject(
-                  new Error("请为每个选择的菜单分配至少一个权限")
-                );
-              }
+              // const hasEmptyPermissions = value.some(
+              //   (item: any) =>
+              //     !item.roleMenu ||
+              //     (item.roleMenu.can_create ||
+              //     item.roleMenu.can_read ||
+              //     item.roleMenu.can_update ||
+              //     item.roleMenu.can_delete)
+              // );
+              // if (hasEmptyPermissions) {
+              //   return Promise.reject(
+              //     new Error("请为每个选择的菜单分配至少一个权限")
+              //   );
+              // }
               return Promise.resolve();
             },
           },
