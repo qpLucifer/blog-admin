@@ -1,6 +1,6 @@
 // 认证相关的工具函数
 
-import { Role, UserInfo, Permission } from '../types';
+import { Role, UserInfo, Permission, Menu } from '../types';
 
 
 /**
@@ -46,28 +46,44 @@ export const setUserInfo = (userInfo: UserInfo): void => {
   localStorage.setItem('userInfo', JSON.stringify(userInfo));
 };
 
-/**
- * 获取用户权限
- */
-export const getUserPermissions = (): string[] => {
-  const permissions = localStorage.getItem('userPermissions');
-  return permissions ? JSON.parse(permissions) : [];
-};
+// /**
+//  * 获取用户权限
+//  */
+// export const getUserPermissions = (): string[] => {
+//   const permissions = localStorage.getItem('userPermissions');
+//   return permissions ? JSON.parse(permissions) : [];
+// };
+
+// /**
+//  * 设置用户权限
+//  */
+// export const setUserPermissions = (permissions: Permission[]): void => {
+//   localStorage.setItem('userPermissions', JSON.stringify(permissions));
+// };
 
 /**
- * 设置用户权限
+ * 获取用户菜单
  */
-export const setUserPermissions = (permissions: Permission[]): void => {
-  localStorage.setItem('userPermissions', JSON.stringify(permissions));
+export const getUserMenus = (): Menu[] => {
+  const menus = localStorage.getItem('userMenus');
+  return menus ? JSON.parse(menus) : [];
 };
 
+
 /**
- * 检查用户是否有指定权限
+ * 设置用户菜单
  */
-export const hasPermission = (permission: string): boolean => {
-  const permissions = getUserPermissions();
-  return permissions.includes(permission);
+export const setUserMenus = (menus: Menu[]): void => {
+  localStorage.setItem('userMenus', JSON.stringify(menus));
 };
+
+// /**
+//  * 检查用户是否有指定权限
+//  */
+// export const hasPermission = (permission: string): boolean => {
+//   const permissions = getUserPermissions();
+//   return permissions.includes(permission);
+// };
 
 /**
  * 检查用户是否有指定角色
@@ -83,7 +99,8 @@ export const hasRole = (role: Role): boolean => {
 export const clearAuth = (): void => {
   localStorage.removeItem('token');
   localStorage.removeItem('userInfo');
-  localStorage.removeItem('userPermissions');
+  localStorage.removeItem('userMenus');
+  // localStorage.removeItem('userPermissions');
 };
 
 /**
@@ -92,9 +109,12 @@ export const clearAuth = (): void => {
 export const handleLogin = (loginData: { token: string; user: UserInfo }): void => {
   setToken(loginData.token);
   setUserInfo(loginData.user);
-  if (loginData.user.permissions) {
-    setUserPermissions(loginData.user.permissions);
+  if (loginData.user.menus) {
+    setUserMenus(loginData.user.menus);
   }
+  // if (loginData.user.permissions) {
+  //   setUserPermissions(loginData.user.permissions);
+  // }
 };
 
 /**

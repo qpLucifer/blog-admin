@@ -80,6 +80,7 @@ export interface UserInfo {
   permissions?: Permission[];
   signature?: string;
   mood?: string;
+  menus?: Menu[];
 }
 
 export interface LoginCredentials {
@@ -150,6 +151,10 @@ export interface Menu {
   updated_at?: string;
   children?: Menu[];
   roleMenu?: RoleMenu;
+  can_create: boolean;
+  can_read: boolean;
+  can_update: boolean;
+  can_delete: boolean;
 }
 
 export interface RoleMenu {
