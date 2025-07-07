@@ -1,34 +1,33 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Button, Avatar, Dropdown, Space, message } from 'antd';
-import { 
-  DashboardOutlined,
-  UserOutlined,
-  TeamOutlined,
-  MenuOutlined,
-  FileTextOutlined,
-  UserSwitchOutlined,
-} from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { logoutUser, selectUser } from '../../store/slices/authSlice';
+import { logoutUser, selectUser, selectUserMenus } from '../../store/slices/authSlice';
 import styles from './index.module.css';
+import { Menu as MenuType } from '../../types';
+import * as AllIcons from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
 
-const menuItems = [
-  { key: 'dashboard', icon: <DashboardOutlined />, label: '首页' },
-  { key: 'users', icon: <UserOutlined />, label: '用户管理' },
-  { key: 'roles', icon: <TeamOutlined />, label: '角色管理' },
-  { key: 'menus', icon: <MenuOutlined />, label: '菜单管理' },
-  { key: 'day-sentence', icon: <FileTextOutlined />, label: '每日一句' },
-  { key: 'profile', icon: <UserSwitchOutlined />, label: '个人中心' }
-];
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const userMenus = useAppSelector(selectUserMenus);
+
+  const menuItems = userMenus.map((menu: MenuType) => {
+    const IconComponent = (AllIcons as any)[menu.icon as keyof typeof AllIcons];
+    const icon = menu.icon ? <IconComponent /> : null;
+    return {
+      key: menu.path,
+      icon,
+      label: menu.name,
+    }
+  });
+
+
   
   const selectedKey = location.pathname.split('/')[1] || 'dashboard';
 
@@ -61,7 +60,7 @@ const MainLayout: React.FC = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[selectedKey]}
-          onClick={({ key }) => navigate(`/${key}`)}
+          onClick={({ key }) => navigate(`${key}`)}
           items={menuItems}
         />
       </Sider>

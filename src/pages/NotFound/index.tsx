@@ -1,6 +1,6 @@
 import React from 'react';
 import { Result, Button } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ const NotFound: React.FC = () => {
       status="404"
       title="404"
       subTitle="页面未找到"
-      extra={<Button type="primary" onClick={() => navigate('/')}>返回首页</Button>}
+      extra={<Button type="primary" onClick={() => navigate('/dashboard')}>返回首页</Button>}
     />
   );
 };
