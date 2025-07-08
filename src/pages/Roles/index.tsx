@@ -2,16 +2,18 @@ import React from "react";
 import { Table, Button, Space, Card, Form, Tag } from "antd";
 import styles from "./index.module.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Role, TableColumn, CreateRoleData, Permission, Menu } from "../../types";
+import { Role, TableColumn, Menu } from "../../types";
 import { getRoles, createRole, updateRole, deleteRole } from "../../api/role";
 import { getMenuList } from "../../api/menu";
-import { useApi, useCrud, useMountAsyncEffect } from "../../hooks";
+import { useApi, useCrud, useMountAsyncEffect, useMenuPermission } from "../../hooks";
+
 import {
   CommonTable,
   CommonTableButton,
   FormModal,
   DeleteModal,
   RoleForm,
+  ActionButtons,
 } from "../../components";
 
 const Roles: React.FC = () => {
@@ -37,46 +39,23 @@ const Roles: React.FC = () => {
   useMountAsyncEffect(fetchRoles);
   useMountAsyncEffect(fetchMenus);
 
+   const operations = useMenuPermission().hasPermission('/roles');
+
   const columns = [
     { title: "ID", dataIndex: "id" },
     { title: "角色名", dataIndex: "name" },
     { title: "描述", dataIndex: "description" },
-    // {
-    //   title: "权限",
-    //   dataIndex: "permissions",
-    //   render: (permissions: Permission[]) => (
-    //     <Space>
-    //       {permissions?.map((permissions) => (
-    //         <Tag key={permissions.id} color="blue">
-    //           {permissions.description}
-    //         </Tag>
-    //       )) || "-"}
-    //     </Space>
-    //   ),
-    // },
     {
       title: "操作",
       key: "action",
       render: (_: any, record: Role) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-            size="small"
-          >
-            编辑
-          </Button>
-          <Button
-            type="link"
-            icon={<DeleteOutlined />}
-            size="small"
-            danger
-            onClick={() => handleDelete(record)}
-          >
-            删除
-          </Button>
-        </Space>
+        <ActionButtons
+          record={record}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          editDisabled={!operations.update}
+          deleteDisabled={!operations.delete}
+        />
       ),
     },
   ];

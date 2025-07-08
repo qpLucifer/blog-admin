@@ -4,6 +4,7 @@ export { useCrud } from './useCrud';
 export { useInitialEffect, useInitialAsyncEffect } from './useInitialEffect';
 export { useMountEffect, useMountAsyncEffect } from './useMountEffect';
 export { useAuth } from './useAuth';
+export { useMenuPermission } from './useMenuPermission';
 
 // Redux 相关的 hooks
 export { useAppDispatch, useAppSelector } from './useRedux'; 

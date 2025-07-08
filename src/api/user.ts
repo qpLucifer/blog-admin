@@ -3,7 +3,7 @@ import { CreateUserData, UpdateUserData } from '../types';
 
 // 获取用户列表
 export const getUsers = () => {
-  return api.get('/api/admin/users');
+  return api.get('/api/user/users');
 };
 
 // 创建用户
@@ -13,20 +13,20 @@ export const createUser = (data: CreateUserData) => {
 
 // 更新用户
 export const updateUser = (id: number | string, data: UpdateUserData) => {
-  return api.put(`/api/admin/users/${id}`, data);
+  return api.put(`/api/user/users/${id}`, data);
 };
 
 // 更新用户个人信息
 export const updateUserProfile = (id: number | string, data: { mood?: string; signature?: string }) => {
-  return api.put(`/api/admin/users/${id}/profile`, data);
+  return api.put(`/api/user/users/${id}/profile`, data);
 };
 
 // 删除用户
 export const deleteUser = (id: number | string) => {
-  return api.delete(`/api/admin/users/${id}`);
+  return api.delete(`/api/user/users/${id}`);
 };
 
 // 获取用户详情
 export const getUserById = (id: number) => {
-  return api.get(`/api/admin/users/${id}`);
+  return api.get(`/api/user/users/${id}`);
 };

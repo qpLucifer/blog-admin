@@ -6,6 +6,7 @@ import { getRoles } from '../../api/role';
 import { User, TableColumn, Role } from '../../types';
 import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
 import { FormModal, DeleteModal, ActionButtons, UserForm, CommonTableButton, CommonTable } from '../../components';
+import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 interface UserWithRoles {
   roles: Role[];
@@ -23,6 +24,8 @@ const Users: React.FC = () => {
    // 只在组件挂载时调用一次
    useMountAsyncEffect(fetchUsers);
    useMountAsyncEffect(fetchRoles);
+
+   const operations = useMenuPermission().hasPermission('/users');
 
   // CRUD 管理
   const {
@@ -126,8 +129,8 @@ const Users: React.FC = () => {
       render: (_: any, record: User) => (
         <ActionButtons
           record={record}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+          onEdit={operations?.update ? handleEdit : undefined}
+          onDelete={operations?.delete ? handleDelete : undefined}
         />
       )
     }
@@ -141,6 +144,7 @@ const Users: React.FC = () => {
         title="用户管理"
         onReload={fetchUsers}
         loading={loading || rolesLoading}
+        operations={operations}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

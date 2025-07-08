@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { login as loginApi, logout } from '../../api/login';
 import { handleLogin, clearAuth } from '../../utils/auth';
-import { UserInfo, LoginCredentials, LoginResponse, Permission } from '../../types';
+import { UserInfo, LoginCredentials, LoginResponse, Permission, Menu } from '../../types';
 
 
 // 认证状态接口
@@ -103,6 +103,14 @@ const authSlice = createSlice({
         localStorage.setItem('userPermissions', JSON.stringify(action.payload));
       }
     },
+
+    updateMenuPermissions: (state, action: PayloadAction<Menu[]>) => {
+      if (state.user) {
+        state.user.menus = action.payload;
+        // 同步到localStorage
+        localStorage.setItem('userMenus', JSON.stringify(action.payload));
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -154,7 +162,8 @@ const authSlice = createSlice({
 });
 
 // 导出actions
-export const { clearError, updateUserInfo, updateUserPermissions } = authSlice.actions;
+export const { clearError, updateUserInfo, updateUserPermissions, updateMenuPermissions } = authSlice.actions;
+
 
 // 导出selectors
 export const selectAuth = (state: { auth: AuthState }) => state.auth;

@@ -5,6 +5,8 @@ import styles from './index.module.css';
 import { useSelector } from 'react-redux';
 import { authReducer } from '../../types';
 import { updateUserProfile } from '../../api/user';
+import { useAppDispatch } from '../../hooks';
+import { updateUserInfo } from '../../store/slices/authSlice';
 
 const defaultBadges = [
   { name: '活跃分子', desc: '经常登录', icon: <StarFilled style={{ color: '#fadb14' }} /> },
@@ -13,8 +15,8 @@ const defaultBadges = [
 ];
 
 const Profile: React.FC = () => {
+  const dispatch = useAppDispatch();
   const { user } = useSelector((state: authReducer) => state.auth);
-  const { token } = useSelector((state: authReducer) => state.auth);
 
   // 可编辑签名和心情
   const [signature, setSignature] = useState(user?.signature || '这个人很懒，什么都没写~');
@@ -33,11 +35,13 @@ const Profile: React.FC = () => {
       setEditSig(false);
       await updateUserProfile(user?.id as number, { signature: value });
       message.success('签名已保存！');
+      dispatch(updateUserInfo({ signature: value }));
     } else {
       setMood(value);
       setEditMood(false);
       await updateUserProfile(user?.id as number, { mood: value });
       message.success('心情已保存！');
+      dispatch(updateUserInfo({ mood: value }));
     }
     // TODO: 可调用后端接口保存
   };

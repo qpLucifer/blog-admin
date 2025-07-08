@@ -1,6 +1,6 @@
-import { Button ,Space} from 'antd';
-import styles from './index.module.css';
-import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Button, Space } from "antd";
+import styles from "./index.module.css";
+import { UserAddOutlined, ReloadOutlined } from "@ant-design/icons";
 
 interface CommonTableButtonProps<T = any> {
   loading?: boolean;
@@ -8,6 +8,12 @@ interface CommonTableButtonProps<T = any> {
   onAdd?: () => void;
   title?: string;
   addButtonText?: string;
+  operations?: {
+    create: boolean;
+    read: boolean;
+    update: boolean;
+    delete: boolean;
+  };
 }
 
 function CommonTableButton<T = any>({
@@ -16,26 +22,30 @@ function CommonTableButton<T = any>({
   onAdd,
   title,
   addButtonText,
+  operations,
 }: CommonTableButtonProps<T>) {
-  
-
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 className={styles.title}>{title}</h2>
-        <Space>
-          <Button 
-            icon={<ReloadOutlined />} 
-            onClick={onReload}
-            loading={loading}
-          >
-            刷新
-          </Button>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 16,
+      }}
+    >
+      <h2 className={styles.title}>{title}</h2>
+      <Space>
+        <Button icon={<ReloadOutlined />} onClick={onReload} loading={loading}>
+          刷新
+        </Button>
+        {operations?.create && (
           <Button type="primary" icon={<UserAddOutlined />} onClick={onAdd}>
             {addButtonText}
           </Button>
-        </Space>
-      </div>
+        )}
+      </Space>
+    </div>
   );
 }
 
-export default CommonTableButton; 
+export default CommonTableButton;
