@@ -6,9 +6,14 @@ export const getUsers = () => {
   return api.get('/api/user/users');
 };
 
+// 注册用户
+export const registerUser = (data: CreateUserData) => {
+  return api.post('/api/register', data);
+};
+
 // 创建用户
 export const createUser = (data: CreateUserData) => {
-  return api.post('/api/register', data);
+  return api.post('/api/user/users', data);
 };
 
 // 更新用户

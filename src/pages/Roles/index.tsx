@@ -136,6 +136,7 @@ const Roles: React.FC = () => {
         title="角色管理"
         onReload={fetchRoles}
         loading={loading || menusLoading}
+        operations={operations}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

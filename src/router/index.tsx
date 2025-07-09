@@ -26,11 +26,7 @@ const AppRouter = () => (
         } />
         
         {/* 受保护的路由 */}
-        <Route path="/" element={
-          <PrivateRoute>
-            <MainLayout />
-          </PrivateRoute>
-        }>
+        <Route path="/" element={<PrivateRoute> <MainLayout /></PrivateRoute>}>
           <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
