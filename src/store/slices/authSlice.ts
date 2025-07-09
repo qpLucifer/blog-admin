@@ -55,23 +55,16 @@ export const logoutUser = createAsyncThunk(
 export const initializeAuth = createAsyncThunk(
   'auth/initialize',
   async (_, { getState, dispatch }) => {
-    const state = getState() as { auth: AuthState };
-    const token = state.auth.token;
-    
-    if (token) {
-      // 从localStorage恢复用户信息
-      const userInfo = localStorage.getItem('userInfo');
-      const userPermissions = localStorage.getItem('userPermissions');
-      
-      if (userInfo) {
-        const user = JSON.parse(userInfo);
-        if (userPermissions) {
-          user.permissions = JSON.parse(userPermissions);
-        }
-        return user;
+    const token = localStorage.getItem('token');
+    const userInfo = localStorage.getItem('userInfo');
+    const userMenus = localStorage.getItem('userMenus');
+    if (token && userInfo) {
+      const user = JSON.parse(userInfo);
+      if (userMenus) {
+        user.menus = JSON.parse(userMenus);
       }
+      return { user, token };
     }
-    
     return null;
   }
 );
@@ -148,9 +141,18 @@ const authSlice = createSlice({
       })
       
       // 初始化
+      .addCase(initializeAuth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(initializeAuth.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       .addCase(initializeAuth.fulfilled, (state, action) => {
+        state.loading = false;
         if (action.payload) {
-          state.user = action.payload;
+          state.user = action.payload.user;
+          state.token = action.payload.token;
           state.isAuthenticated = true;
         } else {
           state.isAuthenticated = false;

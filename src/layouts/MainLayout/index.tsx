@@ -28,8 +28,8 @@ const MainLayout: React.FC = () => {
   });
 
 
-  
-  const selectedKey = location.pathname.split('/')[1] || 'dashboard';
+  // 修正菜单高亮逻辑
+  const selectedKey = location.pathname === '/' ? '/dashboard' : location.pathname;
 
   const handleLogout = async () => {
     try {

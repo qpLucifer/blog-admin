@@ -27,7 +27,7 @@ const AppRouter = () => (
         
         {/* 受保护的路由 */}
         <Route path="/" element={<PrivateRoute> <MainLayout /></PrivateRoute>}>
-          <Route index element={<Navigate to="dashboard" />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="roles" element={<Roles />} />
@@ -35,8 +35,7 @@ const AppRouter = () => (
           <Route path="day-sentence" element={<DaySentence />} />
           <Route path="profile" element={<Profile />} />
         </Route>
-        
-        {/* 404页面 */}
+        {/* 404页面，放在所有路由最后 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

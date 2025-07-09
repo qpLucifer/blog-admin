@@ -129,8 +129,10 @@ const Users: React.FC = () => {
       render: (_: any, record: User) => (
         <ActionButtons
           record={record}
-          onEdit={operations?.update ? handleEdit : undefined}
-          onDelete={operations?.delete ? handleDelete : undefined}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          editDisabled={!operations.update}
+          deleteDisabled={!operations.delete}
         />
       )
     }
