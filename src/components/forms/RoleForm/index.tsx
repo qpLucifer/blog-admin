@@ -27,7 +27,9 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
       // 创建新值结构：{ menuId, permissions: [] }
       const newValue = selectedMenuIds.map((menuId) => {
         const existing = value.find((item: any) => item.menuId === menuId);
-        return existing || { menuId, name:menus.find((item:any)=>item.id===menuId)?.name, roleMenu: {} };
+        return existing || { menuId, name:menus.find((item:any)=>item.id===menuId)?.name, roleMenu: {
+          can_read: true,
+        } };
       });
       onChange(newValue);
     };
@@ -187,19 +189,19 @@ const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
                 return Promise.reject(new Error("请至少选择一个菜单"));
               }
               // 检查是否所有选中的菜单都至少有一个权限
-              // const hasEmptyPermissions = value.some(
-              //   (item: any) =>
-              //     !item.roleMenu ||
-              //     (item.roleMenu.can_create ||
-              //     item.roleMenu.can_read ||
-              //     item.roleMenu.can_update ||
-              //     item.roleMenu.can_delete)
-              // );
-              // if (hasEmptyPermissions) {
-              //   return Promise.reject(
-              //     new Error("请为每个选择的菜单分配至少一个权限")
-              //   );
-              // }
+              const hasEmptyPermissions = value.some(
+                (item: any) =>
+                  !item.roleMenu ||
+                  (!item.roleMenu.can_create &&
+                  !item.roleMenu.can_read &&
+                  !item.roleMenu.can_update &&
+                  !item.roleMenu.can_delete)
+              );
+              if (hasEmptyPermissions) {
+                return Promise.reject(
+                  new Error("请为每个选择的菜单分配至少一个权限")
+                );
+              }
               return Promise.resolve();
             },
           },

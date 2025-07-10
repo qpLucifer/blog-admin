@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { User, TableColumn, Role, Menu } from "../../types";
 import { useApi, useCrud, useMountAsyncEffect } from "../../hooks";
+import { useMenuPermission } from "../../hooks/useMenuPermission";
 import {
   FormModal,
   DeleteModal,
@@ -26,6 +27,8 @@ const Menus: React.FC = () => {
 
   // 只在组件挂载时调用一次
   useMountAsyncEffect(fetchMenus);
+
+  const operations = useMenuPermission().hasPermission('/users');
 
   // CRUD 管理
   const {
@@ -104,6 +107,8 @@ const Menus: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          editDisabled={!operations.update}
+          deleteDisabled={!operations.delete}
         />
       ),
     },
@@ -116,6 +121,7 @@ const Menus: React.FC = () => {
         title="菜单管理"
         onReload={fetchMenus}
         loading={loading}
+        operations={operations}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

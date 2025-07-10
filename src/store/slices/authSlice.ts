@@ -11,6 +11,7 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  userMenus: Menu[] | [];
 }
 
 // 初始状态
@@ -20,6 +21,7 @@ const initialState: AuthState = {
   isAuthenticated: !!localStorage.getItem('token'),
   loading: false,
   error: null,
+  userMenus: localStorage.getItem('userMenus') ? JSON.parse(localStorage.getItem('userMenus') || '[]') : [],
 };
 
 // 异步登录action
@@ -87,15 +89,6 @@ const authSlice = createSlice({
         localStorage.setItem('userInfo', JSON.stringify(state.user));
       }
     },
-    
-    // 更新用户权限
-    updateUserPermissions: (state, action: PayloadAction<Permission[]>) => {
-      if (state.user) {
-        state.user.permissions = action.payload;
-        // 同步到localStorage
-        localStorage.setItem('userPermissions', JSON.stringify(action.payload));
-      }
-    },
 
     updateMenuPermissions: (state, action: PayloadAction<Menu[]>) => {
       if (state.user) {
@@ -117,6 +110,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.userMenus = action.payload.user.menus || [];
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -153,6 +147,7 @@ const authSlice = createSlice({
         if (action.payload) {
           state.user = action.payload.user;
           state.token = action.payload.token;
+          state.userMenus = action.payload.user.menus || [];
           state.isAuthenticated = true;
         } else {
           state.isAuthenticated = false;
@@ -164,7 +159,7 @@ const authSlice = createSlice({
 });
 
 // 导出actions
-export const { clearError, updateUserInfo, updateUserPermissions, updateMenuPermissions } = authSlice.actions;
+export const { clearError, updateUserInfo, updateMenuPermissions } = authSlice.actions;
 
 
 // 导出selectors
@@ -174,7 +169,7 @@ export const selectToken = (state: { auth: AuthState }) => state.auth.token;
 export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
 export const selectLoading = (state: { auth: AuthState }) => state.auth.loading;
 export const selectError = (state: { auth: AuthState }) => state.auth.error;
-export const selectUserMenus = (state: { auth: AuthState }) => state.auth.user?.menus || [];
+export const selectUserMenus = (state: { auth: AuthState }) => state.auth.userMenus || [];
 
 
 // 导出reducer
