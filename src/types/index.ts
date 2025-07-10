@@ -197,3 +197,39 @@ export interface UpdateDaySentenceData {
   day_sentence?: string;
   auth?: string;
 }
+
+// 博客相关类型
+export interface BlogData {
+  id?: number;
+  title: string;
+  cover_image?: string;
+  content: string;
+  summary?: string;
+  author_id: number;
+  tags?: number[];
+  views?: number;
+  likes?: number;
+  comments_count?: number;
+  is_published?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// 标签相关类型
+export interface TagData {
+  id?: number;
+  name: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// 评论相关类型
+export interface CommentData {
+  id?: number;
+  blog_id: number;
+  user_id: number;
+  content: string;
+  parent_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}

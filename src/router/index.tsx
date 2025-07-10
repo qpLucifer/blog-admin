@@ -13,6 +13,9 @@ const DaySentence = lazy(() => import('../pages/DaySentence'));
 const Profile = lazy(() => import('../pages/Profile'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const MainLayout = lazy(() => import('../layouts/MainLayout'));
+const Blogs = lazy(() => import('../pages/Blogs'));
+const Comments = lazy(() => import('../pages/Comments'));
+const Tags = lazy(() => import('../pages/Tags'));
 
 const AppRouter = () => (
   <Router>
@@ -34,6 +37,9 @@ const AppRouter = () => (
           <Route path="menus" element={<Menus />} />
           <Route path="day-sentence" element={<DaySentence />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="blogs" element={<Blogs />} />
+          <Route path="comments" element={<Comments />} />
+          <Route path="tags" element={<Tags />} />
         </Route>
         {/* 404页面，放在所有路由最后 */}
         <Route path="*" element={<NotFound />} />
