@@ -52,6 +52,7 @@ const Blogs: React.FC = () => {
     if (isEdit) {
       await handleUpdate(values);
     } else {
+      values.author_id = 1;
       await handleCreate(values);
     }
   };

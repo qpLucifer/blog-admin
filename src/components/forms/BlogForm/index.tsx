@@ -15,20 +15,21 @@ interface BlogFormProps {
 }
 
 const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
-  const [editorHtml, setEditorHtml] = useState('');
+  // const [editorHtml, setEditorHtml] = useState('');
   const [previewVisible, setPreviewVisible] = useState(false);
   const [coverFileList, setCoverFileList] = useState<any[]>([]);
   const editorRef = useRef<IDomEditor | null>(null);
 
   // 富文本内容变更
-  const handleEditorChange = (editor: IDomEditor) => {
-    setEditorHtml(editor.getHtml());
-  };
+  // const handleEditorChange = (editor: IDomEditor) => {
+  //   debugger
+  //   setEditorHtml(editor.getHtml());
+  // };
 
   // 图片上传
   const uploadProps = {
     name: 'file',
-    action: '/api/upload',
+    action: 'http://localhost:3000/api/upload/image',
     listType: 'picture-card' as const,
     showUploadList: true,
     maxCount: 1,
@@ -50,6 +51,48 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
     const res: any = await axios.post('/api/upload', formData);
     insertFn(res.data.url);
   };
+
+  const EditorComponent = ({ value = '', onChange }: any) => {
+    const handleEditorChange = (editor: IDomEditor) => {
+      onChange(editor.getHtml());
+    }
+    return (
+      <div>
+          <Toolbar
+            editor={editorRef.current}
+            defaultConfig={{}}
+            mode="default"
+            style={{ borderBottom: '1px solid #eee' }}
+          />
+          <Editor
+            defaultConfig={{
+              MENU_CONF: {
+                uploadImage: {
+                  customUpload
+                }
+              }
+            }}
+            value={value}
+            onCreated={(editor: IDomEditor) => (editorRef.current = editor)}
+            onChange={handleEditorChange}
+            mode="default"
+            style={{ minHeight: 200, border: '1px solid #eee', borderRadius: 4, marginBottom: 8 }}
+          />
+          <Button icon={<EyeOutlined />} onClick={() => setPreviewVisible(true)} style={{ marginBottom: 8 }}>
+            预览
+          </Button>
+          <Modal
+            title="内容预览"
+            open={previewVisible}
+            onCancel={() => setPreviewVisible(false)}
+            footer={null}
+            width={800}
+          >
+            <div dangerouslySetInnerHTML={{ __html: value }} />
+          </Modal>
+        </div>
+    )
+  }
 
   return (
     <>
@@ -80,40 +123,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
         label="正文内容"
         rules={[{ required: true, message: '请输入正文内容' }]}
       >
-        <div>
-          <Toolbar
-            editor={editorRef.current}
-            defaultConfig={{}}
-            mode="default"
-            style={{ borderBottom: '1px solid #eee' }}
-          />
-          <Editor
-            defaultConfig={{
-              MENU_CONF: {
-                uploadImage: {
-                  customUpload
-                }
-              }
-            }}
-            value={editorHtml}
-            onCreated={(editor: IDomEditor) => (editorRef.current = editor)}
-            onChange={handleEditorChange}
-            mode="default"
-            style={{ minHeight: 200, border: '1px solid #eee', borderRadius: 4, marginBottom: 8 }}
-          />
-          <Button icon={<EyeOutlined />} onClick={() => setPreviewVisible(true)} style={{ marginBottom: 8 }}>
-            预览
-          </Button>
-          <Modal
-            title="内容预览"
-            open={previewVisible}
-            onCancel={() => setPreviewVisible(false)}
-            footer={null}
-            width={800}
-          >
-            <div dangerouslySetInnerHTML={{ __html: editorHtml }} />
-          </Modal>
-        </div>
+        <EditorComponent />
       </Form.Item>
       <Form.Item
         name="summary"
