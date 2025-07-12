@@ -4,7 +4,7 @@ import styles from './index.module.css';
 import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
 import { getRoles } from '../../api/role';
 import { User, TableColumn, Role } from '../../types';
-import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
 import { FormModal, DeleteModal, ActionButtons, UserForm, CommonTableButton, CommonTable } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
@@ -22,10 +22,14 @@ const Users: React.FC = () => {
   });
 
    // 只在组件挂载时调用一次
-   useMountAsyncEffect(fetchUsers);
-   useMountAsyncEffect(fetchRoles);
+   useInitialAsyncEffect(fetchUsers);
+   useInitialAsyncEffect(fetchRoles);
 
-   const operations = useMenuPermission().hasPermission('/users');
+   const { hasPermission } = useMenuPermission();
+  // 用法示例：
+  // hasPermission('/users', 'create')
+  // hasPermission('/users', 'update')
+  // hasPermission('/users', 'delete')
 
   // CRUD 管理
   const {
@@ -131,8 +135,8 @@ const Users: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!operations.update}
-          deleteDisabled={!operations.delete}
+          editDisabled={!hasPermission('/users', 'update')}
+          deleteDisabled={!hasPermission('/users', 'delete')}
         />
       )
     }
@@ -146,7 +150,12 @@ const Users: React.FC = () => {
         title="用户管理"
         onReload={fetchUsers}
         loading={loading || rolesLoading}
-        operations={operations}
+        operations={{
+          create: hasPermission('/users', 'create'),
+          update: hasPermission('/users', 'update'),
+          delete: hasPermission('/users', 'delete'),
+          read: hasPermission('/users', 'read'),
+        }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

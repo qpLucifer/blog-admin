@@ -1,9 +1,9 @@
 import React from "react";
-import { Table, Button, Space, Card } from "antd";
+import { Table, Button, Space, Card, Tree, Empty, message } from "antd";
 import styles from "./index.module.css";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, MenuOutlined } from "@ant-design/icons";
 import { User, TableColumn, Role, Menu } from "../../types";
-import { useApi, useCrud, useMountAsyncEffect } from "../../hooks";
+import { useApi, useCrud, useInitialAsyncEffect } from "../../hooks";
 import { useMenuPermission } from "../../hooks/useMenuPermission";
 import {
   FormModal,
@@ -13,22 +13,121 @@ import {
   CommonTable,
   ActionButtons,
 } from "../../components";
-import { getMenuList, addMenu, updateMenu, deleteMenu } from "../../api/menu";
+import { getMenuList, getMenuTree, addMenu, updateMenu, deleteMenu } from "../../api/menu";
 
 const Menus: React.FC = () => {
+  // 获取菜单树
   const {
-    data,
-    loading,
-    error,
-    execute: fetchMenus,
-  } = useApi<Menu[]>(getMenuList, {
-    showError: false,
-  });
+    data: menuTree,
+    loading: treeLoading,
+    error: treeError,
+    execute: fetchMenuTree,
+  } = useApi<Menu[]>(getMenuTree, { showError: false });
+
+
+  // 当前选中的菜单id
+  const [selectedKey, setSelectedKey] = React.useState<number | null>(null);
 
   // 只在组件挂载时调用一次
-  useMountAsyncEffect(fetchMenus);
+  useInitialAsyncEffect(fetchMenuTree);
 
-  const operations = useMenuPermission().hasPermission('/users');
+  // 选中树节点时，右侧表格只显示该节点的children
+  const getTableData = () => {
+    if (!selectedKey) return menuTree || [];
+    // 在树中查找选中节点
+    const findNode = (nodes: any[]): any => {
+      for (const node of nodes) {
+        if (node.id === selectedKey) return node;
+        if (node.children) {
+          const found = findNode(node.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    const node = findNode(menuTree || []);
+    return node && node.children ? node.children : [];
+  };
+
+  // 拖拽排序处理（支持order字段）
+  const handleTreeDrop = async (info: any) => {
+    const dragKey = info.node.key;
+    const dropNode = info.node;
+    const dropToGap = info.dropToGap;
+    const dragNode = info.dragNode;
+    // 禁止拖到自己或自己子孙节点下
+    const isDescendant = (drag: any, drop: any) => {
+      if (!drop.children) return false;
+      for (const child of drop.children) {
+        if (child.id === drag.id) return true;
+        if (isDescendant(drag, child)) return true;
+      }
+      return false;
+    };
+    if (dragNode.key === dropNode.key || isDescendant(dragNode, dropNode)) {
+      message.error('不能拖到自己或自己的子菜单下');
+      return;
+    }
+    // 计算新的 parent_id
+    let newParentId = null;
+    let newOrder = 0;
+    let siblings: any[] = [];
+    // 辅助函数：查找节点
+    const findNodeById = (id: number, nodes: any[]): any => {
+      for (const node of nodes) {
+        if (node.id === id) return node;
+        if (node.children) {
+          const found = findNodeById(id, node.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    // 1. 拖到某节点内部（变成子节点）
+    if (!dropToGap) {
+      newParentId = dropNode.key;
+      const parent = findNodeById(newParentId, menuTree || []);
+      siblings = parent && parent.children ? parent.children.filter((c: any) => c.id !== dragNode.key) : [];
+      newOrder = siblings.length; // 放到最后
+    } else {
+      // 2. 拖到某节点前/后（同级排序）
+      newParentId = dropNode.parent_id ?? null;
+      // 找到同级所有节点
+      const parent = newParentId ? findNodeById(newParentId, menuTree || []) : { children: menuTree };
+      siblings = parent && parent.children ? parent.children.filter((c: any) => c.id !== dragNode.key) : [];
+      // 找到目标节点在同级中的索引
+      const dropIndex = siblings.findIndex((c: any) => c.id === dropNode.key);
+      if (dropIndex === -1) {
+        newOrder = siblings.length;
+      } else {
+        newOrder = dropToGap ? dropIndex + (info.dropPosition > info.node.pos.split('-').length - 1 ? 1 : 0) : dropIndex;
+      }
+    }
+    // 重新排序同级所有节点
+    siblings.splice(newOrder, 0, { ...dragNode, id: dragNode.key });
+    // 依次更新所有兄弟节点的order
+    for (let i = 0; i < siblings.length; i++) {
+      await updateMenu(siblings[i].id, { parent_id: newParentId, order: i });
+    }
+    message.success('菜单拖拽排序成功');
+    fetchMenuTree();
+  };
+
+  // 确保children字段为数组或不传
+  const normalizeTree = (nodes: any[]): any[] =>
+    nodes.map(node => {
+      const hasChildren = node.children && node.children.length > 0;
+      return {
+        ...node,
+        children: hasChildren ? normalizeTree(node.children) : undefined
+      };
+    });
+
+  const { hasPermission } = useMenuPermission();
+  // 用法示例：
+  // hasPermission('/menus', 'create')
+  // hasPermission('/menus', 'update')
+  // hasPermission('/menus', 'delete')
 
   // CRUD 管理
   const {
@@ -54,7 +153,7 @@ const Menus: React.FC = () => {
     deleteSuccessMessage: "菜单删除成功",
     onSuccess: () => {
       // 操作成功后刷新列表
-      fetchMenus();
+      fetchMenuTree();
     },
   });
 
@@ -90,6 +189,7 @@ const Menus: React.FC = () => {
       path: currentRecord.path,
       order: currentRecord.order,
       icon: currentRecord.icon,
+      parent_id: currentRecord.parent_id ?? null,
     };
   };
 
@@ -107,55 +207,79 @@ const Menus: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!operations.update}
-          deleteDisabled={!operations.delete}
+          editDisabled={!hasPermission('/menus', 'update')}
+          deleteDisabled={!hasPermission('/menus', 'delete')}
         />
       ),
     },
   ];
   return (
-    <div className={styles.root}>
-      <CommonTableButton
-        addButtonText="新增菜单"
-        onAdd={showCreateModal}
-        title="菜单管理"
-        onReload={fetchMenus}
-        loading={loading}
-        operations={operations}
-      />
-      <Card style={{ borderRadius: 16 }}>
-        <CommonTable
-          columns={columns as TableColumn[]}
-          dataSource={data || []}
-          rowKey="id"
-          pagination={{}}
-          loading={loading}
-          error={error}
-          scroll={{ x: 800 }}
+    <div className={styles.root} style={{ display: 'flex', gap: 24 }}>
+      {/* 左侧树形菜单 */}
+      <div style={{ width: 260, background: '#fff' }}>
+        {(menuTree && menuTree.length > 0) ? (
+          <Tree
+            treeData={normalizeTree(menuTree)}
+            fieldNames={{ title: 'name', key: 'id', children: 'children' }}
+            onSelect={keys => setSelectedKey(keys[0] as number)}
+            selectedKeys={selectedKey ? [selectedKey] : []}
+            defaultExpandAll
+            showIcon={false}
+            draggable
+            onDrop={handleTreeDrop}
+            style={{ width: '100%' }}
+          />
+        ) : (
+          <Empty description="暂无菜单" />
+        )}
+      </div>
+      {/* 右侧表格 */}
+      <div style={{ flex: 1 }}>
+        <CommonTableButton
+          addButtonText="新增菜单"
+          onAdd={showCreateModal}
+          title="菜单管理"
+          onReload={() => { fetchMenuTree(); }}
+          loading={treeLoading}
+          operations={{
+            create: hasPermission('/menus', 'create'),
+            update: hasPermission('/menus', 'update'),
+            delete: hasPermission('/menus', 'delete'),
+            read: hasPermission('/menus', 'read'),
+          }}
         />
-      </Card>
-
-      {/* 新增/编辑弹窗 */}
-      <FormModal
-        title={isEdit ? "编辑菜单" : "新增菜单"}
-        visible={modalVisible}
-        loading={crudLoading}
-        initialValues={getInitialValues()}
-        onCancel={hideModal}
-        onSubmit={handleSubmit}
-        width={600}
-      >
-        <MenuForm />
-      </FormModal>
-
-      {/* 删除确认弹窗 */}
-      <DeleteModal
-        visible={deleteModalVisible}
-        loading={crudLoading}
-        recordName={currentRecord?.name}
-        onCancel={hideDeleteModal}
-        onConfirm={handleDeleteConfirmAction}
-      />
+        <Card style={{ borderRadius: 16 }}>
+          <CommonTable
+            columns={columns as TableColumn[]}
+            dataSource={getTableData()}
+            rowKey="id"
+            pagination={{}}
+            loading={treeLoading}
+            error={treeError}
+            scroll={{ x: 800 }}
+          />
+        </Card>
+        {/* 新增/编辑弹窗 */}
+        <FormModal
+          title={isEdit ? "编辑菜单" : "新增菜单"}
+          visible={modalVisible}
+          loading={crudLoading}
+          initialValues={getInitialValues()}
+          onCancel={hideModal}
+          onSubmit={handleSubmit}
+          width={600}
+        >
+          <MenuForm menus={menuTree || []} currentId={isEdit ? currentRecord?.id : null} />
+        </FormModal>
+        {/* 删除确认弹窗 */}
+        <DeleteModal
+          visible={deleteModalVisible}
+          loading={crudLoading}
+          recordName={currentRecord?.name}
+          onCancel={hideDeleteModal}
+          onConfirm={handleDeleteConfirmAction}
+        />
+      </div>
     </div>
   );
 };

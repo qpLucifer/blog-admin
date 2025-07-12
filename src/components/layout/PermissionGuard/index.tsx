@@ -1,11 +1,12 @@
 import React from 'react';
 import { useAppSelector } from '../../../hooks';
 import { selectUser } from '../../../store/slices/authSlice';
-import { Permission, Role } from '../../../types';
+import { PermissionType, Role } from '../../../types';
+import { hasActionPermission } from '../../../utils/menuUtils';
 
 interface PermissionGuardProps {
   children: React.ReactNode;
-  permission?: Permission;
+  permission?: PermissionType;
   role?: Role;
   fallback?: React.ReactNode;
 }
@@ -23,9 +24,8 @@ const PermissionGuard: React.FC<PermissionGuardProps> = ({
     return <>{children}</>;
   }
   
-  // 检查权限
   if (permission) {
-    const hasPermission = user?.permissions?.includes(permission) || false;
+    const hasPermission = hasActionPermission(user?.menus || [], permission);
     if (!hasPermission) {
       return <>{fallback}</>;
     }

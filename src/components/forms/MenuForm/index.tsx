@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, TreeSelect } from "antd";
 import {
   NumberOutlined,
   LinkOutlined,
@@ -11,7 +11,26 @@ import { IconSelector } from "../../index";
  * 菜单表单组件
  * 用于新增和编辑菜单
  */
-const MenuForm: React.FC = () => {
+interface MenuFormProps {
+  menus?: any[]; // 所有菜单树
+  currentId?: number | null; // 当前编辑菜单id
+}
+
+const MenuForm: React.FC<MenuFormProps> = ({ menus = [], currentId }) => {
+  // 递归生成树形选项
+  const renderTreeNodes = (data: any[]) =>
+    data.map((item) => {
+      if (item.id === currentId) return null; // 禁止自己作为自己的父级
+      if (item.children && item.children.length > 0) {
+        return (
+          <TreeSelect.TreeNode value={item.id} title={item.name} key={item.id}>
+            {renderTreeNodes(item.children)}
+          </TreeSelect.TreeNode>
+        );
+      }
+      return <TreeSelect.TreeNode value={item.id} title={item.name} key={item.id} />;
+    });
+
   return (
     <>
       <Form.Item
@@ -40,6 +59,17 @@ const MenuForm: React.FC = () => {
           placeholder="请输入排序"
           type="number"
         />
+      </Form.Item>
+
+      <Form.Item name="parent_id" label="父级菜单">
+        <TreeSelect
+          allowClear
+          placeholder="请选择父级菜单（不选为顶级菜单）"
+          treeDefaultExpandAll
+          treeLine
+        >
+          {renderTreeNodes(menus)}
+        </TreeSelect>
       </Form.Item>
 
       {/* 选择icon组件 */}

@@ -2,11 +2,12 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import { selectUser } from '../../../store/slices/authSlice';
-import { Permission } from '../../../types';
+import { PermissionType } from '../../../types';
+import { hasActionPermission } from '../../../utils/menuUtils';
 
 interface PermissionRouteProps {
   children: React.ReactNode;
-  requiredPermission?: Permission;
+  requiredPermission?: PermissionType;
   fallbackPath?: string;
 }
 
@@ -22,8 +23,7 @@ const PermissionRoute: React.FC<PermissionRouteProps> = ({
     return <>{children}</>;
   }
   
-  // 检查用户是否有所需权限
-  const hasPermission = user?.permissions?.includes(requiredPermission) || false;
+  const hasPermission = hasActionPermission(user?.menus || [], requiredPermission);
   
   if (!hasPermission) {
     // 权限不足，重定向到指定页面

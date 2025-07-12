@@ -4,7 +4,7 @@ import styles from './index.module.css';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../api/blog';
 import { getTags } from '../../api/tag';
 import { BlogData, TagData, TableColumn } from '../../types';
-import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks'; 
 import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
 import BlogForm from '../../components/forms/BlogForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
@@ -13,10 +13,14 @@ const Blogs: React.FC = () => {
   const { data, loading, error, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, { showError: false });
   const { data: tags, loading: tagsLoading, error: tagsError, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: true });
 
-  useMountAsyncEffect(fetchBlogs);
-  useMountAsyncEffect(fetchTags);
+  useInitialAsyncEffect(fetchBlogs);
+  useInitialAsyncEffect(fetchTags);
 
-  const operations = useMenuPermission().hasPermission('/blogs');
+  const { hasPermission } = useMenuPermission();
+  // 用法示例：
+  // hasPermission('/blogs', 'create')
+  // hasPermission('/blogs', 'update')
+  // hasPermission('/blogs', 'delete')
 
   const {
     modalVisible,
@@ -87,8 +91,8 @@ const Blogs: React.FC = () => {
         record={record}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        editDisabled={!operations.update}
-        deleteDisabled={!operations.delete}
+        editDisabled={!hasPermission('/blogs', 'update')}
+        deleteDisabled={!hasPermission('/blogs', 'delete')}
       />
     ) }
   ];
@@ -101,7 +105,12 @@ const Blogs: React.FC = () => {
         title="博客管理"
         onReload={fetchBlogs}
         loading={loading || tagsLoading}
-        operations={operations}
+        operations={{
+          create: hasPermission('/blogs', 'create'),
+          update: hasPermission('/blogs', 'update'),
+          delete: hasPermission('/blogs', 'delete'),
+          read: hasPermission('/blogs', 'read'),
+        }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

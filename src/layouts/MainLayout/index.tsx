@@ -6,6 +6,7 @@ import { logoutUser, selectUser, selectUserMenus } from '../../store/slices/auth
 import styles from './index.module.css';
 import { Menu as MenuType } from '../../types';
 import * as AllIcons from '@ant-design/icons';
+import { Menu as AntdMenu } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
@@ -17,15 +18,18 @@ const MainLayout: React.FC = () => {
   const user = useAppSelector(selectUser);
   const userMenus = useAppSelector(selectUserMenus);
 
-  const menuItems = userMenus.map((menu: MenuType) => {
-    const IconComponent = (AllIcons as any)[menu.icon as keyof typeof AllIcons];
-    const icon = menu.icon ? <IconComponent /> : null;
-    return {
-      key: menu.path,
-      icon,
-      label: menu.name,
-    }
-  });
+  // 递归生成 items 数组
+  const buildMenuItems = (menus: MenuType[]): any[] =>
+    menus.map(menu => {
+      const IconComponent = (AllIcons as any)[menu.icon as keyof typeof AllIcons];
+      return {
+        key: menu.path,
+        icon: menu.icon ? <IconComponent /> : null,
+        label: menu.name,
+        children: menu.children && menu.children.length > 0 ? buildMenuItems(menu.children) : undefined,
+      };
+    });
+  const menuItems = buildMenuItems(userMenus);
 
 
   // 修正菜单高亮逻辑
@@ -56,12 +60,12 @@ const MainLayout: React.FC = () => {
     <Layout className={styles.layoutRoot}>
       <Sider collapsible>
         <div className={styles.siderLogo}>博客后台</div>
-        <Menu
+        <AntdMenu
           theme="dark"
           mode="inline"
           selectedKeys={[selectedKey]}
-          onClick={({ key }) => navigate(`${key}`)}
           items={menuItems}
+          onClick={({ key }) => navigate(`${key}`)}
         />
       </Sider>
       <Layout>

@@ -3,15 +3,15 @@ import { Table, Card } from 'antd';
 import styles from './index.module.css';
 import { getTags, createTag, updateTag, deleteTag } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
-import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
 import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
 import TagForm from '../../components/forms/TagForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 const Tags: React.FC = () => {
   const { data, loading, error, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: false });
-  useMountAsyncEffect(fetchTags);
-  const operations = useMenuPermission().hasPermission('/tags');
+  useInitialAsyncEffect(fetchTags);
+  const { hasPermission } = useMenuPermission();
   const {
     modalVisible,
     deleteModalVisible,
@@ -63,8 +63,8 @@ const Tags: React.FC = () => {
         record={record}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        editDisabled={!operations.update}
-        deleteDisabled={!operations.delete}
+        editDisabled={!hasPermission('/tags', 'update')}
+        deleteDisabled={!hasPermission('/tags', 'delete')}
       />
     ) }
   ];
@@ -76,7 +76,12 @@ const Tags: React.FC = () => {
         title="标签管理"
         onReload={fetchTags}
         loading={loading}
-        operations={operations}
+        operations={{
+          create: hasPermission('/tags', 'create'),
+          update: hasPermission('/tags', 'update'),
+          delete: hasPermission('/tags', 'delete'),
+          read: hasPermission('/tags', 'read'),
+        }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

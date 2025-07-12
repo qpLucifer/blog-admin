@@ -3,15 +3,15 @@ import { Table, Card } from 'antd';
 import styles from './index.module.css';
 import { getComments, createComment, updateComment, deleteComment } from '../../api/comment';
 import { CommentData, TableColumn } from '../../types';
-import { useApi, useCrud, useMountAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks'; 
 import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
 import CommentForm from '../../components/forms/CommentForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 const Comments: React.FC = () => {
   const { data, loading, error, execute: fetchComments } = useApi<CommentData[]>(getComments, { showError: false });
-  useMountAsyncEffect(fetchComments);
-  const operations = useMenuPermission().hasPermission('/comments');
+  useInitialAsyncEffect(fetchComments);
+  const { hasPermission } = useMenuPermission();
   const {
     modalVisible,
     deleteModalVisible,
@@ -66,8 +66,8 @@ const Comments: React.FC = () => {
         record={record}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        editDisabled={!operations.update}
-        deleteDisabled={!operations.delete}
+        editDisabled={!hasPermission('/comments', 'update')}
+        deleteDisabled={!hasPermission('/comments', 'delete')}
       />
     ) }
   ];
@@ -79,7 +79,12 @@ const Comments: React.FC = () => {
         title="评论管理"
         onReload={fetchComments}
         loading={loading}
-        operations={operations}
+        operations={{
+          create: hasPermission('/comments', 'create'),
+          update: hasPermission('/comments', 'update'),
+          delete: hasPermission('/comments', 'delete'),
+          read: hasPermission('/comments', 'read'),
+        }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

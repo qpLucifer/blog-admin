@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Form, Input, Select, Switch, Upload, Button, Modal } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { BlogData, TagData } from '../../../types';
@@ -15,16 +15,8 @@ interface BlogFormProps {
 }
 
 const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
-  // const [editorHtml, setEditorHtml] = useState('');
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [coverFileList, setCoverFileList] = useState<any[]>([]);
-  const editorRef = useRef<IDomEditor | null>(null);
 
-  // 富文本内容变更
-  // const handleEditorChange = (editor: IDomEditor) => {
-  //   debugger
-  //   setEditorHtml(editor.getHtml());
-  // };
+  const [coverFileList, setCoverFileList] = useState<any[]>([]);
 
   // 图片上传
   const uploadProps = {
@@ -53,9 +45,19 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
   };
 
   const EditorComponent = ({ value = '', onChange }: any) => {
+    const editorRef = useRef<IDomEditor | null>(null);
+    const [previewVisible, setPreviewVisible] = useState(false);
+    useEffect(() => {
+      return () => {
+        if (editorRef.current) {
+          editorRef.current.destroy();
+          editorRef.current = null;
+        }
+      };
+    }, []);
     const handleEditorChange = (editor: IDomEditor) => {
       onChange(editor.getHtml());
-    }
+    };
     return (
       <div>
           <Toolbar

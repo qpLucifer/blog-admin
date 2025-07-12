@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./index.module.css";
 import { TableColumn, DaySentence } from "../../types";
-import { useApi, useCrud, useMountAsyncEffect } from "../../hooks";
+import { useApi, useCrud, useInitialAsyncEffect } from "../../hooks";
+import { useMenuPermission } from "../../hooks/useMenuPermission";
 import { Card, Space, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -17,6 +18,7 @@ import {
   FormModal,
   DeleteModal,
   DaySentenceForm,
+  ActionButtons,
 } from "../../components";
 
 const DaySentences: React.FC = () => {
@@ -29,8 +31,10 @@ const DaySentences: React.FC = () => {
     showError: false,
   });
 
+  const { hasPermission } = useMenuPermission();
+
   // 只在组件挂载时调用一次
-  useMountAsyncEffect(fetchDaySentences);
+  useInitialAsyncEffect(fetchDaySentences);
 
   const columns = [
     { title: "ID", dataIndex: "id" },
@@ -40,25 +44,13 @@ const DaySentences: React.FC = () => {
       title: "操作",
       dataIndex: "operation",
       render: (_: any, record: DaySentence) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-            size="small"
-          >
-            编辑
-          </Button>
-          <Button
-            type="link"
-            icon={<DeleteOutlined />}
-            size="small"
-            danger
-            onClick={() => handleDelete(record)}
-          >
-            删除
-          </Button>
-        </Space>
+        <ActionButtons
+          record={record}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          editDisabled={!hasPermission('/day-sentence', 'update')}
+          deleteDisabled={!hasPermission('/day-sentence', 'delete')}
+        />
       ),
     },
   ];
@@ -133,6 +125,12 @@ const DaySentences: React.FC = () => {
         title="每日一句管理"
         onReload={fetchDaySentences}
         loading={daySentencesLoading}
+        operations={{
+          create: hasPermission('/menus', 'create'),
+          update: hasPermission('/menus', 'update'),
+          delete: hasPermission('/menus', 'delete'),
+          read: hasPermission('/menus', 'read'),
+        }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

@@ -5,7 +5,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Role, TableColumn, Menu } from "../../types";
 import { getRoles, createRole, updateRole, deleteRole } from "../../api/role";
 import { getMenuList } from "../../api/menu";
-import { useApi, useCrud, useMountAsyncEffect, useMenuPermission } from "../../hooks";
+import { useApi, useCrud, useInitialAsyncEffect, useMenuPermission } from "../../hooks";
 
 import {
   CommonTable,
@@ -36,10 +36,10 @@ const Roles: React.FC = () => {
   });
 
   // 只在组件挂载时调用一次
-  useMountAsyncEffect(fetchRoles);
-  useMountAsyncEffect(fetchMenus);
+  useInitialAsyncEffect(fetchRoles);
+  useInitialAsyncEffect(fetchMenus);
 
-   const operations = useMenuPermission().hasPermission('/roles');
+  const { hasPermission } = useMenuPermission();
 
   const columns = [
     { title: "ID", dataIndex: "id" },
@@ -53,8 +53,8 @@ const Roles: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!operations.update}
-          deleteDisabled={!operations.delete}
+          editDisabled={!hasPermission('/roles', 'update')}
+          deleteDisabled={!hasPermission('/roles', 'delete')}
         />
       ),
     },
@@ -136,7 +136,12 @@ const Roles: React.FC = () => {
         title="角色管理"
         onReload={fetchRoles}
         loading={loading || menusLoading}
-        operations={operations}
+        operations={{
+            create: hasPermission('/roles', 'create'),
+            update: hasPermission('/roles', 'update'),
+            delete: hasPermission('/roles', 'delete'),
+            read: hasPermission('/roles', 'read'),
+          }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable

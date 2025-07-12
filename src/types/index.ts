@@ -53,6 +53,9 @@ export interface Permission {
   action?: string;
 }
 
+// 权限类型别名
+export type PermissionType = 'create' | 'read' | 'update' | 'delete';
+
 export interface CreatePermissionData {
   name: string;
   description?: string;
