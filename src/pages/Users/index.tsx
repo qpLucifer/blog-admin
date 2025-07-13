@@ -26,10 +26,6 @@ const Users: React.FC = () => {
    useInitialAsyncEffect(fetchRoles);
 
    const { hasPermission } = useMenuPermission();
-  // 用法示例：
-  // hasPermission('/users', 'create')
-  // hasPermission('/users', 'update')
-  // hasPermission('/users', 'delete')
 
   // CRUD 管理
   const {

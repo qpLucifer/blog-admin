@@ -20,5 +20,3 @@ export { default as DaySentenceForm } from './forms/DaySentenceForm';
 export { default as AuthInitializer } from './layout/AuthInitializer';
 export { default as PrivateRoute } from './layout/PrivateRoute';
 export { default as PublicRoute } from './layout/PublicRoute';
-export { default as PermissionRoute } from './layout/PermissionRoute';
-export { default as PermissionGuard } from './layout/PermissionGuard'; 

@@ -5,5 +5,4 @@ export { useCrud } from './useCrud';
 export { useInitialEffect, useInitialAsyncEffect } from './useInitialEffect';
 export { useMountEffect } from './useMountEffect';
 export { useAppSelector, useAppDispatch } from './useRedux';
-export { useMenuPermission } from './useMenuPermission';
-export { useCrudOperations } from './useCrudOperations'; 
+export { useMenuPermission } from './useMenuPermission'; 
