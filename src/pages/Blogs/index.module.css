@@ -1,6 +1,9 @@
 .root {
-  padding: 0 16px;
-  font-family: var(--font-family, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: none;
+  padding: 0;
 }
 .title {
   margin-bottom: 32px;
@@ -18,4 +21,51 @@
 }
 .card:hover {
   box-shadow: 0 8px 32px rgba(106,75,198,0.12);
+}
+.statsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%);
+  border-radius: 16px;
+  padding: 20px 32px;
+  box-shadow: 0 4px 24px rgba(160,140,209,0.12);
+  animation: fadeInDown 0.8s;
+}
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.statNum {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #6a4bc6;
+  text-shadow: 0 2px 8px #fff6;
+}
+.statLabel {
+  font-size: 1rem;
+  color: #333;
+  opacity: 0.8;
+}
+.addBtn {
+  background: linear-gradient(90deg, #f857a6 0%, #ff5858 100%);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #f857a655;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.addBtn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 24px #f857a688;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
 } 

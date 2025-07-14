@@ -20,3 +20,8 @@ export const updateBlog = (id: number | string, data: BlogData) => {
 export const deleteBlog = (id: number | string) => {
   return api.delete(`/api/blog/delete/${id}`);
 }; 
+
+// 获取单篇博客
+export const getBlog = (id: number) => {
+  return api.get(`/api/blog/${id}`);
+} 

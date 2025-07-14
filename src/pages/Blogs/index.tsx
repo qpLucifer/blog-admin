@@ -8,19 +8,17 @@ import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
 import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
 import BlogForm from '../../components/forms/BlogForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
+import { useNavigate } from 'react-router-dom';
 
 const Blogs: React.FC = () => {
   const { data, loading, error, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, { showError: false });
-  const { data: tags, loading: tagsLoading, error: tagsError, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: true });
+  // const { data: tags, loading: tagsLoading, error: tagsError, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: true });
 
   useInitialAsyncEffect(fetchBlogs);
-  useInitialAsyncEffect(fetchTags);
+  // useInitialAsyncEffect(fetchTags);
 
   const { hasPermission } = useMenuPermission();
-  // 用法示例：
-  // hasPermission('/blogs', 'create')
-  // hasPermission('/blogs', 'update')
-  // hasPermission('/blogs', 'delete')
+  const navigate = useNavigate();
 
   const {
     modalVisible,
@@ -47,11 +45,14 @@ const Blogs: React.FC = () => {
   });
 
   function handleEdit(record: BlogData) {
-    showEditModal(record);
+    navigate(`/blogs/edit/${record.id}`);
   }
   function handleDelete(record: BlogData) {
     showDeleteModal(record);
   }
+  const handleAdd = () => {
+    navigate('/blogs/new');
+  };
   const handleSubmit = async (values: any) => {
     if (isEdit) {
       await handleUpdate(values);
@@ -99,41 +100,27 @@ const Blogs: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <CommonTableButton
-        addButtonText="新增博客"
-        onAdd={showCreateModal}
-        title="博客管理"
-        onReload={fetchBlogs}
-        loading={loading || tagsLoading}
-        operations={{
-          create: hasPermission('/blogs', 'create'),
-          update: hasPermission('/blogs', 'update'),
-          delete: hasPermission('/blogs', 'delete'),
-          read: hasPermission('/blogs', 'read'),
-        }}
-      />
-      <Card style={{ borderRadius: 16 }}>
+      {/* 顶部统计区块 */}
+      <div className={styles.statsBar}>
+        <div className={styles.statCard}>
+          <div className={styles.statNum}>{data?.length || 0}</div>
+          <div className={styles.statLabel}>博客总数</div>
+        </div>
+        <button className={styles.addBtn} onClick={handleAdd}>
+          <span>➕ 新增博客</span>
+        </button>
+      </div>
+      <Card style={{ borderRadius: 16, marginTop: 16 }}>
         <CommonTable
           columns={columns}
           dataSource={data || []}
           rowKey="id"
           pagination={{}}
-          loading={loading || tagsLoading}
-          error={error || tagsError}
+          loading={loading}
+          error={error}
           scroll={{ x: 1000 }}
         />
       </Card>
-      <FormModal
-        title={isEdit ? '编辑博客' : '新增博客'}
-        visible={modalVisible}
-        loading={crudLoading}
-        initialValues={getInitialValues()}
-        onCancel={hideModal}
-        onSubmit={handleSubmit}
-        width={700}
-      >
-        <BlogForm isEdit={isEdit} tags={tags || []} />
-      </FormModal>
       <DeleteModal
         visible={deleteModalVisible}
         loading={crudLoading}

@@ -3,20 +3,20 @@ import { TagData } from '../types';
 
 // 获取标签列表
 export const getTags = () => {
-  return api.get('/api/blog/tags');
+  return api.get('/api/tag/list');
 };
 
 // 新建标签
 export const createTag = (data: TagData) => {
-  return api.post('/api/blog/tags', data);
+  return api.post('/api/tag/add', data);
 };
 
 // 更新标签
 export const updateTag = (id: number | string, data: TagData) => {
-  return api.put(`/api/blog/tags/${id}`, data);   
+  return api.put(`/api/tag/update/${id}`, data);   
 };
 
 // 删除标签
 export const deleteTag = (id: number | string) => {
-  return api.delete(`/api/blog/tags/${id}`);
+  return api.delete(`/api/tag/delete/${id}`);
 }; 

@@ -12,9 +12,15 @@ const { Option } = Select;
 interface BlogFormProps {
   isEdit?: boolean;
   tags?: TagData[];
+  initialValues?: any;
+  onSubmit?: (values: any) => void;
 }
 
-const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
+const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialValues = {}, onSubmit }) => {
+  const [form] = Form.useForm();
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  }, [initialValues, form]);
 
   const [coverFileList, setCoverFileList] = useState<any[]>([]);
 
@@ -47,6 +53,8 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
   const EditorComponent = ({ value = '', onChange }: any) => {
     const editorRef = useRef<IDomEditor | null>(null);
     const [previewVisible, setPreviewVisible] = useState(false);
+    const [editor, setEditor] = useState<IDomEditor | null>(null);
+
     useEffect(() => {
       return () => {
         if (editorRef.current) {
@@ -61,7 +69,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
     return (
       <div>
           <Toolbar
-            editor={editorRef.current}
+            editor={editor}
             defaultConfig={{}}
             mode="default"
             style={{ borderBottom: '1px solid #eee' }}
@@ -75,7 +83,10 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
               }
             }}
             value={value}
-            onCreated={(editor: IDomEditor) => (editorRef.current = editor)}
+            onCreated={(ed: IDomEditor) => {
+              editorRef.current = ed;
+              setEditor(ed);
+            }}
             onChange={handleEditorChange}
             mode="default"
             style={{ minHeight: 200, border: '1px solid #eee', borderRadius: 4, marginBottom: 8 }}
@@ -97,7 +108,12 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
   }
 
   return (
-    <>
+    <Form
+      form={form}
+      layout="vertical"
+      initialValues={initialValues}
+      onFinish={onSubmit}
+    >
       <Form.Item
         name="title"
         label="标题"
@@ -156,7 +172,12 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [] }) => {
       >
         <Switch checkedChildren="已发布" unCheckedChildren="未发布" />
       </Form.Item>
-    </>
+      <Form.Item>
+        <Button type="primary" htmlType="submit" block size="large" style={{background: 'linear-gradient(90deg,#a18cd1,#fbc2eb)', border: 'none', fontWeight: 700}}>
+          {isEdit ? '保存修改' : '发布博客'}
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

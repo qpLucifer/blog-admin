@@ -16,6 +16,7 @@ const MainLayout = lazy(() => import('../layouts/MainLayout'));
 const Blogs = lazy(() => import('../pages/Blogs'));
 const Comments = lazy(() => import('../pages/Comments'));
 const Tags = lazy(() => import('../pages/Tags'));
+const EditBlog = lazy(() => import('../pages/Blogs/Edit'));
 
 const AppRouter = () => (
   <Router>
@@ -38,6 +39,8 @@ const AppRouter = () => (
           <Route path="day-sentence" element={<DaySentence />} />
           <Route path="profile" element={<Profile />} />
           <Route path="blogs" element={<Blogs />} />
+          <Route path="blogs/new" element={<EditBlog />} />
+          <Route path="blogs/edit/:id" element={<EditBlog />} />
           <Route path="comments" element={<Comments />} />
           <Route path="tags" element={<Tags />} />
         </Route>
