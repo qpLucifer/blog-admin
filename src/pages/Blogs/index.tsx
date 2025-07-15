@@ -2,20 +2,16 @@ import React from 'react';
 import { Table, Card, Tag, Space } from 'antd';
 import styles from './index.module.css';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../api/blog';
-import { getTags } from '../../api/tag';
 import { BlogData, TagData, TableColumn } from '../../types';
 import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks'; 
-import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
-import BlogForm from '../../components/forms/BlogForm';
+import {DeleteModal, ActionButtons, CommonTable } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useNavigate } from 'react-router-dom';
 
 const Blogs: React.FC = () => {
   const { data, loading, error, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, { showError: false });
-  // const { data: tags, loading: tagsLoading, error: tagsError, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: true });
 
   useInitialAsyncEffect(fetchBlogs);
-  // useInitialAsyncEffect(fetchTags);
 
   const { hasPermission } = useMenuPermission();
   const navigate = useNavigate();

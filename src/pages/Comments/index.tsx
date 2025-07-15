@@ -2,7 +2,8 @@ import React from 'react';
 import { Table, Card } from 'antd';
 import styles from './index.module.css';
 import { getComments, createComment, updateComment, deleteComment } from '../../api/comment';
-import { CommentData, TableColumn } from '../../types';
+import { CommentData, TableColumn, BlogData } from '../../types';
+import { getBlogs } from '../../api/blog';
 import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks'; 
 import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
 import CommentForm from '../../components/forms/CommentForm';
@@ -10,6 +11,7 @@ import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 const Comments: React.FC = () => {
   const { data, loading, error, execute: fetchComments } = useApi<CommentData[]>(getComments, { showError: false });
+  const { data: blogs, loading: blogsLoading, error: blogsError, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, { showError: false });
   useInitialAsyncEffect(fetchComments);
   const { hasPermission } = useMenuPermission();
   const {
@@ -106,7 +108,7 @@ const Comments: React.FC = () => {
         onSubmit={handleSubmit}
         width={500}
       >
-        <CommentForm />
+        <CommentForm blogs={blogs || []} />
       </FormModal>
       <DeleteModal
         visible={deleteModalVisible}

@@ -62,7 +62,7 @@ const EditBlog: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <div style={{ maxWidth: 1200, margin: '32px auto 0', position: 'relative' }}>
+      <div style={{  margin: '32px auto 0', position: 'relative' }}>
         <Button
           type="text"
           icon={<ArrowLeftOutlined />}
