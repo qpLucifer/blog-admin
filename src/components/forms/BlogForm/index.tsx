@@ -5,7 +5,7 @@ import { BlogData, TagData } from '../../../types';
 import '@wangeditor/editor/dist/css/style.css';
 import { Editor, Toolbar } from '@wangeditor/editor-for-react';
 import { IDomEditor } from '@wangeditor/editor';
-import axios from 'axios';
+import axios, { head } from 'axios';
 
 const { Option } = Select;
 
@@ -28,12 +28,16 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
   const uploadProps = {
     name: 'file',
     action: 'http://localhost:3000/api/upload/image',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
     listType: 'picture-card' as const,
     showUploadList: true,
     maxCount: 1,
     onChange(info: any) {
       let fileList = [...info.fileList];
       fileList = fileList.slice(-1);
+      debugger
       setCoverFileList(fileList);
     },
     onRemove() {
