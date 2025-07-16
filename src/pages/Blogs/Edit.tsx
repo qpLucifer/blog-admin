@@ -62,7 +62,7 @@ const EditBlog: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <div style={{  margin: '32px auto 0', position: 'relative' }}>
+      <div style={{  position: 'relative' }}>
         <Button
           type="text"
           icon={<ArrowLeftOutlined />}
@@ -104,7 +104,7 @@ const EditBlog: React.FC = () => {
             >
               {isEdit ? '编辑博客' : '新增博客'}
             </h2>
-            <div style={{ maxWidth: 800, margin: '0 auto' }}>
+            <div >
               <BlogForm isEdit={isEdit} tags={tags || []} initialValues={initialValues} onSubmit={handleSubmit} />
             </div>
           </Card>

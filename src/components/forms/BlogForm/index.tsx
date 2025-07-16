@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Input, Select, Switch, Upload, Button, Modal } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
-import { BlogData, TagData } from '../../../types';
+import { TagData } from '../../../types';
 import '@wangeditor/editor/dist/css/style.css';
 import { Editor, Toolbar } from '@wangeditor/editor-for-react';
 import { IDomEditor } from '@wangeditor/editor';
-import axios, { head } from 'axios';
+import axios from 'axios';
 
 const { Option } = Select;
 
@@ -18,11 +18,20 @@ interface BlogFormProps {
 
 const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialValues = {}, onSubmit }) => {
   const [form] = Form.useForm();
+  const [coverFileList, setCoverFileList] = useState<any[]>([]);
+
   useEffect(() => {
     form.setFieldsValue(initialValues);
+    if (initialValues.cover_image) {
+      setCoverFileList([{
+        uid: '1',
+        name: 'cover_image',
+        status: 'done',
+        url: 'http://localhost:3000/'+initialValues.cover_image
+      }]);
+    }
   }, [initialValues, form]);
 
-  const [coverFileList, setCoverFileList] = useState<any[]>([]);
 
   // 图片上传
   const uploadProps = {
@@ -33,14 +42,18 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
     },
     listType: 'picture-card' as const,
     showUploadList: true,
+    fileList: coverFileList,
     maxCount: 1,
     onChange(info: any) {
       let fileList = [...info.fileList];
       fileList = fileList.slice(-1);
-      debugger
+      if (info.file.status === 'done') {
+        form.setFieldValue('cover_image', fileList[0].response.url);
+      }
       setCoverFileList(fileList);
     },
     onRemove() {
+      form.setFieldValue('cover_image', '');
       setCoverFileList([]);
     },
     beforeUpload: () => true,
@@ -129,7 +142,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
         name="cover_image"
         label="封面图片"
         valuePropName="cover_image"
-        getValueFromEvent={() => coverFileList[0]?.response?.url || ''}
+        // getValueFromEvent={() => {debugger;return coverFileList[0]?.response?.url || ''}}
       >
         <Upload {...uploadProps}>
           {coverFileList.length >= 1 ? null : (

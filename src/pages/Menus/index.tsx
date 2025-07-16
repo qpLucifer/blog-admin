@@ -1,8 +1,7 @@
 import React from "react";
-import { Table, Button, Space, Card, Tree, Empty, message } from "antd";
+import { Card, Tree, Empty, message } from "antd";
 import styles from "./index.module.css";
-import { EditOutlined, DeleteOutlined, MenuOutlined } from "@ant-design/icons";
-import { User, TableColumn, Role, Menu } from "../../types";
+import { TableColumn, Menu } from "../../types";
 import { useApi, useCrud, useInitialAsyncEffect } from "../../hooks";
 import { useMenuPermission } from "../../hooks/useMenuPermission";
 import {
@@ -13,7 +12,7 @@ import {
   CommonTable,
   ActionButtons,
 } from "../../components";
-import { getMenuList, getMenuTree, addMenu, updateMenu, deleteMenu } from "../../api/menu";
+import { getMenuTree, addMenu, updateMenu, deleteMenu } from "../../api/menu";
 
 const Menus: React.FC = () => {
   // 获取菜单树
@@ -51,7 +50,6 @@ const Menus: React.FC = () => {
 
   // 拖拽排序处理（支持order字段）
   const handleTreeDrop = async (info: any) => {
-    const dragKey = info.node.key;
     const dropNode = info.node;
     const dropToGap = info.dropToGap;
     const dragNode = info.dragNode;
@@ -124,10 +122,6 @@ const Menus: React.FC = () => {
     });
 
   const { hasPermission } = useMenuPermission();
-  // 用法示例：
-  // hasPermission('/menus', 'create')
-  // hasPermission('/menus', 'update')
-  // hasPermission('/menus', 'delete')
 
   // CRUD 管理
   const {

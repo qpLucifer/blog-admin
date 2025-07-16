@@ -29,7 +29,7 @@
   margin: 16px;
 }
 .innerContent {
-  padding: 24px;
+  /* padding: 24px; */
   background: #fff;
   min-height: 360px;
   border-radius: 12px;

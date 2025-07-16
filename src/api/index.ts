@@ -2,6 +2,7 @@ import axios from 'axios';
 import { store } from '../store';
 import { API_BASE_URL, API_TIMEOUT, API_STATUS } from '../constants';
 import { logoutUser } from '../store/slices/authSlice';
+import { message } from 'antd';
 
 
 const instance = axios.create({
@@ -45,12 +46,14 @@ instance.interceptors.response.use(
   },
   async error => {
     if (error.response && error.response.status === API_STATUS.UNAUTHORIZED) {
+      message.error('登录失效，请重新登录');
       // 401错误时，清除认证状态并重定向到登录页
       await store.dispatch(logoutUser());
       // 如果当前页面不是登录页，重定向到登录页
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
+
     }
     // 确保错误信息能正确传递
     if (error.response && error.response.data) {
