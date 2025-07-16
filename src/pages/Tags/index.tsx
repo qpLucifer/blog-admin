@@ -63,8 +63,8 @@ const Tags: React.FC = () => {
         record={record}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        editDisabled={!hasPermission('/tags', 'update')}
-        deleteDisabled={!hasPermission('/tags', 'delete')}
+        editDisabled={!hasPermission('/blogsManage/tags', 'update')}
+        deleteDisabled={!hasPermission('/blogsManage/tags', 'delete')}
       />
     ) }
   ];
@@ -77,10 +77,10 @@ const Tags: React.FC = () => {
         onReload={fetchTags}
         loading={loading}
         operations={{
-          create: hasPermission('/tags', 'create'),
-          update: hasPermission('/tags', 'update'),
-          delete: hasPermission('/tags', 'delete'),
-          read: hasPermission('/tags', 'read'),
+          create: hasPermission('/blogsManage/tags', 'create'),
+          update: hasPermission('/blogsManage/tags', 'update'),
+          delete: hasPermission('/blogsManage/tags', 'delete'),
+          read: hasPermission('/blogsManage/tags', 'read'),
         }}
       />
       <Card style={{ borderRadius: 16 }}>

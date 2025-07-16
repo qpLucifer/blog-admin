@@ -131,8 +131,8 @@ const Users: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/users', 'update')}
-          deleteDisabled={!hasPermission('/users', 'delete')}
+          editDisabled={!hasPermission('/admin/users', 'update')}
+          deleteDisabled={!hasPermission('/admin/users', 'delete')}
         />
       )
     }
@@ -147,10 +147,10 @@ const Users: React.FC = () => {
         onReload={fetchUsers}
         loading={loading || rolesLoading}
         operations={{
-          create: hasPermission('/users', 'create'),
-          update: hasPermission('/users', 'update'),
-          delete: hasPermission('/users', 'delete'),
-          read: hasPermission('/users', 'read'),
+          create: hasPermission('/admin/users', 'create'),
+          update: hasPermission('/admin/users', 'update'),
+          delete: hasPermission('/admin/users', 'delete'),
+          read: hasPermission('/admin/users', 'read'),
         }}
       />
       <Card style={{ borderRadius: 16 }}>

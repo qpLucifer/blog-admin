@@ -22,12 +22,16 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
 
   useEffect(() => {
     form.setFieldsValue(initialValues);
-    if (initialValues.cover_image) {
+    if (!initialValues || Object.keys(initialValues).length === 0) {
+      form.resetFields(); // 新增时重置表单
+      setCoverFileList([]);
+    } 
+    if (initialValues && initialValues.cover_image) {
       setCoverFileList([{
         uid: '1',
         name: 'cover_image',
         status: 'done',
-        url: 'http://localhost:3000/'+initialValues.cover_image
+        url: process.env.REACT_APP_IMAGE_BASE_URL+initialValues.cover_image
       }]);
     }
   }, [initialValues, form]);
@@ -106,7 +110,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
             }}
             onChange={handleEditorChange}
             mode="default"
-            style={{ minHeight: 200, border: '1px solid #eee', borderRadius: 4, marginBottom: 8 }}
+            style={{ minHeight: 300, border: '1px solid #eee', borderRadius: 4, marginBottom: 8 }}
           />
           <Button icon={<EyeOutlined />} onClick={() => setPreviewVisible(true)} style={{ marginBottom: 8 }}>
             预览

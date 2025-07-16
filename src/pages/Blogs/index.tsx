@@ -34,13 +34,13 @@ const Blogs: React.FC = () => {
   });
 
   function handleEdit(record: BlogData) {
-    navigate(`/blogs/edit/${record.id}`);
+    navigate(`/blogsManage/blogs/edit/${record.id}`);
   }
   function handleDelete(record: BlogData) {
     showDeleteModal(record);
   }
   const handleAdd = () => {
-    navigate('/blogs/edit');
+    navigate('/blogsManage/blogs/edit');
   };
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
@@ -71,8 +71,8 @@ const Blogs: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/blogs', 'update')}
-          deleteDisabled={!hasPermission('/blogs', 'delete')}
+          editDisabled={!hasPermission('/blogsManage/blogs', 'update')}
+          deleteDisabled={!hasPermission('/blogsManage/blogs', 'delete')}
         />
       )
     }
@@ -92,10 +92,10 @@ const Blogs: React.FC = () => {
           onReload={fetchBlogs}
           loading={loading}
           operations={{
-            create: hasPermission('/blogs', 'create'),
-            update: hasPermission('/blogs', 'update'),
-            delete: hasPermission('/blogs', 'delete'),
-            read: hasPermission('/blogs', 'read'),
+            create: hasPermission('/blogsManage/blogs', 'create'),
+            update: hasPermission('/blogsManage/blogs', 'update'),
+            delete: hasPermission('/blogsManage/blogs', 'delete'),
+            read: hasPermission('/blogsManage/blogs', 'read'),
           }}
         />
       </div>

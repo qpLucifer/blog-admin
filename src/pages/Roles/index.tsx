@@ -53,8 +53,8 @@ const Roles: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/roles', 'update')}
-          deleteDisabled={!hasPermission('/roles', 'delete')}
+          editDisabled={!hasPermission('/admin/roles', 'update')}
+          deleteDisabled={!hasPermission('/admin/roles', 'delete')}
         />
       ),
     },
@@ -137,10 +137,10 @@ const Roles: React.FC = () => {
         onReload={fetchRoles}
         loading={loading || menusLoading}
         operations={{
-            create: hasPermission('/roles', 'create'),
-            update: hasPermission('/roles', 'update'),
-            delete: hasPermission('/roles', 'delete'),
-            read: hasPermission('/roles', 'read'),
+            create: hasPermission('/admin/roles', 'create'),
+            update: hasPermission('/admin/roles', 'update'),
+            delete: hasPermission('/admin/roles', 'delete'),
+            read: hasPermission('/admin/roles', 'read'),
           }}
       />
       <Card style={{ borderRadius: 16 }}>

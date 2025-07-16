@@ -39,6 +39,17 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+## 环境变量配置
+
+在项目根目录下新建 `.env` 文件，内容示例：
+
+```
+REACT_APP_API_BASE_URL=http://localhost:3000/api
+REACT_APP_IMAGE_BASE_URL=http://localhost:3000
+```
+
+注意：修改 .env 后需重启开发服务器（npm start 或 yarn start）。
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

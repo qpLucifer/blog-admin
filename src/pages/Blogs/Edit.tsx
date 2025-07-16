@@ -52,7 +52,7 @@ const EditBlog: React.FC = () => {
         await createBlog(values);
         message.success('博客创建成功');
       }
-      navigate('/blogs');
+      navigate('/blogsManage/blogs');
     } catch (e) {
       message.error('操作失败');
     } finally {
@@ -88,7 +88,6 @@ const EditBlog: React.FC = () => {
               padding: '48px 48px 32px 48px',
               background: 'rgba(255,255,255,0.98)',
             }}
-            bodyStyle={{ padding: 0 }}
           >
             <h2
               style={{

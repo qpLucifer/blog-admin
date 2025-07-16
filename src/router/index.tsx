@@ -33,16 +33,16 @@ const AppRouter = () => (
         <Route path="/" element={<PrivateRoute> <MainLayout /></PrivateRoute>}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="users" element={<Users />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="menus" element={<Menus />} />
+          <Route path="admin/users" element={<Users />} />
+          <Route path="admin/roles" element={<Roles />} />
+          <Route path="admin/menus" element={<Menus />} />
           <Route path="day-sentence" element={<DaySentence />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="blogs" element={<Blogs />} />
-          <Route path="blogs/new" element={<EditBlog />} />
-          <Route path="blogs/edit/:id" element={<EditBlog />} />
-          <Route path="comments" element={<Comments />} />
-          <Route path="tags" element={<Tags />} />
+          <Route path="blogsManage/blogs" element={<Blogs />} />
+          <Route path="blogsManage/blogs/new" element={<EditBlog />} />
+          <Route path="blogsManage/blogs/edit/:id" element={<EditBlog />} />
+          <Route path="blogsManage/comments" element={<Comments />} />
+          <Route path="blogsManage/tags" element={<Tags />} />
         </Route>
         {/* 404页面，放在所有路由最后 */}
         <Route path="*" element={<NotFound />} />

@@ -201,8 +201,8 @@ const Menus: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/menus', 'update')}
-          deleteDisabled={!hasPermission('/menus', 'delete')}
+          editDisabled={!hasPermission('/admin/menus', 'update')}
+          deleteDisabled={!hasPermission('/admin/menus', 'delete')}
         />
       ),
     },
@@ -236,10 +236,10 @@ const Menus: React.FC = () => {
           onReload={() => { fetchMenuTree(); }}
           loading={treeLoading}
           operations={{
-            create: hasPermission('/menus', 'create'),
-            update: hasPermission('/menus', 'update'),
-            delete: hasPermission('/menus', 'delete'),
-            read: hasPermission('/menus', 'read'),
+            create: hasPermission('/admin/menus', 'create'),
+            update: hasPermission('/admin/menus', 'update'),
+            delete: hasPermission('/admin/menus', 'delete'),
+            read: hasPermission('/admin/menus', 'read'),
           }}
         />
         <Card style={{ borderRadius: 16 }}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Layout, Avatar, Dropdown, message } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -35,6 +35,30 @@ const MainLayout: React.FC = () => {
   // 修正菜单高亮逻辑
   const selectedKey = location.pathname === '/' ? '/dashboard' : location.pathname;
 
+  // 递归查找当前路径的所有父级key
+  const getOpenKeys = (menus: MenuType[], pathname: string): string[] => {
+    let keys: string[] = [];
+    for (const menu of menus) {
+      if (menu.children && menu.children.length > 0) {
+        if (pathname.startsWith(menu.path)) {
+          keys.push(menu.path);
+          const childKeys = getOpenKeys(menu.children, pathname);
+          keys = keys.concat(childKeys);
+        }
+      }
+    }
+    return keys;
+  };
+
+  // 用useState管理openKeys
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+  // 路由变化时自动同步openKeys
+  useEffect(() => {
+    setOpenKeys(getOpenKeys(userMenus, location.pathname));
+  }, [userMenus, location.pathname]);
+
+
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
@@ -64,6 +88,8 @@ const MainLayout: React.FC = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[selectedKey]}
+          openKeys={openKeys}
+          onOpenChange={setOpenKeys}
           items={menuItems}
           onClick={({ key }) => navigate(`${key}`)}
         />

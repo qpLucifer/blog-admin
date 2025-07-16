@@ -126,10 +126,10 @@ const DaySentences: React.FC = () => {
         onReload={fetchDaySentences}
         loading={daySentencesLoading}
         operations={{
-          create: hasPermission('/menus', 'create'),
-          update: hasPermission('/menus', 'update'),
-          delete: hasPermission('/menus', 'delete'),
-          read: hasPermission('/menus', 'read'),
+          create: hasPermission('/day-sentence', 'create'),
+          update: hasPermission('/day-sentence', 'update'),
+          delete: hasPermission('/day-sentence', 'delete'),
+          read: hasPermission('/day-sentence', 'read'),
         }}
       />
       <Card style={{ borderRadius: 16 }}>
