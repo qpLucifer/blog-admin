@@ -3,8 +3,7 @@ import styles from "./index.module.css";
 import { TableColumn, DaySentence } from "../../types";
 import { useApi, useCrud, useInitialAsyncEffect } from "../../hooks";
 import { useMenuPermission } from "../../hooks/useMenuPermission";
-import { Card, Space, Button } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Card } from "antd";
 
 import {
   getDaySentenceList,
@@ -48,8 +47,8 @@ const DaySentences: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/day-sentence', 'update')}
-          deleteDisabled={!hasPermission('/day-sentence', 'delete')}
+          editDisabled={!hasPermission('update')}
+          deleteDisabled={!hasPermission('delete')}
         />
       ),
     },
@@ -126,10 +125,10 @@ const DaySentences: React.FC = () => {
         onReload={fetchDaySentences}
         loading={daySentencesLoading}
         operations={{
-          create: hasPermission('/day-sentence', 'create'),
-          update: hasPermission('/day-sentence', 'update'),
-          delete: hasPermission('/day-sentence', 'delete'),
-          read: hasPermission('/day-sentence', 'read'),
+          create: hasPermission('create'),
+          update: hasPermission('update'),
+          delete: hasPermission('delete'),
+          read: hasPermission('read'),
         }}
       />
       <Card style={{ borderRadius: 16 }}>

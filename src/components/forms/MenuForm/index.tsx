@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Select, TreeSelect } from "antd";
+import { Form, Input, TreeSelect } from "antd";
 import {
   NumberOutlined,
   LinkOutlined,

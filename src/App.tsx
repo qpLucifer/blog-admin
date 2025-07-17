@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigProvider } from 'antd';
 import { Provider } from 'react-redux';
 import zhCN from 'antd/locale/zh_CN';

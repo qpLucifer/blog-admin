@@ -1,7 +1,6 @@
 import React from "react";
-import { Table, Button, Space, Card, Form, Tag } from "antd";
+import { Card } from "antd";
 import styles from "./index.module.css";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Role, TableColumn, Menu } from "../../types";
 import { getRoles, createRole, updateRole, deleteRole } from "../../api/role";
 import { getMenuList } from "../../api/menu";
@@ -53,8 +52,8 @@ const Roles: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/admin/roles', 'update')}
-          deleteDisabled={!hasPermission('/admin/roles', 'delete')}
+          editDisabled={!hasPermission('update')}
+          deleteDisabled={!hasPermission('delete')}
         />
       ),
     },
@@ -137,10 +136,10 @@ const Roles: React.FC = () => {
         onReload={fetchRoles}
         loading={loading || menusLoading}
         operations={{
-            create: hasPermission('/admin/roles', 'create'),
-            update: hasPermission('/admin/roles', 'update'),
-            delete: hasPermission('/admin/roles', 'delete'),
-            read: hasPermission('/admin/roles', 'read'),
+            create: hasPermission('create'),
+            update: hasPermission('update'),
+            delete: hasPermission('delete'),
+            read: hasPermission('read'),
           }}
       />
       <Card style={{ borderRadius: 16 }}>

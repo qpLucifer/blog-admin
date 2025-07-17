@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Button, Space, Card, Empty, Spin, Tag } from 'antd';
+import { Space, Card, Tag } from 'antd';
 import styles from './index.module.css';
 import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
 import { getRoles } from '../../api/role';
@@ -131,8 +131,8 @@ const Users: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/admin/users', 'update')}
-          deleteDisabled={!hasPermission('/admin/users', 'delete')}
+          editDisabled={!hasPermission('update')}
+          deleteDisabled={!hasPermission('delete')}
         />
       )
     }
@@ -147,10 +147,10 @@ const Users: React.FC = () => {
         onReload={fetchUsers}
         loading={loading || rolesLoading}
         operations={{
-          create: hasPermission('/admin/users', 'create'),
-          update: hasPermission('/admin/users', 'update'),
-          delete: hasPermission('/admin/users', 'delete'),
-          read: hasPermission('/admin/users', 'read'),
+          create: hasPermission('create'),
+          update: hasPermission('update'),
+          delete: hasPermission('delete'),
+          read: hasPermission('read'),
         }}
       />
       <Card style={{ borderRadius: 16 }}>

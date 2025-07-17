@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Table, Card, Tree, Select, Button, Space, Popconfirm, message, Avatar, Form } from 'antd';
+import { Card, Tree, Select, Button, Space, Avatar, Form } from 'antd';
 import styles from './index.module.css';
 import { getComments, createComment, updateComment, deleteComment } from '../../api/comment';
-import { CommentData, TableColumn, BlogData, authReducer } from '../../types';
+import { CommentData, BlogData, authReducer } from '../../types';
 import { getBlogs } from '../../api/blog';
 import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
-import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
+import { FormModal, DeleteModal, CommonTableButton } from '../../components';
 import CommentForm from '../../components/forms/CommentForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useSelector } from 'react-redux';
@@ -51,37 +51,6 @@ function buildCommentTree(comments: CommentData[]): any[] {
     }
   });
   return roots;
-}
-
-// 头像emoji和渐变色
-function getAvatarEmoji(userId: number) {
-  const emojis = ['🦄', '🐱', '🐶', '🦊', '🐼', '🐧', '🐸', '🐵', '🦁', '🐯', '🐰', '🐻', '🐨', '🐔', '🐙', '🦉', '🦋', '🐳', '🐲', '🦖'];
-  return emojis[userId % emojis.length];
-}
-function getAvatarGradient(userId: number) {
-  const gradients = [
-    'linear-gradient(135deg,#fbc2eb 0%,#a6c1ee 100%)',
-    'linear-gradient(135deg,#fcb69f 0%,#ffdde1 100%)',
-    'linear-gradient(135deg,#b2f7ef 0%,#f67280 100%)',
-    'linear-gradient(135deg,#355c7d 0%,#6c5b7b 100%)',
-    'linear-gradient(135deg,#f7971e 0%,#ffd200 100%)',
-    'linear-gradient(135deg,#43cea2 0%,#185a9d 100%)',
-    'linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%)',
-    'linear-gradient(135deg,#a1c4fd 0%,#c2e9fb 100%)',
-    'linear-gradient(135deg,#fbc2eb 0%,#fcb69f 100%)',
-    'linear-gradient(135deg,#f7971e 0%,#ffd200 100%)',
-  ];
-  return gradients[userId % gradients.length];
-}
-// 趣味标签
-function getFunTags(content: string) {
-  const tags: string[] = [];
-  if (/赞|棒|好|👍|nice|great|666|牛/.test(content)) tags.push('👍 赞');
-  if (/吐槽|差|不行|👎|呵呵|无语/.test(content)) tags.push('😅 吐槽');
-  if (/哈哈|笑|😂|😁/.test(content)) tags.push('😂 有趣');
-  if (/支持|加油|冲/.test(content)) tags.push('💪 支持');
-  if (/美|漂亮|帅|靓/.test(content)) tags.push('🌟 颜值');
-  return tags;
 }
 
 const Comments: React.FC = () => {
@@ -151,22 +120,6 @@ const Comments: React.FC = () => {
     hideModal();
     setReplyParent(null);
   };
-  const columns: TableColumn[] = [
-    { title: 'ID', dataIndex: 'id', width: 80 },
-    { title: '博客ID', dataIndex: 'blog_id', width: 100 },
-    { title: '用户ID', dataIndex: 'user_id', width: 100 },
-    { title: '内容', dataIndex: 'content', width: 300 },
-    { title: '父评论ID', dataIndex: 'parent_id', width: 100 },
-    { title: '操作', key: 'action', dataIndex: "operation", width: 150, fixed: 'right', render: (_: any, record: CommentData) => (
-      <ActionButtons
-        record={record}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        editDisabled={!hasPermission('/blogsManage/comments', 'update')}
-        deleteDisabled={!hasPermission('/blogsManage/comments', 'delete')}
-      />
-    ) }
-  ];
   const [selectedBlogId, setSelectedBlogId] = useState<number | undefined>(undefined);
   const [form] = Form.useForm();
 
@@ -183,10 +136,10 @@ const Comments: React.FC = () => {
         onReload={fetchComments}
         loading={loading}
         operations={{
-          create: hasPermission('/blogsManage/comments', 'create'),
-          update: hasPermission('/blogsManage/comments', 'update'),
-          delete: hasPermission('/blogsManage/comments', 'delete'),
-          read: hasPermission('/blogsManage/comments', 'read'),
+          create: hasPermission('create'),
+          update: hasPermission('update'),
+          delete: hasPermission('delete'),
+          read: hasPermission('read'),
         }}
       />
       <Card style={{ borderRadius: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 24, background: '#f6f8fa' }}>
@@ -228,7 +181,7 @@ const Comments: React.FC = () => {
                   icon={<EditOutlined />}
                   style={{ color: '#3b82f6', borderColor: '#3b82f6', background: '#f0f7ff' }}
                   onClick={e => { e.stopPropagation(); handleEdit(nodeData); }}
-                  disabled={!hasPermission('/blogsManage/comments', 'update')}
+                  disabled={!hasPermission('update')}
                 />
                 <Button
                   size="middle"
@@ -236,7 +189,7 @@ const Comments: React.FC = () => {
                   danger
                   style={{ background: '#fff0f0', color: '#f43f5e', borderColor: '#f43f5e' }}
                   onClick={e => { e.stopPropagation(); handleDelete(nodeData); }}
-                  disabled={!hasPermission('/blogsManage/comments', 'delete')}
+                  disabled={!hasPermission('delete')}
                 />
                 <Button
                   size="middle"
@@ -244,7 +197,7 @@ const Comments: React.FC = () => {
                   ghost
                   style={{ borderRadius: 20, fontWeight: 500 }}
                   onClick={e => { e.stopPropagation(); handleReply(nodeData); }}
-                  disabled={!hasPermission('/blogsManage/comments', 'create')}
+                  disabled={!hasPermission('create')}
                 >回复</Button>
               </Space>
             </div>

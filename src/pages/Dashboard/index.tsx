@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Row, Col, Statistic, Button, message } from 'antd';
-import { UserOutlined, TeamOutlined, FileTextOutlined, EyeOutlined, LikeOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic } from 'antd';
+import { UserOutlined, TeamOutlined, FileTextOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import styles from './index.module.css';
 // 用 require 方式引入，避免类型报错

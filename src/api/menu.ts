@@ -1,5 +1,5 @@
 import api from './index';
-import { Menu, CreateMenuData, UpdateMenuData } from '../types';
+import { CreateMenuData, UpdateMenuData } from '../types';
 
 
 export const getMenuList = () => {

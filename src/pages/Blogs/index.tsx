@@ -71,8 +71,8 @@ const Blogs: React.FC = () => {
           record={record}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          editDisabled={!hasPermission('/blogsManage/blogs', 'update')}
-          deleteDisabled={!hasPermission('/blogsManage/blogs', 'delete')}
+          editDisabled={!hasPermission('update')}
+          deleteDisabled={!hasPermission('delete')}
         />
       )
     }
@@ -92,10 +92,10 @@ const Blogs: React.FC = () => {
           onReload={fetchBlogs}
           loading={loading}
           operations={{
-            create: hasPermission('/blogsManage/blogs', 'create'),
-            update: hasPermission('/blogsManage/blogs', 'update'),
-            delete: hasPermission('/blogsManage/blogs', 'delete'),
-            read: hasPermission('/blogsManage/blogs', 'read'),
+            create: hasPermission('create'),
+            update: hasPermission('update'),
+            delete: hasPermission('delete'),
+            read: hasPermission('read'),
           }}
         />
       </div>

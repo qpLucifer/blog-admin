@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Card } from 'antd';
+import { Card } from 'antd';
 import styles from './index.module.css';
 import { getTags, createTag, updateTag, deleteTag } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
@@ -63,8 +63,8 @@ const Tags: React.FC = () => {
         record={record}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        editDisabled={!hasPermission('/blogsManage/tags', 'update')}
-        deleteDisabled={!hasPermission('/blogsManage/tags', 'delete')}
+        editDisabled={!hasPermission('update')}
+        deleteDisabled={!hasPermission('delete')}
       />
     ) }
   ];
@@ -77,10 +77,10 @@ const Tags: React.FC = () => {
         onReload={fetchTags}
         loading={loading}
         operations={{
-          create: hasPermission('/blogsManage/tags', 'create'),
-          update: hasPermission('/blogsManage/tags', 'update'),
-          delete: hasPermission('/blogsManage/tags', 'delete'),
-          read: hasPermission('/blogsManage/tags', 'read'),
+          create: hasPermission('create'),
+          update: hasPermission('update'),
+          delete: hasPermission('delete'),
+          read: hasPermission('read'),
         }}
       />
       <Card style={{ borderRadius: 16 }}>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Form, Input } from 'antd';
-import { TagData } from '../../../types';
 
 const TagForm: React.FC = () => {
   return (

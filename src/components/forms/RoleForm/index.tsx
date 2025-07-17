@@ -1,9 +1,7 @@
 import React from "react";
 import { Form, Input, Select, Table, Checkbox } from "antd";
 import {
-  UserOutlined,
   LockOutlined,
-  MailOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import { Menu } from "../../../types";

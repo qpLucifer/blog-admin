@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { login as loginApi, logout } from '../../api/login';
 import { handleLogin, clearAuth } from '../../utils/auth';
-import { UserInfo, LoginCredentials, LoginResponse, Permission, Menu } from '../../types';
+import { UserInfo, LoginCredentials, LoginResponse, Menu } from '../../types';
 
 
 // 认证状态接口
