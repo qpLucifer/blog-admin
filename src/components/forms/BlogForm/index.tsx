@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Form, Input, Select, Switch, Upload, Button, Modal } from 'antd';
+import { Form, Input, Select, Switch, Upload, Button, Modal, InputNumber } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { TagData } from '../../../types';
 import '@wangeditor/editor/dist/css/style.css';
@@ -192,6 +192,21 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
         initialValue={true}
       >
         <Switch checkedChildren="已发布" unCheckedChildren="未发布" />
+      </Form.Item>
+      <Form.Item
+        name="is_choice"
+        label="精选状态"
+        valuePropName="checked"
+        initialValue={false}
+      >
+        <Switch checkedChildren="已精选" unCheckedChildren="未精选" />
+      </Form.Item>
+      <Form.Item
+        name="need_time"
+        label="需要时间"
+        rules={[{ required: true, message: '请输入需要时间' }]}
+      >
+        <InputNumber />
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit" block size="large" style={{background: 'linear-gradient(90deg,#a18cd1,#fbc2eb)', border: 'none', fontWeight: 700}}>

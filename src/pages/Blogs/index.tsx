@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Tag, Space } from 'antd';
+import { Card, Tag, Space, Image } from 'antd';
 import styles from './index.module.css';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../api/blog';
 import { BlogData, TagData, TableColumn } from '../../types';
@@ -7,9 +7,10 @@ import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
 import { DeleteModal, ActionButtons, CommonTable, CommonTableButton } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useNavigate } from 'react-router-dom';
+import { tagColor } from '../../constants';
 
 const Blogs: React.FC = () => {
-  const { data, loading, error, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, { showError: false });
+  const { data, loading, error, execute: fetchBlogs } = useApi<BlogData[]>(({ title, is_published, is_choice, author_id, pageSize, currentPage })=>getBlogs({ title, is_published, is_choice, author_id, pageSize, currentPage }), { showError: false });
 
   useInitialAsyncEffect(fetchBlogs);
 
@@ -40,7 +41,7 @@ const Blogs: React.FC = () => {
     showDeleteModal(record);
   }
   const handleAdd = () => {
-    navigate('/blogsManage/blogs/edit');
+    navigate('/blogsManage/blogs/new');
   };
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
@@ -48,11 +49,14 @@ const Blogs: React.FC = () => {
 
   const columns: TableColumn[] = [
     { title: 'ID', dataIndex: 'id', width: 80 },
-    { title: '标题', dataIndex: 'title', width: 200 },
+    { title: '标题', dataIndex: 'title', width: 100 },
+    { title: '封面图片', dataIndex: 'cover_image', width: 100, render: (v: string) => (
+      v && <Image src={process.env.REACT_APP_IMAGE_BASE_URL + v} alt={v} style={{ width: '100%' }} />
+    ) },
     {
       title: '标签', dataIndex: 'tags', width: 180, render: (tags: TagData[]) => (
         <Space>
-          {tags?.map(tag => <Tag key={tag.id}>{tag.name}</Tag>) || '-'}
+          {tags?.map((tag, index) => <Tag key={tag.id} style={{ color: tagColor[index] }}>{tag.name}</Tag>) || '-'}
         </Space>
       )
     },
@@ -62,9 +66,15 @@ const Blogs: React.FC = () => {
         <Tag color={v ? 'green' : 'red'}>{v ? '已发布' : '未发布'}</Tag>
       )
     },
+    {
+      title: '精选状态', dataIndex: 'is_choice', width: 100, render: (v: boolean) => (
+        <Tag color={v ? 'green' : 'red'}>{v ? '已精选' : '未精选'}</Tag>
+      )
+    },
     { title: '阅读量', dataIndex: 'views', width: 100 },
     { title: '点赞数', dataIndex: 'likes', width: 100 },
     { title: '评论数', dataIndex: 'comments_count', width: 100 },
+    { title: '需要时间', dataIndex: 'need_time', width: 100, render: (v: number) => v ? `${v} 分钟` : '' },
     {
       title: '操作', key: 'action', dataIndex: "operation", width: 150, fixed: 'right', render: (_: any, record: BlogData) => (
         <ActionButtons
