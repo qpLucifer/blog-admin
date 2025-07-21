@@ -52,7 +52,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ isEdit = false, tags = [], initialV
       let fileList = [...info.fileList];
       fileList = fileList.slice(-1);
       if (info.file.status === 'done') {
-        form.setFieldValue('cover_image', fileList[0].response.url);
+        form.setFieldValue('cover_image', fileList[0].response.data.url);
       }
       setCoverFileList(fileList);
     },

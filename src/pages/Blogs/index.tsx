@@ -1,18 +1,25 @@
-import React from 'react';
-import { Card, Tag, Space, Image } from 'antd';
+import React, { useState } from 'react';
+import { Card, Tag, Space, Image, Input, Form, Select, Button, Row, Col } from 'antd';
 import styles from './index.module.css';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../api/blog';
 import { BlogData, TagData, TableColumn } from '../../types';
-import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { DeleteModal, ActionButtons, CommonTable, CommonTableButton } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useNavigate } from 'react-router-dom';
 import { tagColor } from '../../constants';
 
-const Blogs: React.FC = () => {
-  const { data, loading, error, execute: fetchBlogs } = useApi<BlogData[]>(({ title, is_published, is_choice, author_id, pageSize, currentPage })=>getBlogs({ title, is_published, is_choice, author_id, pageSize, currentPage }), { showError: false });
+const { Option } = Select;
 
-  useInitialAsyncEffect(fetchBlogs);
+const Blogs: React.FC = () => {
+  const [form] = Form.useForm();
+  const [queryParams, setQueryParams] = useState({ currentPage: 1, pageSize: 10, title: '', is_published: undefined, is_choice: undefined, author_id: '' });
+
+  const { data, loading, error, execute: fetchBlogs } = useApi<{list: BlogData[], total: number}>(() => getBlogs(queryParams), { showError: false });
+
+  useInitialEffect(() => {
+    fetchBlogs();
+  }, [queryParams]);
 
   const { hasPermission } = useMenuPermission();
   const navigate = useNavigate();
@@ -45,6 +52,28 @@ const Blogs: React.FC = () => {
   };
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
+  };
+
+  const handleTableChange = (page: number, pageSize: number) => {
+    setQueryParams(prev => ({
+      ...prev,
+      currentPage: page,
+      pageSize: pageSize,
+    }));
+  };
+
+  // 查询
+  const onFinish = (values: any) => {
+    setQueryParams(prev => ({
+      ...prev,
+      ...values,
+      currentPage: 1,
+    }));
+  };
+  // 重置
+  const handleReset = () => {
+    form.resetFields();
+    setQueryParams({ currentPage: 1, pageSize: 10, title: '', is_published: undefined, is_choice: undefined, author_id: '' });
   };
 
   const columns: TableColumn[] = [
@@ -92,29 +121,74 @@ const Blogs: React.FC = () => {
     <div className={styles.root}>
       {/* 顶部统计区块 */}
       <div className={styles.statsBar}>
-        <div className={styles.statCard}>
-          <div className={styles.statNum}>{data?.length || 0}</div>
-          <div className={styles.statLabel}>博客总数</div>
-        </div>
-        <CommonTableButton
-          addButtonText="新增博客"
-          onAdd={handleAdd}
-          onReload={fetchBlogs}
-          loading={loading}
-          operations={{
-            create: hasPermission('create'),
-            update: hasPermission('update'),
-            delete: hasPermission('delete'),
-            read: hasPermission('read'),
-          }}
-        />
+        <Row style={{ width: '100%' }} align="middle" gutter={24}>
+          <Col flex="180px">
+            <div className={styles.statCard}>
+              <div className={styles.statNum}>{data?.total || 0}</div>
+              <div className={styles.statLabel}>博客总数</div>
+            </div>
+          </Col>
+          <Col flex="auto">
+            <Form
+              form={form}
+              layout="inline"
+              onFinish={onFinish}
+              initialValues={{ title: '', is_published: undefined, is_choice: undefined, author_id: '' }}
+              style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}
+            >
+              <Form.Item name="title" label="标题">
+                <Input allowClear placeholder="输入标题" style={{ width: 140 }} />
+              </Form.Item>
+              <Form.Item name="is_published" label="发布状态">
+                <Select allowClear placeholder="全部" style={{ width: 110 }}>
+                  <Option value={1}>已发布</Option>
+                  <Option value={0}>未发布</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="is_choice" label="精选">
+                <Select allowClear placeholder="全部" style={{ width: 110 }}>
+                  <Option value={1}>已精选</Option>
+                  <Option value={0}>未精选</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="author_id" label="作者ID">
+                <Input allowClear placeholder="作者ID" style={{ width: 100 }} />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">查询</Button>
+              </Form.Item>
+              <Form.Item>
+                <Button onClick={handleReset}>重置</Button>
+              </Form.Item>
+            </Form>
+          </Col>
+          <Col flex="220px" style={{ textAlign: 'right' }}>
+            <CommonTableButton
+              addButtonText="新增博客"
+              onAdd={handleAdd}
+              onReload={fetchBlogs}
+              loading={loading}
+              operations={{
+                create: hasPermission('create'),
+                update: hasPermission('update'),
+                delete: hasPermission('delete'),
+                read: hasPermission('read'),
+              }}
+            />
+          </Col>
+        </Row>
       </div>
       <Card style={{ borderRadius: 16, marginTop: 16 }}>
         <CommonTable
           columns={columns}
-          dataSource={data || []}
+          dataSource={data?.list || []}
           rowKey="id"
-          pagination={{}}
+          pagination={{
+            current: queryParams.currentPage,
+            pageSize: queryParams.pageSize,
+            total: data?.total,
+            onChange: handleTableChange,
+          }}
           loading={loading}
           error={error}
           scroll={{ x: 1000 }}

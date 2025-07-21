@@ -74,7 +74,7 @@ const EditBlog: React.FC = () => {
             color: '#6a4bc6',
             zIndex: 10,
           }}
-          onClick={() => navigate('/blogs')}
+          onClick={() => navigate('/blogsManage/blogs')}
         >
           返回
         </Button>
