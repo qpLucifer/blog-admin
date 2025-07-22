@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Card, Tag, Space, Image, Input, Form, Select, Button, Row, Col } from 'antd';
 import styles from './index.module.css';
 import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../api/blog';
-import { BlogData, TagData, TableColumn } from '../../types';
-import { useApi, useCrud, useInitialEffect } from '../../hooks';
+import { BlogData, TagData, TableColumn, User } from '../../types';
+import { useApi, useCrud, useInitialEffect, useMountEffect } from '../../hooks';
 import { DeleteModal, ActionButtons, CommonTable, CommonTableButton } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useNavigate } from 'react-router-dom';
 import { tagColor } from '../../constants';
+import { getUsersList } from '../../api/user';
 
 const { Option } = Select;
 
@@ -16,6 +17,12 @@ const Blogs: React.FC = () => {
   const [queryParams, setQueryParams] = useState({ currentPage: 1, pageSize: 10, title: '', is_published: undefined, is_choice: undefined, author_id: '' });
 
   const { data, loading, error, execute: fetchBlogs } = useApi<{list: BlogData[], total: number}>(() => getBlogs(queryParams), { showError: false });
+
+  const { data: users, loading: usersLoading, error: usersError, execute: fetchUsers } = useApi<User[]>(() => getUsersList(), { showError: false });
+
+  useMountEffect(() => {
+    fetchUsers();
+  });
 
   useInitialEffect(() => {
     fetchBlogs();
@@ -89,7 +96,7 @@ const Blogs: React.FC = () => {
         </Space>
       )
     },
-    { title: '作者ID', dataIndex: 'author_id', width: 100 },
+    { title: '作者', dataIndex: 'author_id', width: 100 },
     {
       title: '发布状态', dataIndex: 'is_published', width: 100, render: (v: boolean) => (
         <Tag color={v ? 'green' : 'red'}>{v ? '已发布' : '未发布'}</Tag>
@@ -128,7 +135,7 @@ const Blogs: React.FC = () => {
               <div className={styles.statLabel}>博客总数</div>
             </div>
           </Col>
-          <Col flex="auto">
+          <Col flex="auto" >
             <Form
               form={form}
               layout="inline"
@@ -151,8 +158,14 @@ const Blogs: React.FC = () => {
                   <Option value={0}>未精选</Option>
                 </Select>
               </Form.Item>
-              <Form.Item name="author_id" label="作者ID">
-                <Input allowClear placeholder="作者ID" style={{ width: 100 }} />
+              <Form.Item name="author_id" label="作者">
+                <Select allowClear placeholder="全部" style={{ width: 110 }}>
+                  {users?.map(user => (
+                    <Select.Option key={user.id} value={user.id}>
+                      {user.username}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit">查询</Button>

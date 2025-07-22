@@ -2,8 +2,8 @@ import api from './index';
 import { TagData } from '../types';
 
 // 获取标签列表
-export const getTags = () => {
-  return api.get('/api/tag/list');
+export const getTags = (data: { name: string, pageSize: number, currentPage: number }) => {
+  return api.get('/api/tag/list', data);
 };
 
 // 新建标签

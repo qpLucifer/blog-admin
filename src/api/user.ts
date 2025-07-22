@@ -2,6 +2,10 @@ import api from './index';
 import { CreateUserData, UpdateUserData } from '../types';
 
 // 获取用户列表
+export const getUsersList = () => {
+  return api.get('/api/user/list');
+};
+// 获取用户列表
 export const getUsers = () => {
   return api.get('/api/user/users');
 };

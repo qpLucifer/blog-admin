@@ -1,16 +1,21 @@
-import React from 'react';
-import { Card } from 'antd';
+import React, { useState } from 'react';
+import { Card, Form, Input, Button } from 'antd';
 import styles from './index.module.css';
 import { getTags, createTag, updateTag, deleteTag } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
-import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialAsyncEffect, useInitialEffect } from '../../hooks';
 import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
 import TagForm from '../../components/forms/TagForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 const Tags: React.FC = () => {
-  const { data, loading, error, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: false });
-  useInitialAsyncEffect(fetchTags);
+  const [form] = Form.useForm();
+  const [queryParams, setQueryParams] = useState({ currentPage: 1, pageSize: 10, name: '' });
+  const { data, loading, error, execute: fetchTags } = useApi<{list:TagData[],total:number,pageSize:number,currentPage:number}>(() =>  getTags(queryParams) , { showError: false });
+  // useInitialAsyncEffect(fetchTags);
+  useInitialEffect(() => {
+    fetchTags();
+  }, [queryParams]);
   const { hasPermission } = useMenuPermission();
   const {
     modalVisible,
@@ -55,21 +60,63 @@ const Tags: React.FC = () => {
     if (!currentRecord) return {};
     return { ...currentRecord };
   };
+
+  const handleTableChange = (page: number, pageSize: number) => {
+    setQueryParams(prev => ({
+      ...prev,
+      currentPage: page,
+      pageSize: pageSize,
+    }));
+  };
+
+  // 查询
+  const onFinish = (values: any) => {
+    setQueryParams(prev => ({
+      ...prev,
+      ...values,
+      currentPage: 1,
+    }));
+  };
+  // 重置
+  const handleReset = () => {
+    form.resetFields();
+    setQueryParams({ currentPage: 1, pageSize: 10, name: '' });
+  };
+
   const columns: TableColumn[] = [
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '标签名', dataIndex: 'name', width: 200 },
-    { title: '操作', key: 'action',dataIndex: "operation", width: 150, fixed: 'right', render: (_: any, record: TagData) => (
-      <ActionButtons
-        record={record}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        editDisabled={!hasPermission('update')}
-        deleteDisabled={!hasPermission('delete')}
-      />
-    ) }
+    {
+      title: '操作', key: 'action', dataIndex: "operation", width: 150, fixed: 'right', render: (_: any, record: TagData) => (
+        <ActionButtons
+          record={record}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          editDisabled={!hasPermission('update')}
+          deleteDisabled={!hasPermission('delete')}
+        />
+      )
+    }
   ];
   return (
     <div className={styles.root}>
+      <Form
+        form={form}
+        layout="inline"
+        onFinish={onFinish}
+        initialValues={{ title: '', is_published: undefined, is_choice: undefined, author_id: '' }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}
+      >
+        <Form.Item name="name" label="标签名">
+          <Input allowClear placeholder="输入标签名" style={{ width: 140 }} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">查询</Button>
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={handleReset}>重置</Button>
+        </Form.Item>
+      </Form>
       <CommonTableButton
         addButtonText="新增标签"
         onAdd={showCreateModal}
@@ -86,9 +133,14 @@ const Tags: React.FC = () => {
       <Card style={{ borderRadius: 16 }}>
         <CommonTable
           columns={columns}
-          dataSource={data || []}
+          dataSource={data?.list || []}
           rowKey="id"
-          pagination={{}}
+          pagination={{
+            total: data?.total || 0,
+            current: data?.currentPage || 1,
+            pageSize: data?.pageSize || 10,
+            onChange: handleTableChange,
+          }}
           loading={loading}
           error={error}
           scroll={{ x: 600 }}
