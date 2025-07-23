@@ -5,7 +5,10 @@ import { useEffect, useRef } from 'react';
  * @param effect 要执行的effect函数
  * @param deps 依赖数组
  */
-export function useInitialEffect(effect: () => void | (() => void), deps: React.DependencyList = []) {
+export function useInitialEffect(
+  effect: () => void | (() => void),
+  deps: React.DependencyList = []
+) {
   const hasInitialized = useRef(false);
   const isFirstRender = useRef(true);
 

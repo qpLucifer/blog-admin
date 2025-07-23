@@ -3,7 +3,6 @@ import { login as loginApi, logout } from '../../api/login';
 import { handleLogin, clearAuth } from '../../utils/auth';
 import { UserInfo, LoginCredentials, LoginResponse, Menu } from '../../types';
 
-
 // 认证状态接口
 interface AuthState {
   user: UserInfo | null;
@@ -21,7 +20,9 @@ const initialState: AuthState = {
   isAuthenticated: !!localStorage.getItem('token'),
   loading: false,
   error: null,
-  userMenus: localStorage.getItem('userMenus') ? JSON.parse(localStorage.getItem('userMenus') || '[]') : [],
+  userMenus: localStorage.getItem('userMenus')
+    ? JSON.parse(localStorage.getItem('userMenus') || '[]')
+    : [],
 };
 
 // 异步登录action
@@ -40,23 +41,20 @@ export const loginUser = createAsyncThunk(
 );
 
 // 异步登出action
-export const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      await logout(); // 用工具函数
-      clearAuth(); // 用工具函数
-      return true;
-    } catch (error: any) {
-      return rejectWithValue('登出失败');
-    }
+export const logoutUser = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
+  try {
+    await logout(); // 用工具函数
+    clearAuth(); // 用工具函数
+    return true;
+  } catch (error: any) {
+    return rejectWithValue('登出失败');
   }
-);
+});
 
 // 初始化用户信息action
 export const initializeAuth = createAsyncThunk(
   'auth/initialize',
-  async (_, { getState, dispatch }) => {
+  async (_, { getState: _getState, dispatch: _dispatch }) => {
     const token = localStorage.getItem('token');
     const userInfo = localStorage.getItem('userInfo');
     const userMenus = localStorage.getItem('userMenus');
@@ -77,10 +75,10 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     // 清除错误信息
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
-    
+
     // 更新用户信息
     updateUserInfo: (state, action: PayloadAction<Partial<UserInfo>>) => {
       if (state.user) {
@@ -98,10 +96,10 @@ const authSlice = createSlice({
       }
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       // 登录
-      .addCase(loginUser.pending, (state) => {
+      .addCase(loginUser.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -117,12 +115,12 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // 登出
-      .addCase(logoutUser.pending, (state) => {
+      .addCase(logoutUser.pending, state => {
         state.loading = true;
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(logoutUser.fulfilled, state => {
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
@@ -133,9 +131,9 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      
+
       // 初始化
-      .addCase(initializeAuth.pending, (state) => {
+      .addCase(initializeAuth.pending, state => {
         state.loading = true;
       })
       .addCase(initializeAuth.rejected, (state, action) => {
@@ -161,7 +159,6 @@ const authSlice = createSlice({
 // 导出actions
 export const { clearError, updateUserInfo, updateMenuPermissions } = authSlice.actions;
 
-
 // 导出selectors
 export const selectAuth = (state: { auth: AuthState }) => state.auth;
 export const selectUser = (state: { auth: AuthState }) => state.auth.user;
@@ -171,6 +168,5 @@ export const selectLoading = (state: { auth: AuthState }) => state.auth.loading;
 export const selectError = (state: { auth: AuthState }) => state.auth.error;
 export const selectUserMenus = (state: { auth: AuthState }) => state.auth.userMenus || [];
 
-
 // 导出reducer
-export default authSlice.reducer; 
+export default authSlice.reducer;

@@ -6,12 +6,12 @@ interface UseCrudOptions<T = any> {
   createApi?: (data: any) => any;
   updateApi?: (id: number | string, data: any) => any;
   deleteApi?: (id: number | string) => any;
-  
+
   // 消息提示
   createSuccessMessage?: string;
   updateSuccessMessage?: string;
   deleteSuccessMessage?: string;
-  
+
   // 回调函数
   onSuccess?: (type: 'create' | 'update' | 'delete', data?: T) => void;
   onError?: (type: 'create' | 'update' | 'delete', error: any) => void;
@@ -24,14 +24,14 @@ interface UseCrudReturn<T = any> {
   loading: boolean;
   currentRecord: T | null;
   isEdit: boolean;
-  
+
   // 操作方法
   showCreateModal: () => void;
   showEditModal: (record: T) => void;
   showDeleteModal: (record: T) => void;
   hideModal: () => void;
   hideDeleteModal: () => void;
-  
+
   // 提交方法
   handleCreate: (values: any) => Promise<void>;
   handleUpdate: (values: any) => Promise<void>;
@@ -51,7 +51,7 @@ export function useCrud<T = any>(options: UseCrudOptions<T> = {}): UseCrudReturn
     updateSuccessMessage = '更新成功',
     deleteSuccessMessage = '删除成功',
     onSuccess,
-    onError
+    onError,
   } = options;
 
   // 状态管理
@@ -95,49 +95,55 @@ export function useCrud<T = any>(options: UseCrudOptions<T> = {}): UseCrudReturn
   }, []);
 
   // 处理创建
-  const handleCreate = useCallback(async (values: any) => {
-    if (!createApi) {
-      console.warn('createApi 未提供');
-      return;
-    }
+  const handleCreate = useCallback(
+    async (values: any) => {
+      if (!createApi) {
+        console.warn('createApi 未提供');
+        return;
+      }
 
-    try {
-      setLoading(true);
-      const result = await createApi(values);
-      message.success(createSuccessMessage);
-      hideModal();
-      onSuccess?.('create', result);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || '创建失败';
-      message.error(errorMessage);
-      onError?.('create', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [createApi, createSuccessMessage, hideModal, onSuccess, onError]);
+      try {
+        setLoading(true);
+        const result = await createApi(values);
+        message.success(createSuccessMessage);
+        hideModal();
+        onSuccess?.('create', result);
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message || '创建失败';
+        message.error(errorMessage);
+        onError?.('create', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [createApi, createSuccessMessage, hideModal, onSuccess, onError]
+  );
 
   // 处理更新
-  const handleUpdate = useCallback(async (values: any) => {
-    if (!updateApi || !currentRecord) {
-      console.warn('updateApi 未提供或 currentRecord 为空');
-      return;
-    }
+  const handleUpdate = useCallback(
+    async (values: any) => {
+      if (!updateApi || !currentRecord) {
+        console.warn('updateApi 未提供或 currentRecord 为空');
+        return;
+      }
 
-    try {
-      setLoading(true);
-      const id = (currentRecord as any).id;
-      const result = await updateApi(id, values);
-      message.success(updateSuccessMessage);
-      hideModal();
-      onSuccess?.('update', result);
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || '更新失败';
-      message.error(errorMessage);
-      onError?.('update', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [updateApi, currentRecord, updateSuccessMessage, hideModal, onSuccess, onError]);
+      try {
+        setLoading(true);
+        const id = (currentRecord as any).id;
+        const result = await updateApi(id, values);
+        message.success(updateSuccessMessage);
+        hideModal();
+        onSuccess?.('update', result);
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message || '更新失败';
+        message.error(errorMessage);
+        onError?.('update', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [updateApi, currentRecord, updateSuccessMessage, hideModal, onSuccess, onError]
+  );
 
   // 处理删除
   const handleDelete = useCallback(async () => {
@@ -175,6 +181,6 @@ export function useCrud<T = any>(options: UseCrudOptions<T> = {}): UseCrudReturn
     hideDeleteModal,
     handleCreate,
     handleUpdate,
-    handleDelete
+    handleDelete,
   };
-} 
+}

@@ -25,8 +25,8 @@ export const findMenuByPath = (menuList: Menu[], path: string): Menu | undefined
  * @returns 是否有权限
  */
 export const hasPermissionRecursive = (
-  menus: Menu[], 
-  path: string, 
+  menus: Menu[],
+  path: string,
   action: 'create' | 'read' | 'update' | 'delete' = 'read'
 ): boolean => {
   const menu = findMenuByPath(menus, path);
@@ -79,6 +79,6 @@ export const buildMenuTree = (list: Menu[], parentId: number | null = null): Men
     .sort((a, b) => (a.order || 0) - (b.order || 0))
     .map(item => ({
       ...item,
-      children: buildMenuTree(list, item.id)
+      children: buildMenuTree(list, item.id),
     }));
-}; 
+};

@@ -31,7 +31,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   showDelete = true,
   editDisabled = false,
   deleteDisabled = false,
-  size = 'small'
+  size = 'small',
 }) => {
   const handleEdit = () => {
     if (onEdit) {
@@ -49,7 +49,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     <Space>
       {showEdit && (
         <Button
-          type="link"
+          type='link'
           icon={<EditOutlined />}
           size={size}
           onClick={handleEdit}
@@ -62,12 +62,12 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         <Popconfirm
           title={deleteConfirmText}
           onConfirm={handleDelete}
-          okText="确定"
-          cancelText="取消"
-          placement="topRight"
+          okText='确定'
+          cancelText='取消'
+          placement='topRight'
         >
           <Button
-            type="link"
+            type='link'
             icon={<DeleteOutlined />}
             size={size}
             danger
@@ -81,4 +81,4 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   );
 };
 
-export default ActionButtons; 
+export default ActionButtons;

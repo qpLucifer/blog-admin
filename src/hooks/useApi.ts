@@ -26,38 +26,40 @@ export function useApi<T = any>(
   options: UseApiOptions = {}
 ): UseApiReturn<T> {
   const { showError = true, showSuccess = false, successMessage = '操作成功' } = options;
-  
+
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
 
-  const execute = useCallback(async (...args: any[]): Promise<T | null> => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const result = await apiFunction(...args);
-      setData(result);
-      
-      if (showSuccess) {
-        message.success(successMessage || '操作成功');
+  const execute = useCallback(
+    async (...args: any[]): Promise<T | null> => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const result = await apiFunction(...args);
+        setData(result);
+
+        if (showSuccess) {
+          message.success(successMessage || '操作成功');
+        }
+
+        return result;
+      } catch (err: any) {
+        const errorMessage = err.response?.data?.message || err.message || '操作失败';
+        setError(errorMessage);
+
+        if (showError) {
+          message.error(errorMessage);
+        }
+
+        return null;
+      } finally {
+        setLoading(false);
       }
-      
-      return result;
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || '操作失败';
-      setError(errorMessage);
-      
-      if (showError) {
-        message.error(errorMessage);
-      }
-      
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFunction]); // 只依赖 apiFunction
+    },
+    [apiFunction]
+  ); // 只依赖 apiFunction
 
   const reset = useCallback(() => {
     setData(null);
@@ -70,7 +72,7 @@ export function useApi<T = any>(
     loading,
     error,
     execute,
-    reset
+    reset,
   };
 }
 
@@ -87,4 +89,4 @@ export function getErrorMessage(error: any): string {
     return error.message;
   }
   return '操作失败';
-} 
+}

@@ -16,7 +16,7 @@ interface IconSelectorProps {
 const IconSelector: React.FC<IconSelectorProps> = ({
   value,
   onChange,
-  placeholder = '请选择图标'
+  placeholder = '请选择图标',
 }) => {
   const [searchText, setSearchText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +57,7 @@ const IconSelector: React.FC<IconSelectorProps> = ({
       popupRender={() => (
         <div style={{ padding: '8px' }}>
           <Search
-            placeholder="搜索图标..."
+            placeholder='搜索图标...'
             value={searchText}
             onChange={handleSearch}
             className={styles.searchInput}
@@ -65,12 +65,12 @@ const IconSelector: React.FC<IconSelectorProps> = ({
           />
           <div className={styles.iconGrid}>
             <Row gutter={[8, 8]}>
-              {filteredIcons.map((icon) => {
+              {filteredIcons.map(icon => {
                 const IconComponent = (AllIcons as any)[icon.value];
                 return (
                   <Col span={6} key={icon.value}>
                     <Card
-                      size="small"
+                      size='small'
                       hoverable
                       className={`${styles.iconCard} ${value === icon.value ? styles.selected : ''}`}
                       onClick={() => handleSelect(icon.value)}
@@ -78,9 +78,7 @@ const IconSelector: React.FC<IconSelectorProps> = ({
                       <div className={styles.iconContainer}>
                         {IconComponent && <IconComponent style={{ fontSize: '20px' }} />}
                       </div>
-                      <div className={styles.iconName}>
-                        {icon.name}
-                      </div>
+                      <div className={styles.iconName}>{icon.name}</div>
                     </Card>
                   </Col>
                 );
@@ -103,4 +101,4 @@ const IconSelector: React.FC<IconSelectorProps> = ({
   );
 };
 
-export default IconSelector; 
+export default IconSelector;

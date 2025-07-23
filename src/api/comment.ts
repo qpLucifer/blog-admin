@@ -13,10 +13,10 @@ export const createComment = (data: CommentData) => {
 
 // 更新评论
 export const updateComment = (id: number | string, data: CommentData) => {
-  return api.put(`/api/comments/update/${id}`, data);     
+  return api.put(`/api/comments/update/${id}`, data);
 };
 
 // 删除评论
 export const deleteComment = (id: number | string) => {
   return api.delete(`/api/comments/delete/${id}`);
-}; 
+};

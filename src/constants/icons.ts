@@ -62,8 +62,9 @@ export const ICON_LIST = [
 // 根据搜索关键词过滤图标
 export const filterIcons = (keyword: string) => {
   if (!keyword) return ICON_LIST;
-  return ICON_LIST.filter(icon => 
-    icon.name.toLowerCase().includes(keyword.toLowerCase()) ||
-    icon.value.toLowerCase().includes(keyword.toLowerCase())
+  return ICON_LIST.filter(
+    icon =>
+      icon.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      icon.value.toLowerCase().includes(keyword.toLowerCase())
   );
-}; 
+};

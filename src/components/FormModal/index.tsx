@@ -31,7 +31,7 @@ const FormModal: React.FC<FormModalProps> = ({
   width = 600,
   okText = '确定',
   cancelText = '取消',
-  form: externalForm
+  form: externalForm,
 }) => {
   const [form] = Form.useForm();
   const currentForm = externalForm || form;
@@ -69,27 +69,18 @@ const FormModal: React.FC<FormModalProps> = ({
       onCancel={handleCancel}
       width={width}
       footer={[
-        <Button key="cancel" onClick={handleCancel}>
+        <Button key='cancel' onClick={handleCancel}>
           {cancelText}
         </Button>,
-        <Button 
-          key="submit" 
-          type="primary" 
-          loading={loading}
-          onClick={handleSubmit}
-        >
+        <Button key='submit' type='primary' loading={loading} onClick={handleSubmit}>
           {okText}
-        </Button>
+        </Button>,
       ]}
       destroyOnHidden
       maskClosable={false}
     >
       <Spin spinning={loading}>
-        <Form
-          form={currentForm}
-          layout="vertical"
-          preserve={true}
-        >
+        <Form form={currentForm} layout='vertical' preserve={true}>
           {children}
         </Form>
       </Spin>
@@ -97,4 +88,4 @@ const FormModal: React.FC<FormModalProps> = ({
   );
 };
 
-export default FormModal; 
+export default FormModal;

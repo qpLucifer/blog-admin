@@ -2,7 +2,6 @@
 
 import { Role, UserInfo, Menu } from '../types';
 
-
 /**
  * 获取当前token
  */
@@ -46,7 +45,6 @@ export const setUserInfo = (userInfo: UserInfo): void => {
   localStorage.setItem('userInfo', JSON.stringify(userInfo));
 };
 
-
 /**
  * 获取用户菜单
  */
@@ -54,7 +52,6 @@ export const getUserMenus = (): Menu[] => {
   const menus = localStorage.getItem('userMenus');
   return menus ? JSON.parse(menus) : [];
 };
-
 
 /**
  * 设置用户菜单
@@ -97,4 +94,4 @@ export const handleLogin = (loginData: { token: string; user: UserInfo }): void 
 export const handleLogout = (): void => {
   clearAuth();
   window.location.href = '/login';
-}; 
+};

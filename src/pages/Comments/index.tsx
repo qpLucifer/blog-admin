@@ -21,13 +21,20 @@ function getAvatarColor(userId: number) {
 // 评论内容折叠组件
 const FoldableContent: React.FC<{ content: string }> = ({ content }) => {
   const [expanded, setExpanded] = useState(false);
-  if (content.length <= 40) return <span style={{ color: '#222', fontWeight: 600 }}>{content}</span>;
+  if (content.length <= 40)
+    return <span style={{ color: '#222', fontWeight: 600 }}>{content}</span>;
   return (
     <>
       <span style={{ color: '#222', fontWeight: 600 }}>
         {expanded ? content : content.slice(0, 40) + '...'}
       </span>
-      <a style={{ marginLeft: 8, fontSize: 12 }} onClick={e => { e.stopPropagation(); setExpanded(v => !v); }}>
+      <a
+        style={{ marginLeft: 8, fontSize: 12 }}
+        onClick={e => {
+          e.stopPropagation();
+          setExpanded(v => !v);
+        }}
+      >
         {expanded ? '收起' : '展开'}
       </a>
     </>
@@ -39,7 +46,11 @@ function buildCommentTree(comments: CommentData[]): any[] {
   const map = new Map<number, any>();
   const roots: any[] = [];
   comments.forEach(comment => {
-    map.set(comment.id!, { ...comment, key: comment.id, title: `[${comment.id}] ${comment.content?.slice(0, 30)}` });
+    map.set(comment.id!, {
+      ...comment,
+      key: comment.id,
+      title: `[${comment.id}] ${comment.content?.slice(0, 30)}`,
+    });
   });
   map.forEach(comment => {
     if (comment.parent_id && map.has(comment.parent_id)) {
@@ -55,8 +66,14 @@ function buildCommentTree(comments: CommentData[]): any[] {
 
 const Comments: React.FC = () => {
   const { user } = useSelector((state: authReducer) => state.auth);
-  const { data, loading, error, execute: fetchComments } = useApi<CommentData[]>(getComments, { showError: false });
-  const { data: blogs, loading: blogsLoading, error: blogsError, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, { showError: false });
+  const {
+    data,
+    loading,
+    execute: fetchComments,
+  } = useApi<CommentData[]>(getComments, { showError: false });
+  const { data: blogs, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, {
+    showError: false,
+  });
   useInitialAsyncEffect(fetchComments);
   useInitialAsyncEffect(fetchBlogs);
 
@@ -74,7 +91,7 @@ const Comments: React.FC = () => {
     hideDeleteModal,
     handleCreate,
     handleUpdate,
-    handleDelete: handleDeleteConfirm
+    handleDelete: handleDeleteConfirm,
   } = useCrud<CommentData>({
     createApi: createComment,
     updateApi: updateComment,
@@ -82,7 +99,7 @@ const Comments: React.FC = () => {
     createSuccessMessage: '评论创建成功',
     updateSuccessMessage: '评论更新成功',
     deleteSuccessMessage: '评论删除成功',
-    onSuccess: fetchComments
+    onSuccess: fetchComments,
   });
   function handleEdit(record: CommentData) {
     showEditModal(record);
@@ -124,15 +141,16 @@ const Comments: React.FC = () => {
   const [form] = Form.useForm();
 
   // 只展示选中博客下的评论
-  const filteredComments = selectedBlogId ? (data || []).filter(c => c.blog_id === selectedBlogId) : (data || []);
-
+  const filteredComments = selectedBlogId
+    ? (data || []).filter(c => c.blog_id === selectedBlogId)
+    : data || [];
 
   return (
     <div className={styles.root}>
       <CommonTableButton
-        addButtonText="新增评论"
+        addButtonText='新增评论'
         onAdd={showCreateModal}
-        title="评论管理"
+        title='评论管理'
         onReload={fetchComments}
         loading={loading}
         operations={{
@@ -142,12 +160,19 @@ const Comments: React.FC = () => {
           read: hasPermission('read'),
         }}
       />
-      <Card style={{ borderRadius: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: 24, background: '#f6f8fa' }}>
+      <Card
+        style={{
+          borderRadius: 24,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          padding: 24,
+          background: '#f6f8fa',
+        }}
+      >
         <div style={{ marginBottom: 24 }}>
           <Select
             style={{ width: 320, fontSize: 16 }}
             allowClear
-            placeholder="请选择要查看的博客"
+            placeholder='请选择要查看的博客'
             value={selectedBlogId}
             onChange={setSelectedBlogId}
             options={blogs?.map(blog => ({ label: blog.title, value: blog.id }))}
@@ -159,46 +184,104 @@ const Comments: React.FC = () => {
           showLine={false}
           style={{ background: 'transparent', padding: 8 }}
           titleRender={nodeData => (
-            <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', width: '100%', background: '#fff', borderRadius: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', marginBottom: 0, padding: '18px 24px', minHeight: 64, transition: 'box-shadow 0.2s, border 0.2s', gap: 16, border: '2px solid transparent', position: 'relative', marginTop: 18 }}>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 16, flexDirection: 'row' }}>
-                <Avatar size={40} style={{ background: getAvatarColor(nodeData.user_id), fontSize: 20, marginTop: 2 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: '100%',
+                background: '#fff',
+                borderRadius: 16,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                marginBottom: 0,
+                padding: '18px 24px',
+                minHeight: 64,
+                transition: 'box-shadow 0.2s, border 0.2s',
+                gap: 16,
+                border: '2px solid transparent',
+                position: 'relative',
+                marginTop: 18,
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 16,
+                  flexDirection: 'row',
+                }}
+              >
+                <Avatar
+                  size={40}
+                  style={{
+                    background: getAvatarColor(nodeData.user_id),
+                    fontSize: 20,
+                    marginTop: 2,
+                  }}
+                >
                   {String(nodeData.user_id).charAt(0).toUpperCase()}
                 </Avatar>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: 17, marginBottom: 6, color: '#222', wordBreak: 'break-all' }}>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 17,
+                      marginBottom: 6,
+                      color: '#222',
+                      wordBreak: 'break-all',
+                    }}
+                  >
                     <FoldableContent content={nodeData.content} />
                   </div>
                   <div style={{ color: '#888', fontSize: 14, lineHeight: 1.7 }}>
                     <span>ID: {nodeData.id}</span>
                     <span style={{ marginLeft: 18 }}>用户ID: {nodeData.user_id}</span>
-                    <span style={{ marginLeft: 18 }}>时间: {nodeData.created_at ? dayjs(nodeData.created_at).format('YYYY-MM-DD HH:mm') : '-'}</span>
+                    <span style={{ marginLeft: 18 }}>
+                      时间:{' '}
+                      {nodeData.created_at
+                        ? dayjs(nodeData.created_at).format('YYYY-MM-DD HH:mm')
+                        : '-'}
+                    </span>
                   </div>
                 </div>
               </div>
               <Space size={12} style={{ marginTop: 2, flexWrap: 'wrap' }}>
                 <Button
-                  size="middle"
+                  size='middle'
                   icon={<EditOutlined />}
                   style={{ color: '#3b82f6', borderColor: '#3b82f6', background: '#f0f7ff' }}
-                  onClick={e => { e.stopPropagation(); handleEdit(nodeData); }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleEdit(nodeData);
+                  }}
                   disabled={!hasPermission('update')}
                 />
                 <Button
-                  size="middle"
+                  size='middle'
                   icon={<DeleteOutlined />}
                   danger
                   style={{ background: '#fff0f0', color: '#f43f5e', borderColor: '#f43f5e' }}
-                  onClick={e => { e.stopPropagation(); handleDelete(nodeData); }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleDelete(nodeData);
+                  }}
                   disabled={!hasPermission('delete')}
                 />
                 <Button
-                  size="middle"
-                  type="primary"
+                  size='middle'
+                  type='primary'
                   ghost
                   style={{ borderRadius: 20, fontWeight: 500 }}
-                  onClick={e => { e.stopPropagation(); handleReply(nodeData); }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleReply(nodeData);
+                  }}
                   disabled={!hasPermission('create')}
-                >回复</Button>
+                >
+                  回复
+                </Button>
               </Space>
             </div>
           )}
@@ -227,4 +310,4 @@ const Comments: React.FC = () => {
   );
 };
 
-export default Comments; 
+export default Comments;

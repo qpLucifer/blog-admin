@@ -11,7 +11,7 @@ interface CommonTableProps<T = any> {
   columns: TableColumn[];
   loading?: boolean;
   error?: string | null;
-  
+
   // 分页相关
   pagination?: {
     current?: number;
@@ -19,12 +19,12 @@ interface CommonTableProps<T = any> {
     total?: number;
     onChange?: (page: number, pageSize: number) => void;
   };
-  
+
   // 操作相关
   onReload?: () => void;
   rowKey?: string | ((record: T) => string);
   scroll?: { x?: number | string; y?: number | string };
-  
+
   // 样式相关
   className?: string;
   size?: SizeType;
@@ -44,13 +44,12 @@ function CommonTable<T = any>({
   rowKey = 'id',
   scroll,
   className,
-  size = 'middle'
+  size = 'middle',
 }: CommonTableProps<T>) {
-  
   // 渲染加载状态
   const renderLoading = () => (
     <div className={styles.loadingContainer}>
-      <Spin size="large" />
+      <Spin size='large' />
       <div className={styles.loadingText}>加载中...</div>
     </div>
   );
@@ -58,15 +57,15 @@ function CommonTable<T = any>({
   // 渲染错误状态
   const renderError = () => (
     <div className={styles.errorContainer}>
-      <Empty 
+      <Empty
         description={
           <div>
             <div className={styles.errorTitle}>加载失败</div>
             <div className={styles.errorMessage}>{error}</div>
             {onReload && (
-              <Button 
-                type="primary" 
-                icon={<ReloadOutlined />} 
+              <Button
+                type='primary'
+                icon={<ReloadOutlined />}
                 onClick={onReload}
                 className={styles.reloadButton}
               >
@@ -80,12 +79,7 @@ function CommonTable<T = any>({
   );
 
   // 渲染空数据状态
-  const renderEmpty = () => (
-    <Empty 
-      description="暂无数据"
-      image={Empty.PRESENTED_IMAGE_SIMPLE}
-    />
-  );
+  const renderEmpty = () => <Empty description='暂无数据' image={Empty.PRESENTED_IMAGE_SIMPLE} />;
 
   // 渲染表格内容
   const renderTable = () => {
@@ -106,13 +100,17 @@ function CommonTable<T = any>({
         columns={columns}
         dataSource={dataSource}
         rowKey={rowKey}
-        pagination={pagination ? {
-          pageSize: 10,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
-          ...pagination
-        } : false}
+        pagination={
+          pagination
+            ? {
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
+                ...pagination,
+              }
+            : false
+        }
         loading={loading}
         scroll={scroll}
         size={size}
@@ -121,11 +119,7 @@ function CommonTable<T = any>({
     );
   };
 
-  return (
-    <div className={styles.tableContainer}>
-      {renderTable()}
-    </div>
-  );
+  return <div className={styles.tableContainer}>{renderTable()}</div>;
 }
 
-export default CommonTable; 
+export default CommonTable;

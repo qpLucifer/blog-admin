@@ -17,8 +17,16 @@ const EditBlog: React.FC = () => {
   const { user } = useSelector((state: authReducer) => state.auth);
   const [loading, setLoading] = useState(false);
   const [initialValues, setInitialValues] = useState<any>({});
-  const { data: tags, loading: tagsLoading, error: tagsError, execute: fetchTags } = useApi<TagData[]>(getTags, { showError: false });
-  const { data: blog, loading: blogLoading, error: blogError, execute: fetchBlog } = useApi<BlogData>(getBlog, { showError: false });
+  const {
+    data: tags,
+    loading: tagsLoading,
+    execute: fetchTags,
+  } = useApi<TagData[]>(getTags, { showError: false });
+  const {
+    data: blog,
+    loading: blogLoading,
+    execute: fetchBlog,
+  } = useApi<BlogData>(getBlog, { showError: false });
 
   useInitialAsyncEffect(fetchTags);
 
@@ -62,9 +70,9 @@ const EditBlog: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <div style={{  position: 'relative' }}>
+      <div style={{ position: 'relative' }}>
         <Button
-          type="text"
+          type='text'
           icon={<ArrowLeftOutlined />}
           style={{
             position: 'absolute',
@@ -78,7 +86,7 @@ const EditBlog: React.FC = () => {
         >
           返回
         </Button>
-        <Spin spinning={loading || tagsLoading || blogLoading} tip="加载中...">
+        <Spin spinning={loading || tagsLoading || blogLoading} tip='加载中...'>
           <Card
             style={{
               width: '100%',
@@ -103,8 +111,13 @@ const EditBlog: React.FC = () => {
             >
               {isEdit ? '编辑博客' : '新增博客'}
             </h2>
-            <div >
-              <BlogForm isEdit={isEdit} tags={tags || []} initialValues={initialValues} onSubmit={handleSubmit} />
+            <div>
+              <BlogForm
+                isEdit={isEdit}
+                tags={tags || []}
+                initialValues={initialValues}
+                onSubmit={handleSubmit}
+              />
             </div>
           </Card>
         </Spin>
@@ -113,4 +126,4 @@ const EditBlog: React.FC = () => {
   );
 };
 
-export default EditBlog; 
+export default EditBlog;

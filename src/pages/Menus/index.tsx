@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, Tree, Empty, message } from "antd";
-import styles from "./index.module.css";
-import { TableColumn, Menu } from "../../types";
-import { useApi, useCrud, useInitialAsyncEffect } from "../../hooks";
-import { useMenuPermission } from "../../hooks/useMenuPermission";
+import React from 'react';
+import { Card, Tree, Empty, message } from 'antd';
+import styles from './index.module.css';
+import { TableColumn, Menu } from '../../types';
+import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useMenuPermission } from '../../hooks/useMenuPermission';
 import {
   FormModal,
   DeleteModal,
@@ -11,8 +11,8 @@ import {
   CommonTableButton,
   CommonTable,
   ActionButtons,
-} from "../../components";
-import { getMenuTree, addMenu, updateMenu, deleteMenu } from "../../api/menu";
+} from '../../components';
+import { getMenuTree, addMenu, updateMenu, deleteMenu } from '../../api/menu';
 
 const Menus: React.FC = () => {
   // 获取菜单树
@@ -22,7 +22,6 @@ const Menus: React.FC = () => {
     error: treeError,
     execute: fetchMenuTree,
   } = useApi<Menu[]>(getMenuTree, { showError: false });
-
 
   // 当前选中的菜单id
   const [selectedKey, setSelectedKey] = React.useState<number | null>(null);
@@ -85,20 +84,26 @@ const Menus: React.FC = () => {
     if (!dropToGap) {
       newParentId = dropNode.key;
       const parent = findNodeById(newParentId, menuTree || []);
-      siblings = parent && parent.children ? parent.children.filter((c: any) => c.id !== dragNode.key) : [];
+      siblings =
+        parent && parent.children ? parent.children.filter((c: any) => c.id !== dragNode.key) : [];
       newOrder = siblings.length; // 放到最后
     } else {
       // 2. 拖到某节点前/后（同级排序）
       newParentId = dropNode.parent_id ?? null;
       // 找到同级所有节点
-      const parent = newParentId ? findNodeById(newParentId, menuTree || []) : { children: menuTree };
-      siblings = parent && parent.children ? parent.children.filter((c: any) => c.id !== dragNode.key) : [];
+      const parent = newParentId
+        ? findNodeById(newParentId, menuTree || [])
+        : { children: menuTree };
+      siblings =
+        parent && parent.children ? parent.children.filter((c: any) => c.id !== dragNode.key) : [];
       // 找到目标节点在同级中的索引
       const dropIndex = siblings.findIndex((c: any) => c.id === dropNode.key);
       if (dropIndex === -1) {
         newOrder = siblings.length;
       } else {
-        newOrder = dropToGap ? dropIndex + (info.dropPosition > info.node.pos.split('-').length - 1 ? 1 : 0) : dropIndex;
+        newOrder = dropToGap
+          ? dropIndex + (info.dropPosition > info.node.pos.split('-').length - 1 ? 1 : 0)
+          : dropIndex;
       }
     }
     // 重新排序同级所有节点
@@ -117,7 +122,7 @@ const Menus: React.FC = () => {
       const hasChildren = node.children && node.children.length > 0;
       return {
         ...node,
-        children: hasChildren ? normalizeTree(node.children) : undefined
+        children: hasChildren ? normalizeTree(node.children) : undefined,
       };
     });
 
@@ -142,9 +147,9 @@ const Menus: React.FC = () => {
     createApi: addMenu,
     updateApi: updateMenu,
     deleteApi: deleteMenu,
-    createSuccessMessage: "菜单创建成功",
-    updateSuccessMessage: "菜单更新成功",
-    deleteSuccessMessage: "菜单删除成功",
+    createSuccessMessage: '菜单创建成功',
+    updateSuccessMessage: '菜单更新成功',
+    deleteSuccessMessage: '菜单删除成功',
     onSuccess: () => {
       // 操作成功后刷新列表
       fetchMenuTree();
@@ -188,14 +193,14 @@ const Menus: React.FC = () => {
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id" },
-    { title: "菜单名", dataIndex: "name" },
-    { title: "路径", dataIndex: "path" },
-    { title: "排序", dataIndex: "order" },
-    { title: "图标", dataIndex: "icon" },
+    { title: 'ID', dataIndex: 'id' },
+    { title: '菜单名', dataIndex: 'name' },
+    { title: '路径', dataIndex: 'path' },
+    { title: '排序', dataIndex: 'order' },
+    { title: '图标', dataIndex: 'icon' },
     {
-      title: "操作",
-      key: "action",
+      title: '操作',
+      key: 'action',
       render: (_: any, record: any) => (
         <ActionButtons
           record={record}
@@ -211,7 +216,7 @@ const Menus: React.FC = () => {
     <div className={styles.root} style={{ display: 'flex', gap: 24 }}>
       {/* 左侧树形菜单 */}
       <div style={{ width: 260, background: '#fff' }}>
-        {(menuTree && menuTree.length > 0) ? (
+        {menuTree && menuTree.length > 0 ? (
           <Tree
             treeData={normalizeTree(menuTree)}
             fieldNames={{ title: 'name', key: 'id', children: 'children' }}
@@ -224,16 +229,18 @@ const Menus: React.FC = () => {
             style={{ width: '100%' }}
           />
         ) : (
-          <Empty description="暂无菜单" />
+          <Empty description='暂无菜单' />
         )}
       </div>
       {/* 右侧表格 */}
       <div style={{ flex: 1 }}>
         <CommonTableButton
-          addButtonText="新增菜单"
+          addButtonText='新增菜单'
           onAdd={showCreateModal}
-          title="菜单管理"
-          onReload={() => { fetchMenuTree(); }}
+          title='菜单管理'
+          onReload={() => {
+            fetchMenuTree();
+          }}
           loading={treeLoading}
           operations={{
             create: hasPermission('create'),
@@ -246,7 +253,7 @@ const Menus: React.FC = () => {
           <CommonTable
             columns={columns as TableColumn[]}
             dataSource={getTableData()}
-            rowKey="id"
+            rowKey='id'
             pagination={{}}
             loading={treeLoading}
             error={treeError}
@@ -255,7 +262,7 @@ const Menus: React.FC = () => {
         </Card>
         {/* 新增/编辑弹窗 */}
         <FormModal
-          title={isEdit ? "编辑菜单" : "新增菜单"}
+          title={isEdit ? '编辑菜单' : '新增菜单'}
           visible={modalVisible}
           loading={crudLoading}
           initialValues={getInitialValues()}

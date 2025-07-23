@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
  * @returns { hasPermission } 传入菜单path和操作类型（create/read/update/delete），返回布尔值
  */
 export const useMenuPermission = function () {
-    const location = useLocation();
+  const location = useLocation();
   const menus = useAppSelector(selectUserMenus);
 
   /**
@@ -21,4 +21,4 @@ export const useMenuPermission = function () {
   }
 
   return { hasPermission };
-}; 
+};

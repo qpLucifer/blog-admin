@@ -5,7 +5,14 @@ import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
 import { getRoles } from '../../api/role';
 import { User, TableColumn, Role } from '../../types';
 import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
-import { FormModal, DeleteModal, ActionButtons, UserForm, CommonTableButton, CommonTable } from '../../components';
+import {
+  FormModal,
+  DeleteModal,
+  ActionButtons,
+  UserForm,
+  CommonTableButton,
+  CommonTable,
+} from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 interface UserWithRoles {
@@ -13,19 +20,29 @@ interface UserWithRoles {
 }
 
 const Users: React.FC = () => {
-  const { data, loading, error, execute: fetchUsers } = useApi<User[]>(getUsers, {
+  const {
+    data,
+    loading,
+    error,
+    execute: fetchUsers,
+  } = useApi<User[]>(getUsers, {
     showError: false,
   });
 
-  const { data: roles, loading: rolesLoading, error: rolesError, execute: fetchRoles } = useApi<Role[]>(getRoles, {
+  const {
+    data: roles,
+    loading: rolesLoading,
+    error: rolesError,
+    execute: fetchRoles,
+  } = useApi<Role[]>(getRoles, {
     showError: true,
   });
 
-   // 只在组件挂载时调用一次
-   useInitialAsyncEffect(fetchUsers);
-   useInitialAsyncEffect(fetchRoles);
+  // 只在组件挂载时调用一次
+  useInitialAsyncEffect(fetchUsers);
+  useInitialAsyncEffect(fetchRoles);
 
-   const { hasPermission } = useMenuPermission();
+  const { hasPermission } = useMenuPermission();
 
   // CRUD 管理
   const {
@@ -41,7 +58,7 @@ const Users: React.FC = () => {
     hideDeleteModal,
     handleCreate,
     handleUpdate,
-    handleDelete: handleDeleteConfirm
+    handleDelete: handleDeleteConfirm,
   } = useCrud<User>({
     createApi: createUser,
     updateApi: updateUser,
@@ -52,7 +69,7 @@ const Users: React.FC = () => {
     onSuccess: () => {
       // 操作成功后刷新列表
       fetchUsers();
-    }
+    },
   });
 
   // 处理编辑
@@ -93,33 +110,33 @@ const Users: React.FC = () => {
   const columns = [
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '用户名', dataIndex: 'username', width: 120 },
-    { 
-      title: '邮箱', 
-      dataIndex: 'email', 
+    {
+      title: '邮箱',
+      dataIndex: 'email',
       width: 200,
-      render: (email: string) => email || '-'
+      render: (email: string) => email || '-',
     },
-    { 
-      title: '角色', 
-      dataIndex: 'roles', 
+    {
+      title: '角色',
+      dataIndex: 'roles',
       width: 150,
       render: (roles: UserWithRoles['roles']) => (
         <Space>
           {roles?.map(role => (
-            <Tag key={role.id} color="blue">{role.name}</Tag>
+            <Tag key={role.id} color='blue'>
+              {role.name}
+            </Tag>
           )) || '-'}
         </Space>
-      )
+      ),
     },
-    { 
-      title: '状态', 
-      dataIndex: 'is_active', 
+    {
+      title: '状态',
+      dataIndex: 'is_active',
       width: 100,
       render: (status: number) => (
-        <Tag color={status ? 'green' : 'red'}>
-          {status ? '启用' : '禁用'}
-        </Tag>
-      )
+        <Tag color={status ? 'green' : 'red'}>{status ? '启用' : '禁用'}</Tag>
+      ),
     },
     {
       title: '操作',
@@ -134,16 +151,16 @@ const Users: React.FC = () => {
           editDisabled={!hasPermission('update')}
           deleteDisabled={!hasPermission('delete')}
         />
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <div className={styles.root}>
       <CommonTableButton
-        addButtonText="新增用户"
+        addButtonText='新增用户'
         onAdd={showCreateModal}
-        title="用户管理"
+        title='用户管理'
         onReload={fetchUsers}
         loading={loading || rolesLoading}
         operations={{
@@ -157,7 +174,7 @@ const Users: React.FC = () => {
         <CommonTable
           columns={columns as TableColumn[]}
           dataSource={data || []}
-          rowKey="id"
+          rowKey='id'
           pagination={{}}
           loading={loading || rolesLoading}
           error={error || rolesError}
@@ -190,4 +207,4 @@ const Users: React.FC = () => {
   );
 };
 
-export default Users; 
+export default Users;

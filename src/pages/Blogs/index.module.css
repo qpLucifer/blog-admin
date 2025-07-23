@@ -15,12 +15,12 @@
 }
 .card {
   border-radius: var(--card-radius, 12px);
-  box-shadow: var(--card-shadow, 0 2px 16px rgba(160,140,209,0.08));
+  box-shadow: var(--card-shadow, 0 2px 16px rgba(160, 140, 209, 0.08));
   background: #fff;
   transition: box-shadow 0.2s;
 }
 .card:hover {
-  box-shadow: 0 8px 32px rgba(106,75,198,0.12);
+  box-shadow: 0 8px 32px rgba(106, 75, 198, 0.12);
 }
 .statsBar {
   display: flex;
@@ -30,7 +30,7 @@
   /* background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%); */
   border-radius: 16px;
   padding: 20px 32px;
-  box-shadow: 0 4px 24px rgba(160,140,209,0.12);
+  box-shadow: 0 4px 24px rgba(160, 140, 209, 0.12);
   animation: fadeInDown 0.8s;
 }
 .statCard {
@@ -59,13 +59,21 @@
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 2px 12px #f857a655;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 .addBtn:hover {
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 6px 24px #f857a688;
 }
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
-} 
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

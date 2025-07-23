@@ -3,15 +3,29 @@ import { Card, Form, Input, Button } from 'antd';
 import styles from './index.module.css';
 import { getTags, createTag, updateTag, deleteTag } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
-import { useApi, useCrud, useInitialAsyncEffect, useInitialEffect } from '../../hooks';
-import { FormModal, DeleteModal, ActionButtons, CommonTableButton, CommonTable } from '../../components';
+import { useApi, useCrud, useInitialEffect } from '../../hooks';
+import {
+  FormModal,
+  DeleteModal,
+  ActionButtons,
+  CommonTableButton,
+  CommonTable,
+} from '../../components';
 import TagForm from '../../components/forms/TagForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 const Tags: React.FC = () => {
   const [form] = Form.useForm();
   const [queryParams, setQueryParams] = useState({ currentPage: 1, pageSize: 10, name: '' });
-  const { data, loading, error, execute: fetchTags } = useApi<{list:TagData[],total:number,pageSize:number,currentPage:number}>(() =>  getTags(queryParams) , { showError: false });
+  const {
+    data,
+    loading,
+    error,
+    execute: fetchTags,
+  } = useApi<{ list: TagData[]; total: number; pageSize: number; currentPage: number }>(
+    () => getTags(queryParams),
+    { showError: false }
+  );
   // useInitialAsyncEffect(fetchTags);
   useInitialEffect(() => {
     fetchTags();
@@ -30,7 +44,7 @@ const Tags: React.FC = () => {
     hideDeleteModal,
     handleCreate,
     handleUpdate,
-    handleDelete: handleDeleteConfirm
+    handleDelete: handleDeleteConfirm,
   } = useCrud<TagData>({
     createApi: createTag,
     updateApi: updateTag,
@@ -38,7 +52,7 @@ const Tags: React.FC = () => {
     createSuccessMessage: '标签创建成功',
     updateSuccessMessage: '标签更新成功',
     deleteSuccessMessage: '标签删除成功',
-    onSuccess: fetchTags
+    onSuccess: fetchTags,
   });
   function handleEdit(record: TagData) {
     showEditModal(record);
@@ -87,7 +101,12 @@ const Tags: React.FC = () => {
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '标签名', dataIndex: 'name', width: 200 },
     {
-      title: '操作', key: 'action', dataIndex: "operation", width: 150, fixed: 'right', render: (_: any, record: TagData) => (
+      title: '操作',
+      key: 'action',
+      dataIndex: 'operation',
+      width: 150,
+      fixed: 'right',
+      render: (_: any, record: TagData) => (
         <ActionButtons
           record={record}
           onEdit={handleEdit}
@@ -95,32 +114,34 @@ const Tags: React.FC = () => {
           editDisabled={!hasPermission('update')}
           deleteDisabled={!hasPermission('delete')}
         />
-      )
-    }
+      ),
+    },
   ];
   return (
     <div className={styles.root}>
       <Form
         form={form}
-        layout="inline"
+        layout='inline'
         onFinish={onFinish}
         initialValues={{ title: '', is_published: undefined, is_choice: undefined, author_id: '' }}
         style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}
       >
-        <Form.Item name="name" label="标签名">
-          <Input allowClear placeholder="输入标签名" style={{ width: 140 }} />
+        <Form.Item name='name' label='标签名'>
+          <Input allowClear placeholder='输入标签名' style={{ width: 140 }} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">查询</Button>
+          <Button type='primary' htmlType='submit'>
+            查询
+          </Button>
         </Form.Item>
         <Form.Item>
           <Button onClick={handleReset}>重置</Button>
         </Form.Item>
       </Form>
       <CommonTableButton
-        addButtonText="新增标签"
+        addButtonText='新增标签'
         onAdd={showCreateModal}
-        title="标签管理"
+        title='标签管理'
         onReload={fetchTags}
         loading={loading}
         operations={{
@@ -134,7 +155,7 @@ const Tags: React.FC = () => {
         <CommonTable
           columns={columns}
           dataSource={data?.list || []}
-          rowKey="id"
+          rowKey='id'
           pagination={{
             total: data?.total || 0,
             current: data?.currentPage || 1,
@@ -168,4 +189,4 @@ const Tags: React.FC = () => {
   );
 };
 
-export default Tags; 
+export default Tags;

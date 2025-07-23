@@ -1,10 +1,10 @@
-import React from "react";
-import { Card } from "antd";
-import styles from "./index.module.css";
-import { Role, TableColumn, Menu } from "../../types";
-import { getRoles, createRole, updateRole, deleteRole } from "../../api/role";
-import { getMenuList } from "../../api/menu";
-import { useApi, useCrud, useInitialAsyncEffect, useMenuPermission } from "../../hooks";
+import React from 'react';
+import { Card } from 'antd';
+import styles from './index.module.css';
+import { Role, TableColumn, Menu } from '../../types';
+import { getRoles, createRole, updateRole, deleteRole } from '../../api/role';
+import { getMenuList } from '../../api/menu';
+import { useApi, useCrud, useInitialAsyncEffect, useMenuPermission } from '../../hooks';
 
 import {
   CommonTable,
@@ -13,7 +13,7 @@ import {
   DeleteModal,
   RoleForm,
   ActionButtons,
-} from "../../components";
+} from '../../components';
 
 const Roles: React.FC = () => {
   const {
@@ -41,12 +41,12 @@ const Roles: React.FC = () => {
   const { hasPermission } = useMenuPermission();
 
   const columns = [
-    { title: "ID", dataIndex: "id" },
-    { title: "角色名", dataIndex: "name" },
-    { title: "描述", dataIndex: "description" },
+    { title: 'ID', dataIndex: 'id' },
+    { title: '角色名', dataIndex: 'name' },
+    { title: '描述', dataIndex: 'description' },
     {
-      title: "操作",
-      key: "action",
+      title: '操作',
+      key: 'action',
       render: (_: any, record: Role) => (
         <ActionButtons
           record={record}
@@ -78,9 +78,9 @@ const Roles: React.FC = () => {
     createApi: createRole,
     updateApi: updateRole,
     deleteApi: deleteRole,
-    createSuccessMessage: "角色创建成功",
-    updateSuccessMessage: "角色更新成功",
-    deleteSuccessMessage: "角色删除成功",
+    createSuccessMessage: '角色创建成功',
+    updateSuccessMessage: '角色更新成功',
+    deleteSuccessMessage: '角色删除成功',
     onSuccess: () => {
       // 操作成功后刷新列表
       fetchRoles();
@@ -117,30 +117,28 @@ const Roles: React.FC = () => {
     return {
       name: currentRecord.name,
       description: currentRecord.description,
-      menus: currentRecord.menus?.map(
-        (menu) => ({
-          name: menu.name,
-          menuId: menu.id,
-          roleMenu: menu.roleMenu,
-        })
-      ),
+      menus: currentRecord.menus?.map(menu => ({
+        name: menu.name,
+        menuId: menu.id,
+        roleMenu: menu.roleMenu,
+      })),
     };
   };
 
   return (
     <div className={styles.root}>
       <CommonTableButton
-        addButtonText="新增角色"
+        addButtonText='新增角色'
         onAdd={showCreateModal}
-        title="角色管理"
+        title='角色管理'
         onReload={fetchRoles}
         loading={loading || menusLoading}
         operations={{
-            create: hasPermission('create'),
-            update: hasPermission('update'),
-            delete: hasPermission('delete'),
-            read: hasPermission('read'),
-          }}
+          create: hasPermission('create'),
+          update: hasPermission('update'),
+          delete: hasPermission('delete'),
+          read: hasPermission('read'),
+        }}
       />
       <Card style={{ borderRadius: 16 }}>
         <CommonTable
@@ -155,7 +153,7 @@ const Roles: React.FC = () => {
 
       {/* 新增/编辑弹窗 */}
       <FormModal
-        title={isEdit ? "编辑角色" : "新增角色"}
+        title={isEdit ? '编辑角色' : '新增角色'}
         visible={modalVisible}
         loading={crudLoading}
         initialValues={getInitialValues()}

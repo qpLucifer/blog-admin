@@ -2,7 +2,14 @@ import api from './index';
 import { BlogData } from '../types';
 
 // 获取博客列表
-export const getBlogs = (data:{ title?: string, is_published?: number, is_choice?: number, author_id?: string, pageSize?: number, currentPage?: number }) => {
+export const getBlogs = (data: {
+  title?: string;
+  is_published?: number;
+  is_choice?: number;
+  author_id?: string;
+  pageSize?: number;
+  currentPage?: number;
+}) => {
   return api.get('/api/blog/list?', data);
 };
 
@@ -24,4 +31,4 @@ export const deleteBlog = (id: number | string) => {
 // 获取单篇博客
 export const getBlog = (id: number) => {
   return api.get(`/api/blog/${id}`);
-} 
+};

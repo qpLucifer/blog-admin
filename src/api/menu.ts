@@ -1,10 +1,9 @@
 import api from './index';
 import { CreateMenuData, UpdateMenuData } from '../types';
 
-
 export const getMenuList = () => {
   return api.get('/api/menu');
-};  
+};
 
 export const getMenuTree = () => {
   return api.get('/api/menu/tree');

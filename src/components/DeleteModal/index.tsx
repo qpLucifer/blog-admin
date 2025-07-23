@@ -26,7 +26,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onCancel,
   onConfirm,
   okText = '删除',
-  cancelText = '取消'
+  cancelText = '取消',
 }) => {
   const handleConfirm = async () => {
     try {
@@ -47,8 +47,8 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <ExclamationCircleOutlined 
-            style={{ color: '#faad14', fontSize: '16px', marginRight: '8px' }} 
+          <ExclamationCircleOutlined
+            style={{ color: '#faad14', fontSize: '16px', marginRight: '8px' }}
           />
           {title}
         </div>
@@ -56,18 +56,12 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       open={visible}
       onCancel={onCancel}
       footer={[
-        <Button key="cancel" onClick={onCancel}>
+        <Button key='cancel' onClick={onCancel}>
           {cancelText}
         </Button>,
-        <Button 
-          key="confirm" 
-          type="primary" 
-          danger
-          loading={loading}
-          onClick={handleConfirm}
-        >
+        <Button key='confirm' type='primary' danger loading={loading} onClick={handleConfirm}>
           {okText}
-        </Button>
+        </Button>,
       ]}
       destroyOnHidden
       maskClosable={false}
@@ -77,4 +71,4 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   );
 };
 
-export default DeleteModal; 
+export default DeleteModal;

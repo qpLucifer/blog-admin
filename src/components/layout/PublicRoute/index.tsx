@@ -9,14 +9,14 @@ interface PublicRouteProps {
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  
+
   // 如果已经登录，重定向到仪表板
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to='/dashboard' replace />;
   }
-  
+
   // 如果未登录，渲染子组件
   return <>{children}</>;
 };
 
-export default PublicRoute; 
+export default PublicRoute;

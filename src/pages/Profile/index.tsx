@@ -1,6 +1,25 @@
 import React, { useState } from 'react';
-import { Card, Descriptions, Avatar, Row, Col, Button, Input, Tooltip, Modal, Tag, Switch, message } from 'antd';
-import { UserOutlined, EditOutlined, SmileOutlined, BulbOutlined, StarFilled } from '@ant-design/icons';
+import {
+  Card,
+  Descriptions,
+  Avatar,
+  Row,
+  Col,
+  Button,
+  Input,
+  Tooltip,
+  Modal,
+  Tag,
+  Switch,
+  message,
+} from 'antd';
+import {
+  UserOutlined,
+  EditOutlined,
+  SmileOutlined,
+  BulbOutlined,
+  StarFilled,
+} from '@ant-design/icons';
 import styles from './index.module.css';
 import { useSelector } from 'react-redux';
 import { authReducer } from '../../types';
@@ -56,7 +75,7 @@ const Profile: React.FC = () => {
     <div className={styles.profileBg + (dark ? ' ' + styles.dark : '')}>
       {/* 顶部波浪渐变背景 */}
       <div className={styles.waveBg} />
-      <Row justify="center" >
+      <Row justify='center'>
         <Col xs={24} sm={18} md={12} lg={8}>
           <Card
             className={styles.card}
@@ -85,34 +104,40 @@ const Profile: React.FC = () => {
               </span>
             }
             extra={
-              <Tooltip title="查看我的徽章">
-                <Button shape="circle" icon={<StarFilled />} onClick={() => setBadgeModal(true)} />
+              <Tooltip title='查看我的徽章'>
+                <Button shape='circle' icon={<StarFilled />} onClick={() => setBadgeModal(true)} />
               </Tooltip>
             }
           >
             <Descriptions column={1}>
-              <Descriptions.Item label="用户名">{user?.username}</Descriptions.Item>
-              <Descriptions.Item label="角色">{user?.roles?.join(', ')}</Descriptions.Item>
-              <Descriptions.Item label="邮箱">{user?.email}</Descriptions.Item>
-              <Descriptions.Item label="个性签名">
+              <Descriptions.Item label='用户名'>{user?.username}</Descriptions.Item>
+              <Descriptions.Item label='角色'>{user?.roles?.join(', ')}</Descriptions.Item>
+              <Descriptions.Item label='邮箱'>{user?.email}</Descriptions.Item>
+              <Descriptions.Item label='个性签名'>
                 {editSig ? (
                   <span>
                     <Input
                       defaultValue={signature}
                       maxLength={30}
                       style={{ width: 180 }}
-                      onPressEnter={e => handleSave('signature', (e.target as HTMLInputElement).value)}
+                      onPressEnter={e =>
+                        handleSave('signature', (e.target as HTMLInputElement).value)
+                      }
                       onBlur={e => handleSave('signature', (e.target as HTMLInputElement).value)}
                       autoFocus
                     />
                   </span>
                 ) : (
                   <span>
-                    {signature} <EditOutlined onClick={() => setEditSig(true)} style={{ marginLeft: 8, color: '#a18cd1', cursor: 'pointer' }} />
+                    {signature}{' '}
+                    <EditOutlined
+                      onClick={() => setEditSig(true)}
+                      style={{ marginLeft: 8, color: '#a18cd1', cursor: 'pointer' }}
+                    />
                   </span>
                 )}
               </Descriptions.Item>
-              <Descriptions.Item label="今日心情">
+              <Descriptions.Item label='今日心情'>
                 {editMood ? (
                   <span>
                     <Input
@@ -126,13 +151,23 @@ const Profile: React.FC = () => {
                   </span>
                 ) : (
                   <span>
-                    {mood} <EditOutlined onClick={() => setEditMood(true)} style={{ marginLeft: 8, color: '#52c41a', cursor: 'pointer' }} />
+                    {mood}{' '}
+                    <EditOutlined
+                      onClick={() => setEditMood(true)}
+                      style={{ marginLeft: 8, color: '#52c41a', cursor: 'pointer' }}
+                    />
                   </span>
                 )}
               </Descriptions.Item>
-              <Descriptions.Item label="我的徽章">
+              <Descriptions.Item label='我的徽章'>
                 {defaultBadges.map(b => (
-                  <Tag key={b.name} color="purple" className={styles.badgeTag} style={{ marginBottom: 4, cursor: 'pointer' }} onClick={() => setBadgeModal(true)}>
+                  <Tag
+                    key={b.name}
+                    color='purple'
+                    className={styles.badgeTag}
+                    style={{ marginBottom: 4, cursor: 'pointer' }}
+                    onClick={() => setBadgeModal(true)}
+                  >
                     {b.icon} {b.name}
                   </Tag>
                 ))}
@@ -142,12 +177,7 @@ const Profile: React.FC = () => {
         </Col>
       </Row>
       {/* 徽章弹窗 */}
-      <Modal
-        title="我的徽章"
-        open={badgeModal}
-        onCancel={() => setBadgeModal(false)}
-        footer={null}
-      >
+      <Modal title='我的徽章' open={badgeModal} onCancel={() => setBadgeModal(false)} footer={null}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
           {defaultBadges.map(b => (
             <Card key={b.name} hoverable style={{ width: 120, textAlign: 'center' }}>
@@ -162,4 +192,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

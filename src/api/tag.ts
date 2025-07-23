@@ -2,7 +2,7 @@ import api from './index';
 import { TagData } from '../types';
 
 // 获取标签列表
-export const getTags = (data: { name: string, pageSize: number, currentPage: number }) => {
+export const getTags = (data: { name: string; pageSize: number; currentPage: number }) => {
   return api.get('/api/tag/list', data);
 };
 
@@ -13,10 +13,10 @@ export const createTag = (data: TagData) => {
 
 // 更新标签
 export const updateTag = (id: number | string, data: TagData) => {
-  return api.put(`/api/tag/update/${id}`, data);   
+  return api.put(`/api/tag/update/${id}`, data);
 };
 
 // 删除标签
 export const deleteTag = (id: number | string) => {
   return api.delete(`/api/tag/delete/${id}`);
-}; 
+};

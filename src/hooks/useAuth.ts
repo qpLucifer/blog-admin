@@ -1,6 +1,13 @@
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from './useRedux';
-import { loginUser, logoutUser, initializeAuth, selectUser, selectIsAuthenticated, selectLoading } from '../store/slices/authSlice';
+import {
+  loginUser,
+  logoutUser,
+  initializeAuth,
+  selectUser,
+  selectIsAuthenticated,
+  selectLoading,
+} from '../store/slices/authSlice';
 import { LoginCredentials } from '../types';
 
 /**
@@ -14,14 +21,17 @@ export function useAuth() {
   const loading = useAppSelector(selectLoading);
 
   // 登录
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    try {
-      const result = await dispatch(loginUser(credentials)).unwrap();
-      return { success: true, data: result };
-    } catch (error: any) {
-      return { success: false, error: error.message || '登录失败' };
-    }
-  }, [dispatch]);
+  const login = useCallback(
+    async (credentials: LoginCredentials) => {
+      try {
+        const result = await dispatch(loginUser(credentials)).unwrap();
+        return { success: true, data: result };
+      } catch (error: any) {
+        return { success: false, error: error.message || '登录失败' };
+      }
+    },
+    [dispatch]
+  );
 
   // 登出
   const logout = useCallback(async () => {
@@ -48,10 +58,10 @@ export function useAuth() {
     user,
     isAuthenticated,
     loading,
-    
+
     // 方法
     login,
     logout,
     initialize,
   };
-} 
+}

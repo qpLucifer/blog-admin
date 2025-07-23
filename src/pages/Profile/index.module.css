@@ -1,18 +1,20 @@
 .card {
   border-radius: 18px;
-  box-shadow: 0 4px 32px rgba(160,140,209,0.15);
+  box-shadow: 0 4px 32px rgba(160, 140, 209, 0.15);
   position: relative;
   z-index: 2;
-  background: rgba(255,255,255,0.95);
-  transition: box-shadow 0.3s, background 0.3s;
+  background: rgba(255, 255, 255, 0.95);
+  transition:
+    box-shadow 0.3s,
+    background 0.3s;
   margin-bottom: 32px;
-  animation: card-pop 0.8s cubic-bezier(.68,-0.55,.27,1.55);
+  animation: card-pop 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
 .dark .card {
-  background: rgba(40,40,60,0.98);
+  background: rgba(40, 40, 60, 0.98);
   color: #fff;
-  box-shadow: 0 4px 32px rgba(80,60,160,0.25);
+  box-shadow: 0 4px 32px rgba(80, 60, 160, 0.25);
 }
 
 .profileBg {
@@ -41,22 +43,38 @@
 }
 
 @keyframes waveMove {
-  0% { transform: skewY(-2deg) scaleX(1); }
-  100% { transform: skewY(2deg) scaleX(1.04); }
+  0% {
+    transform: skewY(-2deg) scaleX(1);
+  }
+  100% {
+    transform: skewY(2deg) scaleX(1.04);
+  }
 }
 
 .avatarGlow {
   animation: avatar-glow 2s infinite alternate;
-  box-shadow: 0 0 16px 4px #a18cd1, 0 0 32px 8px #fbc2eb44;
+  box-shadow:
+    0 0 16px 4px #a18cd1,
+    0 0 32px 8px #fbc2eb44;
 }
 
 @keyframes avatar-glow {
-  0% { box-shadow: 0 0 16px 4px #a18cd1, 0 0 32px 8px #fbc2eb44; }
-  100% { box-shadow: 0 0 32px 8px #fbc2eb, 0 0 48px 16px #a18cd144; }
+  0% {
+    box-shadow:
+      0 0 16px 4px #a18cd1,
+      0 0 32px 8px #fbc2eb44;
+  }
+  100% {
+    box-shadow:
+      0 0 32px 8px #fbc2eb,
+      0 0 48px 16px #a18cd144;
+  }
 }
 
 .badgeTag {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 .badgeTag:hover {
   transform: scale(1.15) rotate(-6deg);
@@ -64,9 +82,18 @@
 }
 
 @keyframes card-pop {
-  0% { transform: scale(0.92) translateY(40px); opacity: 0; }
-  80% { transform: scale(1.04) translateY(-8px); opacity: 1; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
+  0% {
+    transform: scale(0.92) translateY(40px);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.04) translateY(-8px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 .dark .ant-descriptions-item-label {
@@ -102,7 +129,8 @@
 }
 
 /* 强制暗色模式下所有文字、按钮、输入、标签、弹窗等高对比度显示 */
-.dark, .dark * {
+.dark,
+.dark * {
   color: #f6f6fa !important;
   text-shadow: 0 1px 2px #2228;
 }
@@ -127,7 +155,8 @@
   border-color: #444466 !important;
   color: #f6f6fa !important;
 }
-.dark .ant-input, .dark .ant-input:focus {
+.dark .ant-input,
+.dark .ant-input:focus {
   background: #23243a !important;
   color: #f6f6fa !important;
   border-color: #a18cd1 !important;
@@ -154,10 +183,12 @@
   color: #fff !important;
   fill: #fff !important;
   font-weight: bold !important;
-  text-shadow: 0 0 6px #a18cd1, 0 0 2px #000a;
+  text-shadow:
+    0 0 6px #a18cd1,
+    0 0 2px #000a;
 }
 .dark .ant-tag .anticon {
   color: #ffe066 !important;
   fill: #ffe066 !important;
   filter: drop-shadow(0 0 6px #a18cd1) drop-shadow(0 0 2px #fff);
-} 
+}

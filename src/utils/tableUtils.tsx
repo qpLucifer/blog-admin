@@ -48,8 +48,8 @@ export const createStatusColumn = (config: {
   dataIndex: config.dataIndex,
   width: config.width || 100,
   render: (status: boolean | number) => (
-    <Tag color={status ? (config.activeColor || 'green') : (config.inactiveColor || 'red')}>
-      {status ? (config.activeText || '启用') : (config.inactiveText || '禁用')}
+    <Tag color={status ? config.activeColor || 'green' : config.inactiveColor || 'red'}>
+      {status ? config.activeText || '启用' : config.inactiveText || '禁用'}
     </Tag>
   ),
 });
@@ -67,7 +67,7 @@ export const createTimeColumn = (config: {
   title: config.title || '创建时间',
   dataIndex: config.dataIndex,
   width: config.width || 180,
-  render: (time: string) => time ? new Date(time).toLocaleString() : '-',
+  render: (time: string) => (time ? new Date(time).toLocaleString() : '-'),
 });
 
 /**
@@ -75,10 +75,12 @@ export const createTimeColumn = (config: {
  * @param config ID列配置
  * @returns ID列配置
  */
-export const createIdColumn = (config: {
-  width?: number;
-} = {}): TableColumn => ({
+export const createIdColumn = (
+  config: {
+    width?: number;
+  } = {}
+): TableColumn => ({
   title: 'ID',
   dataIndex: 'id',
   width: config.width || 80,
-}); 
+});

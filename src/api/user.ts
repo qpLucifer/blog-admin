@@ -26,7 +26,10 @@ export const updateUser = (id: number | string, data: UpdateUserData) => {
 };
 
 // 更新用户个人信息
-export const updateUserProfile = (id: number | string, data: { mood?: string; signature?: string }) => {
+export const updateUserProfile = (
+  id: number | string,
+  data: { mood?: string; signature?: string }
+) => {
   return api.put(`/api/user/users/${id}/profile`, data);
 };
 

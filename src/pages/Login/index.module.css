@@ -7,7 +7,7 @@
 }
 .card {
   width: 380px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   border-radius: 16px;
   padding: 32px 24px 24px 24px;
 }
@@ -26,4 +26,4 @@
   font-weight: bold;
   color: #6a4bc6;
   letter-spacing: 2px;
-} 
+}

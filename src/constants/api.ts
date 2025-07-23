@@ -21,4 +21,4 @@ export const API_ERROR_MESSAGES = {
   UNAUTHORIZED: '未授权访问',
   FORBIDDEN: '禁止访问',
   NOT_FOUND: '资源不存在',
-} as const; 
+} as const;

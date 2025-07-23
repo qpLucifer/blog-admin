@@ -11,19 +11,19 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const userMenus = useAppSelector(selectUserMenus);  
+  const userMenus = useAppSelector(selectUserMenus);
   if (!isAuthenticated || !userMenus.length) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to='/login' state={{ from: location }} replace />;
   }
-  
+
   const hasPermission = hasRoutePermission(userMenus, location.pathname);
   const homePage = location.pathname === '/';
   if (!hasPermission && !homePage) {
-    return <Navigate to="/404" state={{ from: location }} replace/>;
+    return <Navigate to='/404' state={{ from: location }} replace />;
   }
-  
+
   // 如果已登录，渲染子组件
   return <>{children}</>;
 };
 
-export default PrivateRoute; 
+export default PrivateRoute;

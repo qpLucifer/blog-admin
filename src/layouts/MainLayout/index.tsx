@@ -10,7 +10,6 @@ import { Menu as AntdMenu } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
-
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,11 +25,11 @@ const MainLayout: React.FC = () => {
         key: menu.path,
         icon: menu.icon ? <IconComponent /> : null,
         label: menu.name,
-        children: menu.children && menu.children.length > 0 ? buildMenuItems(menu.children) : undefined,
+        children:
+          menu.children && menu.children.length > 0 ? buildMenuItems(menu.children) : undefined,
       };
     });
   const menuItems = buildMenuItems(userMenus);
-
 
   // 修正菜单高亮逻辑
   const selectedKey = location.pathname === '/' ? '/dashboard' : location.pathname;
@@ -58,7 +57,6 @@ const MainLayout: React.FC = () => {
     setOpenKeys(getOpenKeys(userMenus, location.pathname));
   }, [userMenus, location.pathname]);
 
-
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
@@ -69,9 +67,7 @@ const MainLayout: React.FC = () => {
     }
   };
 
-  const userMenuItems = [
-    { key: 'logout', label: '退出登录' }
-  ];
+  const userMenuItems = [{ key: 'logout', label: '退出登录' }];
 
   const handleMenuClick = ({ key }: { key: string }) => {
     if (key === 'logout') {
@@ -79,14 +75,13 @@ const MainLayout: React.FC = () => {
     }
   };
 
-
   return (
     <Layout className={styles.layoutRoot}>
       <Sider collapsible>
         <div className={styles.siderLogo}>博客后台</div>
         <AntdMenu
-          theme="dark"
-          mode="inline"
+          theme='dark'
+          mode='inline'
           selectedKeys={[selectedKey]}
           openKeys={openKeys}
           onOpenChange={setOpenKeys}
@@ -96,7 +91,10 @@ const MainLayout: React.FC = () => {
       </Sider>
       <Layout>
         <Header className={styles.header}>
-          <Dropdown menu={{ items: userMenuItems, onClick: handleMenuClick }} placement="bottomRight">
+          <Dropdown
+            menu={{ items: userMenuItems, onClick: handleMenuClick }}
+            placement='bottomRight'
+          >
             <Avatar className={styles.avatar} size={36} style={{ background: '#a18cd1' }}>
               {user?.username?.charAt(0)?.toUpperCase() || 'A'}
             </Avatar>
@@ -112,4 +110,4 @@ const MainLayout: React.FC = () => {
   );
 };
 
-export default MainLayout; 
+export default MainLayout;

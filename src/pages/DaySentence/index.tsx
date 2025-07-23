@@ -1,16 +1,16 @@
-import React from "react";
-import styles from "./index.module.css";
-import { TableColumn, DaySentence } from "../../types";
-import { useApi, useCrud, useInitialAsyncEffect } from "../../hooks";
-import { useMenuPermission } from "../../hooks/useMenuPermission";
-import { Card } from "antd";
+import React from 'react';
+import styles from './index.module.css';
+import { TableColumn, DaySentence } from '../../types';
+import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useMenuPermission } from '../../hooks/useMenuPermission';
+import { Card } from 'antd';
 
 import {
   getDaySentenceList,
   addDaySentence,
   updateDaySentence,
   deleteDaySentence,
-} from "../../api/daySentence";
+} from '../../api/daySentence';
 import {
   CommonTable,
   CommonTableButton,
@@ -18,7 +18,7 @@ import {
   DeleteModal,
   DaySentenceForm,
   ActionButtons,
-} from "../../components";
+} from '../../components';
 
 const DaySentences: React.FC = () => {
   const {
@@ -36,12 +36,12 @@ const DaySentences: React.FC = () => {
   useInitialAsyncEffect(fetchDaySentences);
 
   const columns = [
-    { title: "ID", dataIndex: "id" },
-    { title: "作者", dataIndex: "auth" },
-    { title: "每日一句", dataIndex: "day_sentence" },
+    { title: 'ID', dataIndex: 'id' },
+    { title: '作者', dataIndex: 'auth' },
+    { title: '每日一句', dataIndex: 'day_sentence' },
     {
-      title: "操作",
-      dataIndex: "operation",
+      title: '操作',
+      dataIndex: 'operation',
       render: (_: any, record: DaySentence) => (
         <ActionButtons
           record={record}
@@ -73,9 +73,9 @@ const DaySentences: React.FC = () => {
     createApi: addDaySentence,
     updateApi: updateDaySentence,
     deleteApi: deleteDaySentence,
-    createSuccessMessage: "每日一句创建成功",
-    updateSuccessMessage: "每日一句更新成功",
-    deleteSuccessMessage: "每日一句删除成功",
+    createSuccessMessage: '每日一句创建成功',
+    updateSuccessMessage: '每日一句更新成功',
+    deleteSuccessMessage: '每日一句删除成功',
     onSuccess: () => {
       // 操作成功后刷新列表
       fetchDaySentences();
@@ -119,9 +119,9 @@ const DaySentences: React.FC = () => {
   return (
     <div className={styles.root}>
       <CommonTableButton
-        addButtonText="新增每日一句"
+        addButtonText='新增每日一句'
         onAdd={showCreateModal}
-        title="每日一句管理"
+        title='每日一句管理'
         onReload={fetchDaySentences}
         loading={daySentencesLoading}
         operations={{
@@ -144,7 +144,7 @@ const DaySentences: React.FC = () => {
 
       {/* 新增/编辑弹窗 */}
       <FormModal
-        title={isEdit ? "编辑每日一句" : "新增每日一句"}
+        title={isEdit ? '编辑每日一句' : '新增每日一句'}
         visible={modalVisible}
         loading={crudLoading}
         initialValues={getInitialValues()}

@@ -13,7 +13,7 @@ export const createRole = (data: CreateRoleData) => {
 
 // 更新角色
 export const updateRole = (id: number | string, data: UpdateRoleData) => {
-  return api.put(`/api/role/roles/${id}`, data);  
+  return api.put(`/api/role/roles/${id}`, data);
 };
 
 // 删除角色

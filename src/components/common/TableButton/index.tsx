@@ -1,8 +1,8 @@
-import { Button, Space } from "antd";
-import styles from "./index.module.css";
-import { UserAddOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Button, Space } from 'antd';
+import styles from './index.module.css';
+import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
 
-interface CommonTableButtonProps<T = any> {
+interface CommonTableButtonProps {
   loading?: boolean;
   onReload?: () => void;
   onAdd?: () => void;
@@ -16,20 +16,20 @@ interface CommonTableButtonProps<T = any> {
   };
 }
 
-function CommonTableButton<T = any>({
+function CommonTableButton({
   loading,
   onReload,
   onAdd,
   title,
   addButtonText,
   operations,
-}: CommonTableButtonProps<T>) {
+}: CommonTableButtonProps) {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 16,
       }}
     >
@@ -39,7 +39,7 @@ function CommonTableButton<T = any>({
           刷新
         </Button>
         {operations?.create && (
-          <Button type="primary" icon={<UserAddOutlined />} onClick={onAdd}>
+          <Button type='primary' icon={<UserAddOutlined />} onClick={onAdd}>
             {addButtonText}
           </Button>
         )}

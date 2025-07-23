@@ -8,11 +8,11 @@
 
 ```typescript
 interface AuthState {
-  user: UserInfo | null;        // 用户信息
-  token: string | null;         // 认证token
-  isAuthenticated: boolean;     // 是否已认证
-  loading: boolean;             // 加载状态
-  error: string | null;         // 错误信息
+  user: UserInfo | null; // 用户信息
+  token: string | null; // 认证token
+  isAuthenticated: boolean; // 是否已认证
+  loading: boolean; // 加载状态
+  error: string | null; // 错误信息
 }
 ```
 
@@ -25,14 +25,18 @@ interface AuthState {
 ```tsx
 import PrivateRoute from '../components/PrivateRoute';
 
-<Route path="/dashboard" element={
-  <PrivateRoute>
-    <Dashboard />
-  </PrivateRoute>
-} />
+<Route
+  path='/dashboard'
+  element={
+    <PrivateRoute>
+      <Dashboard />
+    </PrivateRoute>
+  }
+/>;
 ```
 
 **功能：**
+
 - 检查用户是否已登录（通过Redux状态验证）
 - 如果未登录，重定向到登录页面
 - 如果已登录，渲染子组件
@@ -44,14 +48,18 @@ import PrivateRoute from '../components/PrivateRoute';
 ```tsx
 import PublicRoute from '../components/PublicRoute';
 
-<Route path="/login" element={
-  <PublicRoute>
-    <Login />
-  </PublicRoute>
-} />
+<Route
+  path='/login'
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  }
+/>;
 ```
 
 **功能：**
+
 - 如果用户已登录，重定向到仪表板
 - 如果用户未登录，渲染子组件
 
@@ -62,14 +70,18 @@ import PublicRoute from '../components/PublicRoute';
 ```tsx
 import PermissionRoute from '../components/PermissionRoute';
 
-<Route path="/admin" element={
-  <PermissionRoute requiredPermission="admin:access">
-    <AdminPanel />
-  </PermissionRoute>
-} />
+<Route
+  path='/admin'
+  element={
+    <PermissionRoute requiredPermission='admin:access'>
+      <AdminPanel />
+    </PermissionRoute>
+  }
+/>;
 ```
 
 **功能：**
+
 - 检查用户是否有所需权限
 - 如果权限不足，重定向到指定页面
 - 如果有权限，渲染子组件
@@ -80,12 +92,12 @@ import PermissionRoute from '../components/PermissionRoute';
 
 ```tsx
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { 
-  selectUser, 
-  selectIsAuthenticated, 
+import {
+  selectUser,
+  selectIsAuthenticated,
   selectLoading,
   loginUser,
-  logoutUser 
+  logoutUser,
 } from '../store/slices/authSlice';
 
 const MyComponent = () => {
@@ -94,7 +106,7 @@ const MyComponent = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const loading = useAppSelector(selectLoading);
 
-  const handleLogin = async (credentials) => {
+  const handleLogin = async credentials => {
     try {
       await dispatch(loginUser(credentials)).unwrap();
       // 登录成功
@@ -120,9 +132,7 @@ const MyComponent = () => {
           <button onClick={handleLogout}>登出</button>
         </div>
       ) : (
-        <button onClick={() => handleLogin({ username: 'test', password: 'test' })}>
-          登录
-        </button>
+        <button onClick={() => handleLogin({ username: 'test', password: 'test' })}>登录</button>
       )}
     </div>
   );
@@ -136,13 +146,7 @@ const MyComponent = () => {
 ### 1. Redux版本 (推荐) - `src/utils/authRedux.ts`
 
 ```typescript
-import { 
-  getToken, 
-  isAuthenticated, 
-  getUserInfo, 
-  hasPermission, 
-  hasRole 
-} from '../utils/authRedux';
+import { getToken, isAuthenticated, getUserInfo, hasPermission, hasRole } from '../utils/authRedux';
 
 // 检查登录状态
 const loggedIn = isAuthenticated();
@@ -181,27 +185,36 @@ const AppRouter = () => (
     <Router>
       <Routes>
         {/* 公共路由 */}
-        <Route path="/login" element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        } />
-        
+        <Route
+          path='/login'
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
         {/* 受保护的路由 */}
-        <Route path="/" element={
-          <PrivateRoute>
-            <MainLayout />
-          </PrivateRoute>
-        }>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="users" element={<Users />} />
-          
+        <Route
+          path='/'
+          element={
+            <PrivateRoute>
+              <MainLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route path='dashboard' element={<Dashboard />} />
+          <Route path='users' element={<Users />} />
+
           {/* 需要特定权限的路由 */}
-          <Route path="admin" element={
-            <PermissionRoute requiredPermission="admin:access">
-              <AdminPanel />
-            </PermissionRoute>
-          } />
+          <Route
+            path='admin'
+            element={
+              <PermissionRoute requiredPermission='admin:access'>
+                <AdminPanel />
+              </PermissionRoute>
+            }
+          />
         </Route>
       </Routes>
     </Router>
@@ -218,10 +231,10 @@ import { selectUser } from '../store/slices/authSlice';
 
 const MyComponent = () => {
   const user = useAppSelector(selectUser);
-  
+
   const canEdit = user?.permissions?.includes('user:edit') || false;
   const isAdmin = user?.roles?.includes('admin') || false;
-  
+
   return (
     <div>
       {canEdit && <button>编辑</button>}
@@ -244,10 +257,10 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  
+
   const loading = useAppSelector(selectLoading);
   const error = useAppSelector(selectError);
-  
+
   const from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
@@ -257,7 +270,7 @@ const Login = () => {
     }
   }, [error, dispatch]);
 
-  const onFinish = async (values) => {
+  const onFinish = async values => {
     try {
       await dispatch(loginUser(values)).unwrap();
       message.success('登录成功');
@@ -269,14 +282,14 @@ const Login = () => {
 
   return (
     <Form onFinish={onFinish}>
-      <Form.Item name="username" rules={[{ required: true }]}>
-        <Input placeholder="用户名" />
+      <Form.Item name='username' rules={[{ required: true }]}>
+        <Input placeholder='用户名' />
       </Form.Item>
-      <Form.Item name="password" rules={[{ required: true }]}>
-        <Input.Password placeholder="密码" />
+      <Form.Item name='password' rules={[{ required: true }]}>
+        <Input.Password placeholder='密码' />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading} block>
+        <Button type='primary' htmlType='submit' loading={loading} block>
           {loading ? '登录中...' : '登录'}
         </Button>
       </Form.Item>
@@ -306,7 +319,7 @@ Redux状态会自动与localStorage同步：
 1. **Token刷新**: 可以添加token过期检查和自动刷新机制
 2. **权限缓存**: 可以添加权限缓存和定期同步机制
 3. **动态路由**: 可以根据用户权限动态生成路由配置
-4. **状态持久化**: 可以使用redux-persist进行更完善的状态持久化 
+4. **状态持久化**: 可以使用redux-persist进行更完善的状态持久化
 
 # 组件库说明
 
@@ -339,16 +352,16 @@ const MyComponent = () => {
 
   return (
     <FormModal
-      title="新增用户"
+      title='新增用户'
       visible={visible}
       loading={loading}
       onCancel={() => setVisible(false)}
       onSubmit={handleSubmit}
     >
-      <Form.Item name="username" label="用户名" rules={[{ required: true }]}>
+      <Form.Item name='username' label='用户名' rules={[{ required: true }]}>
         <Input />
       </Form.Item>
-      <Form.Item name="email" label="邮箱" rules={[{ type: 'email' }]}>
+      <Form.Item name='email' label='邮箱' rules={[{ type: 'email' }]}>
         <Input />
       </Form.Item>
     </FormModal>
@@ -413,8 +426,8 @@ const MyComponent = () => {
       record={record}
       onEdit={handleEdit}
       onDelete={handleDelete}
-      editText="编辑"
-      deleteText="删除"
+      editText='编辑'
+      deleteText='删除'
     />
   );
 };
@@ -444,7 +457,7 @@ const UsersPage = () => {
     hideDeleteModal,
     handleCreate,
     handleUpdate,
-    handleDelete
+    handleDelete,
   } = useCrud({
     createApi: createUser,
     updateApi: updateUser,
@@ -455,13 +468,13 @@ const UsersPage = () => {
     onSuccess: () => {
       // 操作成功后刷新列表
       fetchUsers();
-    }
+    },
   });
 
   return (
     <div>
       <Button onClick={showCreateModal}>新增用户</Button>
-      
+
       {/* 表格 */}
       <Table
         columns={[
@@ -469,13 +482,9 @@ const UsersPage = () => {
           {
             title: '操作',
             render: (_, record) => (
-              <ActionButtons
-                record={record}
-                onEdit={showEditModal}
-                onDelete={showDeleteModal}
-              />
-            )
-          }
+              <ActionButtons record={record} onEdit={showEditModal} onDelete={showDeleteModal} />
+            ),
+          },
         ]}
       />
 
@@ -513,11 +522,14 @@ const UsersPage = () => {
 ```tsx
 import { PrivateRoute } from '../components';
 
-<Route path="/dashboard" element={
-  <PrivateRoute>
-    <Dashboard />
-  </PrivateRoute>
-} />
+<Route
+  path='/dashboard'
+  element={
+    <PrivateRoute>
+      <Dashboard />
+    </PrivateRoute>
+  }
+/>;
 ```
 
 ### PublicRoute - 公共路由
@@ -527,11 +539,14 @@ import { PrivateRoute } from '../components';
 ```tsx
 import { PublicRoute } from '../components';
 
-<Route path="/login" element={
-  <PublicRoute>
-    <Login />
-  </PublicRoute>
-} />
+<Route
+  path='/login'
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  }
+/>;
 ```
 
 ### PermissionRoute - 权限路由
@@ -541,11 +556,14 @@ import { PublicRoute } from '../components';
 ```tsx
 import { PermissionRoute } from '../components';
 
-<Route path="/admin" element={
-  <PermissionRoute requiredPermission="admin:access">
-    <AdminPanel />
-  </PermissionRoute>
-} />
+<Route
+  path='/admin'
+  element={
+    <PermissionRoute requiredPermission='admin:access'>
+      <AdminPanel />
+    </PermissionRoute>
+  }
+/>;
 ```
 
 ## 认证组件
@@ -561,9 +579,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <AuthInitializer />
-      <Router>
-        {/* 路由配置 */}
-      </Router>
+      <Router>{/* 路由配置 */}</Router>
     </Provider>
   );
 };
@@ -584,4 +600,4 @@ const App = () => {
 1. 在 `src/components/` 目录下创建新组件
 2. 添加 TypeScript 类型定义
 3. 在 `src/components/index.ts` 中导出
-4. 更新此文档说明使用方法 
+4. 更新此文档说明使用方法

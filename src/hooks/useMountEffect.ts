@@ -28,4 +28,4 @@ export function useMountAsyncEffect(asyncFunction: () => Promise<any>) {
       asyncFunction();
     }
   }, []); // 空依赖数组，只在挂载时调用一次
-} 
+}

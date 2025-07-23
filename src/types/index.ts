@@ -70,7 +70,6 @@ export interface UpdatePermissionData {
   action?: string;
 }
 
-
 // 认证相关类型
 export interface UserInfo {
   id: number;
@@ -134,7 +133,7 @@ export interface TableColumn {
   width?: number;
   render?: (value: any, record: any) => React.ReactNode;
   fixed?: 'left' | 'right';
-} 
+}
 
 export interface authReducer {
   auth: {
