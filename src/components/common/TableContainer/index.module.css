@@ -1,0 +1,80 @@
+.tableContainer {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.tableContainer:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tableWrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 表格样式优化 */
+.tableWrapper :global(.ant-table) {
+  border-radius: 0;
+}
+
+.tableWrapper :global(.ant-table-thead > tr > th) {
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  color: #262626;
+  padding: 16px;
+}
+
+.tableWrapper :global(.ant-table-tbody > tr > td) {
+  padding: 16px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.tableWrapper :global(.ant-table-tbody > tr:hover > td) {
+  background: #f8f9ff;
+}
+
+.tableWrapper :global(.ant-table-tbody > tr:last-child > td) {
+  border-bottom: none;
+}
+
+/* 分页样式优化 */
+.tableWrapper :global(.ant-pagination) {
+  padding: 16px 24px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+  margin: 0;
+  text-align: right;
+}
+
+.tableWrapper :global(.ant-pagination-total-text) {
+  color: #8c8c8c;
+  font-size: 12px;
+}
+
+/* 空状态样式 */
+.tableWrapper :global(.ant-empty) {
+  padding: 40px 20px;
+}
+
+.tableWrapper :global(.ant-empty-description) {
+  color: #8c8c8c;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .tableWrapper :global(.ant-table-thead > tr > th),
+  .tableWrapper :global(.ant-table-tbody > tr > td) {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .tableWrapper :global(.ant-pagination) {
+    padding: 12px 16px;
+    text-align: center;
+  }
+}

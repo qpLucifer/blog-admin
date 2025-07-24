@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, Tree, Empty, message } from 'antd';
+import React, { useState } from 'react';
+import { Card, Tree, Empty, message, Form, Input, Button } from 'antd';
 import styles from './index.module.css';
 import { TableColumn, Menu } from '../../types';
-import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import {
   FormModal,
@@ -15,19 +15,27 @@ import {
 import { getMenuTree, addMenu, updateMenu, deleteMenu } from '../../api/menu';
 
 const Menus: React.FC = () => {
+  const [form] = Form.useForm();
+  const [searchParams, setSearchParams] = useState({
+    name: '',
+    path: '',
+  });
+
   // 获取菜单树
   const {
     data: menuTree,
     loading: treeLoading,
     error: treeError,
     execute: fetchMenuTree,
-  } = useApi<Menu[]>(getMenuTree, { showError: false });
+  } = useApi<Menu[]>(() => getMenuTree(searchParams), { showError: false });
 
   // 当前选中的菜单id
   const [selectedKey, setSelectedKey] = React.useState<number | null>(null);
 
-  // 只在组件挂载时调用一次
-  useInitialAsyncEffect(fetchMenuTree);
+  // 当搜索参数变化时重新获取数据
+  useInitialEffect(() => {
+    fetchMenuTree();
+  }, [searchParams]);
 
   // 选中树节点时，右侧表格只显示该节点的children
   const getTableData = () => {
@@ -180,6 +188,20 @@ const Menus: React.FC = () => {
     await handleDeleteConfirm();
   };
 
+  // 处理搜索
+  const onFinish = (values: any) => {
+    setSearchParams(values);
+  };
+
+  // 重置搜索
+  const handleReset = () => {
+    form.resetFields();
+    setSearchParams({
+      name: '',
+      path: '',
+    });
+  };
+
   // 获取表单初始值
   const getInitialValues = () => {
     if (!currentRecord) return {};
@@ -213,73 +235,99 @@ const Menus: React.FC = () => {
     },
   ];
   return (
-    <div className={styles.root} style={{ display: 'flex', gap: 24 }}>
-      {/* 左侧树形菜单 */}
-      <div style={{ width: 260, background: '#fff' }}>
-        {menuTree && menuTree.length > 0 ? (
-          <Tree
-            treeData={normalizeTree(menuTree)}
-            fieldNames={{ title: 'name', key: 'id', children: 'children' }}
-            onSelect={keys => setSelectedKey(keys[0] as number)}
-            selectedKeys={selectedKey ? [selectedKey] : []}
-            defaultExpandAll
-            showIcon={false}
-            draggable
-            onDrop={handleTreeDrop}
-            style={{ width: '100%' }}
-          />
-        ) : (
-          <Empty description='暂无菜单' />
-        )}
-      </div>
-      {/* 右侧表格 */}
-      <div style={{ flex: 1 }}>
-        <CommonTableButton
-          addButtonText='新增菜单'
-          onAdd={showCreateModal}
-          title='菜单管理'
-          onReload={() => {
-            fetchMenuTree();
-          }}
-          loading={treeLoading}
-          operations={{
-            create: hasPermission('create'),
-            update: hasPermission('update'),
-            delete: hasPermission('delete'),
-            read: hasPermission('read'),
-          }}
-        />
-        <Card style={{ borderRadius: 16 }}>
-          <CommonTable
-            columns={columns as TableColumn[]}
-            dataSource={getTableData()}
-            rowKey='id'
-            pagination={{}}
+    <div className={styles.root}>
+      {/* 搜索表单 */}
+      <Form
+        form={form}
+        layout='inline'
+        onFinish={onFinish}
+        initialValues={{ name: '', path: '' }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}
+      >
+        <Form.Item name='name' label='菜单名'>
+          <Input allowClear placeholder='输入菜单名' style={{ width: 140 }} />
+        </Form.Item>
+        <Form.Item name='path' label='路径'>
+          <Input allowClear placeholder='输入路径' style={{ width: 160 }} />
+        </Form.Item>
+        <Form.Item>
+          <Button type='primary' htmlType='submit'>
+            查询
+          </Button>
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={handleReset}>重置</Button>
+        </Form.Item>
+      </Form>
+
+      <div style={{ display: 'flex', gap: 24 }}>
+        {/* 左侧树形菜单 */}
+        <div style={{ width: 260, background: '#fff' }}>
+          {menuTree && menuTree.length > 0 ? (
+            <Tree
+              treeData={normalizeTree(menuTree)}
+              fieldNames={{ title: 'name', key: 'id', children: 'children' }}
+              onSelect={keys => setSelectedKey(keys[0] as number)}
+              selectedKeys={selectedKey ? [selectedKey] : []}
+              defaultExpandAll
+              showIcon={false}
+              draggable
+              onDrop={handleTreeDrop}
+              style={{ width: '100%' }}
+            />
+          ) : (
+            <Empty description='暂无菜单' />
+          )}
+        </div>
+        {/* 右侧表格 */}
+        <div style={{ flex: 1 }}>
+          <CommonTableButton
+            addButtonText='新增菜单'
+            onAdd={showCreateModal}
+            title='菜单管理'
+            onReload={() => {
+              fetchMenuTree();
+            }}
             loading={treeLoading}
-            error={treeError}
-            scroll={{ x: 800 }}
+            operations={{
+              create: hasPermission('create'),
+              update: hasPermission('update'),
+              delete: hasPermission('delete'),
+              read: hasPermission('read'),
+            }}
           />
-        </Card>
-        {/* 新增/编辑弹窗 */}
-        <FormModal
-          title={isEdit ? '编辑菜单' : '新增菜单'}
-          visible={modalVisible}
-          loading={crudLoading}
-          initialValues={getInitialValues()}
-          onCancel={hideModal}
-          onSubmit={handleSubmit}
-          width={600}
-        >
-          <MenuForm menus={menuTree || []} currentId={isEdit ? currentRecord?.id : null} />
-        </FormModal>
-        {/* 删除确认弹窗 */}
-        <DeleteModal
-          visible={deleteModalVisible}
-          loading={crudLoading}
-          recordName={currentRecord?.name}
-          onCancel={hideDeleteModal}
-          onConfirm={handleDeleteConfirmAction}
-        />
+          <Card style={{ borderRadius: 16 }}>
+            <CommonTable
+              columns={columns as TableColumn[]}
+              dataSource={getTableData()}
+              rowKey='id'
+              pagination={{}}
+              loading={treeLoading}
+              error={treeError}
+              scroll={{ x: 800 }}
+            />
+          </Card>
+          {/* 新增/编辑弹窗 */}
+          <FormModal
+            title={isEdit ? '编辑菜单' : '新增菜单'}
+            visible={modalVisible}
+            loading={crudLoading}
+            initialValues={getInitialValues()}
+            onCancel={hideModal}
+            onSubmit={handleSubmit}
+            width={600}
+          >
+            <MenuForm menus={menuTree || []} currentId={isEdit ? currentRecord?.id : null} />
+          </FormModal>
+          {/* 删除确认弹窗 */}
+          <DeleteModal
+            visible={deleteModalVisible}
+            loading={crudLoading}
+            recordName={currentRecord?.name}
+            onCancel={hideDeleteModal}
+            onConfirm={handleDeleteConfirmAction}
+          />
+        </div>
       </div>
     </div>
   );

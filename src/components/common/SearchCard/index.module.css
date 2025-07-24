@@ -1,0 +1,97 @@
+.searchCard {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.searchCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #262626;
+}
+
+.titleIcon {
+  margin-right: 8px;
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.collapseBtn {
+  padding: 0;
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.collapseBtn:hover {
+  color: #1890ff;
+}
+
+.searchContent {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.searchContent.collapsed {
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.searchForm {
+  width: 100%;
+}
+
+.formFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .formFields {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .formFields :global(.ant-form-item) {
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  .formFields :global(.ant-form-item-control-input) {
+    width: 100%;
+  }
+
+  .formActions {
+    justify-content: center;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .formActions :global(.ant-btn) {
+    width: 100%;
+  }
+}

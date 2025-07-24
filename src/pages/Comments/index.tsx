@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Card, Tree, Select, Button, Space, Avatar, Form } from 'antd';
+import { Card, Tree, Select, Button, Space, Avatar, Form, Input, Pagination } from 'antd';
 import styles from './index.module.css';
 import { getComments, createComment, updateComment, deleteComment } from '../../api/comment';
 import { CommentData, BlogData, authReducer } from '../../types';
 import { getBlogs } from '../../api/blog';
-import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { FormModal, DeleteModal, CommonTableButton } from '../../components';
 import CommentForm from '../../components/forms/CommentForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
@@ -66,16 +66,35 @@ function buildCommentTree(comments: CommentData[]): any[] {
 
 const Comments: React.FC = () => {
   const { user } = useSelector((state: authReducer) => state.auth);
+  const [form] = Form.useForm();
+  const [queryParams, setQueryParams] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    content: '',
+    user_id: '',
+    blog_id: undefined,
+  });
+
   const {
     data,
     loading,
     execute: fetchComments,
-  } = useApi<CommentData[]>(getComments, { showError: false });
+  } = useApi<{ list: CommentData[]; total: number; pageSize: number; currentPage: number }>(
+    () => getComments(queryParams),
+    { showError: false }
+  );
+
   const { data: blogs, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, {
     showError: false,
   });
-  useInitialAsyncEffect(fetchComments);
-  useInitialAsyncEffect(fetchBlogs);
+
+  useInitialEffect(() => {
+    fetchComments();
+  }, [queryParams]);
+
+  useInitialEffect(() => {
+    fetchBlogs();
+  }, []);
 
   const { hasPermission } = useMenuPermission();
   const {
@@ -137,16 +156,74 @@ const Comments: React.FC = () => {
     hideModal();
     setReplyParent(null);
   };
-  const [selectedBlogId, setSelectedBlogId] = useState<number | undefined>(undefined);
-  const [form] = Form.useForm();
+  // 处理分页变化
+  const handleTableChange = (page: number, pageSize: number) => {
+    setQueryParams(prev => ({
+      ...prev,
+      currentPage: page,
+      pageSize: pageSize,
+    }));
+  };
 
-  // 只展示选中博客下的评论
-  const filteredComments = selectedBlogId
-    ? (data || []).filter(c => c.blog_id === selectedBlogId)
-    : data || [];
+  // 处理搜索
+  const onFinish = (values: any) => {
+    setQueryParams(prev => ({
+      ...prev,
+      ...values,
+      currentPage: 1,
+    }));
+  };
+
+  // 重置搜索
+  const handleReset = () => {
+    form.resetFields();
+    setQueryParams({
+      currentPage: 1,
+      pageSize: 10,
+      content: '',
+      user_id: '',
+      blog_id: undefined,
+    });
+  };
+
+  // 评论数据（用于树形展示）
+  const commentsData = data?.list || [];
 
   return (
     <div className={styles.root}>
+      {/* 搜索表单 */}
+      <Form
+        form={form}
+        layout='inline'
+        onFinish={onFinish}
+        initialValues={{ content: '', user_id: '', blog_id: undefined }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}
+      >
+        <Form.Item name='content' label='评论内容'>
+          <Input allowClear placeholder='输入评论内容' style={{ width: 160 }} />
+        </Form.Item>
+        <Form.Item name='user_id' label='用户ID'>
+          <Input allowClear placeholder='输入用户ID' style={{ width: 120 }} />
+        </Form.Item>
+        <Form.Item name='blog_id' label='博客'>
+          <Select allowClear placeholder='选择博客' style={{ width: 200 }}>
+            {blogs?.map(blog => (
+              <Select.Option key={blog.id} value={blog.id}>
+                {blog.title}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button type='primary' htmlType='submit'>
+            查询
+          </Button>
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={handleReset}>重置</Button>
+        </Form.Item>
+      </Form>
+
       <CommonTableButton
         addButtonText='新增评论'
         onAdd={showCreateModal}
@@ -168,18 +245,8 @@ const Comments: React.FC = () => {
           background: '#f6f8fa',
         }}
       >
-        <div style={{ marginBottom: 24 }}>
-          <Select
-            style={{ width: 320, fontSize: 16 }}
-            allowClear
-            placeholder='请选择要查看的博客'
-            value={selectedBlogId}
-            onChange={setSelectedBlogId}
-            options={blogs?.map(blog => ({ label: blog.title, value: blog.id }))}
-          />
-        </div>
         <Tree
-          treeData={buildCommentTree(filteredComments)}
+          treeData={buildCommentTree(commentsData)}
           defaultExpandAll
           showLine={false}
           style={{ background: 'transparent', padding: 8 }}
@@ -286,6 +353,19 @@ const Comments: React.FC = () => {
             </div>
           )}
         />
+
+        {/* 分页组件 */}
+        <div style={{ marginTop: 24, textAlign: 'center' }}>
+          <Pagination
+            total={data?.total || 0}
+            current={data?.currentPage || 1}
+            pageSize={data?.pageSize || 10}
+            onChange={handleTableChange}
+            showSizeChanger
+            showQuickJumper
+            showTotal={(total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`}
+          />
+        </div>
       </Card>
       <FormModal
         title={isEdit ? '编辑评论' : replyParent ? `回复评论(ID:${replyParent.id})` : '新增评论'}

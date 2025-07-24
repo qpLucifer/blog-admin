@@ -1,0 +1,114 @@
+/* 页面布局通用样式 */
+.pageContainer {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 64px);
+}
+
+.pageContent {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 页面标题区域 */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+
+.pageTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0;
+}
+
+.pageBreadcrumb {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* 卡片间距 */
+.cardSpacing {
+  margin-bottom: 16px;
+}
+
+.cardSpacing:last-child {
+  margin-bottom: 0;
+}
+
+/* 搜索区域动画 */
+.searchSection {
+  transition: all 0.3s ease;
+  transform-origin: top;
+}
+
+.searchSection.collapsed {
+  transform: scaleY(0);
+  opacity: 0;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+/* 操作栏样式 */
+.toolbarSection {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f5f5f5;
+  padding: 8px 0;
+  margin: -8px 0 16px 0;
+}
+
+/* 表格区域 */
+.tableSection {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .pageContainer {
+    padding: 16px;
+  }
+
+  .pageContent {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 12px;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .pageTitle {
+    font-size: 18px;
+  }
+
+  .toolbarSection {
+    position: static;
+    margin: 0 0 16px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding: 8px;
+  }
+
+  .pageTitle {
+    font-size: 16px;
+  }
+}

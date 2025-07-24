@@ -1,29 +1,40 @@
-import React from 'react';
-import { Card } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input } from 'antd';
 import styles from './index.module.css';
 import { Role, TableColumn, Menu } from '../../types';
 import { getRoles, createRole, updateRole, deleteRole } from '../../api/role';
 import { getMenuList } from '../../api/menu';
-import { useApi, useCrud, useInitialAsyncEffect, useMenuPermission } from '../../hooks';
+import { useApi, useCrud, useInitialEffect, useMenuPermission } from '../../hooks';
 
 import {
   CommonTable,
-  CommonTableButton,
   FormModal,
   DeleteModal,
   RoleForm,
   ActionButtons,
+  SearchCard,
+  TableToolbar,
+  TableContainer,
 } from '../../components';
 
 const Roles: React.FC = () => {
+  const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
+  const [queryParams, setQueryParams] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    name: '',
+  });
+
   const {
     data,
     loading,
     error,
     execute: fetchRoles,
-  } = useApi<Role[]>(getRoles, {
-    showError: false,
-  });
+  } = useApi<{ list: Role[]; total: number; pageSize: number; currentPage: number }>(
+    () => getRoles(queryParams),
+    { showError: false }
+  );
 
   const {
     data: menus,
@@ -34,9 +45,14 @@ const Roles: React.FC = () => {
     showError: false,
   });
 
-  // 只在组件挂载时调用一次
-  useInitialAsyncEffect(fetchRoles);
-  useInitialAsyncEffect(fetchMenus);
+  // 当查询参数变化时重新获取数据
+  useInitialEffect(() => {
+    fetchRoles();
+  }, [queryParams]);
+
+  useInitialEffect(() => {
+    fetchMenus();
+  }, []);
 
   const { hasPermission } = useMenuPermission();
 
@@ -111,6 +127,34 @@ const Roles: React.FC = () => {
     await handleDeleteConfirm();
   };
 
+  // 处理分页变化
+  const handleTableChange = (page: number, pageSize: number) => {
+    setQueryParams(prev => ({
+      ...prev,
+      currentPage: page,
+      pageSize: pageSize,
+    }));
+  };
+
+  // 处理搜索
+  const onFinish = (values: any) => {
+    setQueryParams(prev => ({
+      ...prev,
+      ...values,
+      currentPage: 1,
+    }));
+  };
+
+  // 重置搜索
+  const handleReset = () => {
+    form.resetFields();
+    setQueryParams({
+      currentPage: 1,
+      pageSize: 10,
+      name: '',
+    });
+  };
+
   // 获取表单初始值
   const getInitialValues = () => {
     if (!currentRecord) return {};
@@ -127,29 +171,52 @@ const Roles: React.FC = () => {
 
   return (
     <div className={styles.root}>
-      <CommonTableButton
+      {/* 搜索区域 */}
+      <SearchCard
+        title='查询条件'
+        form={form}
+        onFinish={onFinish}
+        onReset={handleReset}
+        loading={loading}
+        collapsed={searchCollapsed}
+        onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+      >
+        <Form.Item name='name' label='角色名'>
+          <Input allowClear placeholder='输入角色名' style={{ width: 140 }} />
+        </Form.Item>
+      </SearchCard>
+
+      {/* 操作栏 */}
+      <TableToolbar
+        title='角色管理'
+        showAdd={hasPermission('create')}
         addButtonText='新增角色'
         onAdd={showCreateModal}
-        title='角色管理'
         onReload={fetchRoles}
         loading={loading || menusLoading}
+        selectedRowKeys={[]}
         operations={{
           create: hasPermission('create'),
-          update: hasPermission('update'),
-          delete: hasPermission('delete'),
-          read: hasPermission('read'),
+          export: hasPermission('read'),
         }}
       />
-      <Card style={{ borderRadius: 16 }}>
+
+      {/* 表格区域 */}
+      <TableContainer loading={loading || menusLoading}>
         <CommonTable
           onReload={fetchRoles}
           columns={columns as TableColumn[]}
-          dataSource={data || []}
+          dataSource={data?.list || []}
           error={error || menusError}
           loading={loading || menusLoading}
-          pagination={{}}
+          pagination={{
+            total: data?.total || 0,
+            current: data?.currentPage || 1,
+            pageSize: data?.pageSize || 10,
+            onChange: handleTableChange,
+          }}
         />
-      </Card>
+      </TableContainer>
 
       {/* 新增/编辑弹窗 */}
       <FormModal

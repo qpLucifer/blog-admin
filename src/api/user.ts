@@ -6,8 +6,14 @@ export const getUsersList = () => {
   return api.get('/api/user/list');
 };
 // 获取用户列表
-export const getUsers = () => {
-  return api.get('/api/user/users');
+export const getUsers = (params?: {
+  currentPage?: number;
+  pageSize?: number;
+  username?: string;
+  email?: string;
+  is_active?: number;
+}) => {
+  return api.get('/api/user/users', { params });
 };
 
 // 注册用户

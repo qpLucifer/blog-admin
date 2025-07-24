@@ -2,8 +2,8 @@ import api from './index';
 import { CreateRoleData, UpdateRoleData } from '../types';
 
 // 获取角色列表
-export const getRoles = () => {
-  return api.get('/api/role/roles');
+export const getRoles = (params?: { currentPage?: number; pageSize?: number; name?: string }) => {
+  return api.get('/api/role/roles', { params });
 };
 
 // 创建角色

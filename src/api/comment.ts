@@ -2,8 +2,14 @@ import api from './index';
 import { CommentData } from '../types';
 
 // 获取评论列表
-export const getComments = () => {
-  return api.get('/api/comments/list');
+export const getComments = (params?: {
+  currentPage?: number;
+  pageSize?: number;
+  content?: string;
+  user_id?: string;
+  blog_id?: number;
+}) => {
+  return api.get('/api/comments/list', { params });
 };
 
 // 新建评论

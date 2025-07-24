@@ -5,8 +5,8 @@ export const getMenuList = () => {
   return api.get('/api/menu');
 };
 
-export const getMenuTree = () => {
-  return api.get('/api/menu/tree');
+export const getMenuTree = (params?: { name?: string; path?: string }) => {
+  return api.get('/api/menu/tree', { params });
 };
 
 export const addMenu = (data: CreateMenuData) => {
