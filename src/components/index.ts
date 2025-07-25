@@ -7,6 +7,7 @@ export { default as RouteLoading } from './common/RouteLoading';
 export { default as SearchCard } from './common/SearchCard';
 export { default as TableToolbar } from './common/TableToolbar';
 export { default as TableContainer } from './common/TableContainer';
+export { default as CoolLoading } from './common/CoolLoading';
 
 // 弹窗组件
 export { default as FormModal } from './FormModal';
