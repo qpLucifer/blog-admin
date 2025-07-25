@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card, Form, Input, Button } from 'antd';
+import { Form, Input } from 'antd';
 import styles from './index.module.css';
+import pageStyles from '../../styles/page-layout.module.css';
 import { getTagsPage, createTag, updateTag, deleteTag } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
@@ -8,14 +9,17 @@ import {
   FormModal,
   DeleteModal,
   ActionButtons,
-  CommonTableButton,
   CommonTable,
+  SearchCard,
+  TableToolbar,
+  TableContainer,
 } from '../../components';
 import TagForm from '../../components/forms/TagForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
 const Tags: React.FC = () => {
   const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [queryParams, setQueryParams] = useState({ currentPage: 1, pageSize: 10, name: '' });
   const {
     data,
@@ -118,73 +122,74 @@ const Tags: React.FC = () => {
     },
   ];
   return (
-    <div className={styles.root}>
-      <Form
-        form={form}
-        layout='inline'
-        onFinish={onFinish}
-        initialValues={{ title: '', is_published: undefined, is_choice: undefined, author_id: '' }}
-        style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}
-      >
-        <Form.Item name='name' label='标签名'>
-          <Input allowClear placeholder='输入标签名' style={{ width: 140 }} />
-        </Form.Item>
-        <Form.Item>
-          <Button type='primary' htmlType='submit'>
-            查询
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <Button onClick={handleReset}>重置</Button>
-        </Form.Item>
-      </Form>
-      <CommonTableButton
-        addButtonText='新增标签'
-        onAdd={showCreateModal}
-        title='标签管理'
-        onReload={fetchTags}
-        loading={loading}
-        operations={{
-          create: hasPermission('create'),
-          update: hasPermission('update'),
-          delete: hasPermission('delete'),
-          read: hasPermission('read'),
-        }}
-      />
-      <Card style={{ borderRadius: 16 }}>
-        <CommonTable
-          columns={columns}
-          dataSource={data?.list || []}
-          rowKey='id'
-          pagination={{
-            total: data?.total || 0,
-            current: data?.currentPage || 1,
-            pageSize: data?.pageSize || 10,
-            onChange: handleTableChange,
-          }}
+    <div className={`${styles.root} ${pageStyles.pageContainer}`}>
+      <div className={pageStyles.pageContent}>
+        {/* 搜索区域 */}
+        <SearchCard
+          title='查询条件'
+          form={form}
+          onFinish={onFinish}
+          onReset={handleReset}
           loading={loading}
-          error={error}
-          scroll={{ x: 600 }}
+          collapsed={searchCollapsed}
+          onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+        >
+          <Form.Item name='name' label='标签名'>
+            <Input allowClear placeholder='输入标签名' style={{ width: 140 }} />
+          </Form.Item>
+        </SearchCard>
+
+        {/* 操作栏 */}
+        <TableToolbar
+          title='标签管理'
+          showAdd={hasPermission('create')}
+          addButtonText='新增标签'
+          onAdd={showCreateModal}
+          onReload={fetchTags}
+          loading={loading}
+          selectedRowKeys={[]}
+          operations={{
+            create: hasPermission('create'),
+            export: hasPermission('read'),
+          }}
         />
-      </Card>
-      <FormModal
-        title={isEdit ? '编辑标签' : '新增标签'}
-        visible={modalVisible}
-        loading={crudLoading}
-        initialValues={getInitialValues()}
-        onCancel={hideModal}
-        onSubmit={handleSubmit}
-        width={400}
-      >
-        <TagForm />
-      </FormModal>
-      <DeleteModal
-        visible={deleteModalVisible}
-        loading={crudLoading}
-        recordName={currentRecord?.name}
-        onCancel={hideDeleteModal}
-        onConfirm={handleDeleteConfirmAction}
-      />
+
+        {/* 表格区域 */}
+        <TableContainer loading={loading}>
+          <CommonTable
+            columns={columns}
+            dataSource={data?.list || []}
+            rowKey='id'
+            pagination={{
+              total: data?.total || 0,
+              current: data?.currentPage || 1,
+              pageSize: data?.pageSize || 10,
+              onChange: handleTableChange,
+            }}
+            loading={loading}
+            error={error}
+            scroll={{ x: 600 }}
+          />
+        </TableContainer>
+        <FormModal
+          title={isEdit ? '编辑标签' : '新增标签'}
+          visible={modalVisible}
+          loading={crudLoading}
+          initialValues={getInitialValues()}
+          onCancel={hideModal}
+          onSubmit={handleSubmit}
+          width={400}
+        >
+          <TagForm />
+        </FormModal>
+        <DeleteModal
+          visible={deleteModalVisible}
+          loading={crudLoading}
+          recordName={currentRecord?.name}
+          onCancel={hideDeleteModal}
+          onConfirm={handleDeleteConfirmAction}
+        />
+      </div>
     </div>
   );
 };

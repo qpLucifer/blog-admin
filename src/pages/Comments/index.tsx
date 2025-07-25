@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Card, Tree, Select, Button, Space, Avatar, Form, Input, Pagination } from 'antd';
+import { Tree, Select, Space, Avatar, Form, Input, Button } from 'antd';
 import styles from './index.module.css';
-import { getComments, createComment, updateComment, deleteComment } from '../../api/comment';
+import pageStyles from '../../styles/page-layout.module.css';
+import { getCommentsPage, createComment, updateComment, deleteComment } from '../../api/comment';
 import { CommentData, BlogData, authReducer } from '../../types';
 import { getBlogsAll } from '../../api/blog';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
-import { FormModal, DeleteModal, CommonTableButton } from '../../components';
+import { FormModal, DeleteModal, SearchCard, TableToolbar, TableContainer } from '../../components';
 import CommentForm from '../../components/forms/CommentForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useSelector } from 'react-redux';
@@ -67,6 +68,7 @@ function buildCommentTree(comments: CommentData[]): any[] {
 const Comments: React.FC = () => {
   const { user } = useSelector((state: authReducer) => state.auth);
   const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [queryParams, setQueryParams] = useState({
     currentPage: 1,
     pageSize: 10,
@@ -80,7 +82,7 @@ const Comments: React.FC = () => {
     loading,
     execute: fetchComments,
   } = useApi<{ list: CommentData[]; total: number; pageSize: number; currentPage: number }>(
-    () => getComments(queryParams),
+    () => getCommentsPage(queryParams),
     { showError: false }
   );
 
@@ -156,14 +158,14 @@ const Comments: React.FC = () => {
     hideModal();
     setReplyParent(null);
   };
-  // 处理分页变化
-  const handleTableChange = (page: number, pageSize: number) => {
-    setQueryParams(prev => ({
-      ...prev,
-      currentPage: page,
-      pageSize: pageSize,
-    }));
-  };
+  // // 处理分页变化
+  // const handleTableChange = (page: number, pageSize: number) => {
+  //   setQueryParams(prev => ({
+  //     ...prev,
+  //     currentPage: page,
+  //     pageSize: pageSize,
+  //   }));
+  // };
 
   // 处理搜索
   const onFinish = (values: any) => {
@@ -190,183 +192,162 @@ const Comments: React.FC = () => {
   const commentsData = data?.list || [];
 
   return (
-    <div className={styles.root}>
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout='inline'
-        onFinish={onFinish}
-        initialValues={{ content: '', user_id: '', blog_id: undefined }}
-        style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}
-      >
-        <Form.Item name='content' label='评论内容'>
-          <Input allowClear placeholder='输入评论内容' style={{ width: 160 }} />
-        </Form.Item>
-        <Form.Item name='user_id' label='用户ID'>
-          <Input allowClear placeholder='输入用户ID' style={{ width: 120 }} />
-        </Form.Item>
-        <Form.Item name='blog_id' label='博客'>
-          <Select allowClear placeholder='选择博客' style={{ width: 200 }}>
-            {blogs?.map(blog => (
-              <Select.Option key={blog.id} value={blog.id}>
-                {blog.title}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item>
-          <Button type='primary' htmlType='submit'>
-            查询
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <Button onClick={handleReset}>重置</Button>
-        </Form.Item>
-      </Form>
+    <div className={`${styles.root} ${pageStyles.pageContainer}`}>
+      <div className={pageStyles.pageContent}>
+        {/* 搜索区域 */}
+        <SearchCard
+          title='查询条件'
+          form={form}
+          onFinish={onFinish}
+          onReset={handleReset}
+          loading={loading}
+          collapsed={searchCollapsed}
+          onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+        >
+          <Form.Item name='content' label='评论内容'>
+            <Input allowClear placeholder='输入评论内容' style={{ width: 160 }} />
+          </Form.Item>
+          <Form.Item name='user_id' label='用户ID'>
+            <Input allowClear placeholder='输入用户ID' style={{ width: 120 }} />
+          </Form.Item>
+          <Form.Item name='blog_id' label='博客'>
+            <Select allowClear placeholder='选择博客' style={{ width: 200 }}>
+              {blogs?.map(blog => (
+                <Select.Option key={blog.id} value={blog.id}>
+                  {blog.title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </SearchCard>
 
-      <CommonTableButton
-        addButtonText='新增评论'
-        onAdd={showCreateModal}
-        title='评论管理'
-        onReload={fetchComments}
-        loading={loading}
-        operations={{
-          create: hasPermission('create'),
-          update: hasPermission('update'),
-          delete: hasPermission('delete'),
-          read: hasPermission('read'),
-        }}
-      />
-      <Card
-        style={{
-          borderRadius: 24,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-          padding: 24,
-          background: '#f6f8fa',
-        }}
-      >
-        <Tree
-          treeData={buildCommentTree(commentsData)}
-          defaultExpandAll
-          showLine={false}
-          style={{ background: 'transparent', padding: 8 }}
-          titleRender={nodeData => (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '100%',
-                background: '#fff',
-                borderRadius: 16,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                marginBottom: 0,
-                padding: '18px 24px',
-                minHeight: 64,
-                transition: 'box-shadow 0.2s, border 0.2s',
-                gap: 16,
-                border: '2px solid transparent',
-                position: 'relative',
-                marginTop: 18,
-              }}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 16,
-                  flexDirection: 'row',
-                }}
-              >
-                <Avatar
-                  size={40}
-                  style={{
-                    background: getAvatarColor(nodeData.user_id),
-                    fontSize: 20,
-                    marginTop: 2,
-                  }}
-                >
-                  {String(nodeData.user_id).charAt(0).toUpperCase()}
-                </Avatar>
-                <div style={{ flex: 1 }}>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 17,
-                      marginBottom: 6,
-                      color: '#222',
-                      wordBreak: 'break-all',
-                    }}
-                  >
-                    <FoldableContent content={nodeData.content} />
-                  </div>
-                  <div style={{ color: '#888', fontSize: 14, lineHeight: 1.7 }}>
-                    <span>ID: {nodeData.id}</span>
-                    <span style={{ marginLeft: 18 }}>用户ID: {nodeData.user_id}</span>
-                    <span style={{ marginLeft: 18 }}>
-                      时间:{' '}
-                      {nodeData.created_at
-                        ? dayjs(nodeData.created_at).format('YYYY-MM-DD HH:mm')
-                        : '-'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <Space size={12} style={{ marginTop: 2, flexWrap: 'wrap' }}>
-                <Button
-                  size='middle'
-                  icon={<EditOutlined />}
-                  style={{ color: '#3b82f6', borderColor: '#3b82f6', background: '#f0f7ff' }}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleEdit(nodeData);
-                  }}
-                  disabled={!hasPermission('update')}
-                />
-                <Button
-                  size='middle'
-                  icon={<DeleteOutlined />}
-                  danger
-                  style={{ background: '#fff0f0', color: '#f43f5e', borderColor: '#f43f5e' }}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleDelete(nodeData);
-                  }}
-                  disabled={!hasPermission('delete')}
-                />
-                <Button
-                  size='middle'
-                  type='primary'
-                  ghost
-                  style={{ borderRadius: 20, fontWeight: 500 }}
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleReply(nodeData);
-                  }}
-                  disabled={!hasPermission('create')}
-                >
-                  回复
-                </Button>
-              </Space>
-            </div>
-          )}
+        {/* 操作栏 */}
+        <TableToolbar
+          title='评论管理'
+          showAdd={hasPermission('create')}
+          addButtonText='新增评论'
+          onAdd={showCreateModal}
+          onReload={fetchComments}
+          loading={loading}
+          selectedRowKeys={[]}
+          operations={{
+            create: hasPermission('create'),
+            export: hasPermission('read'),
+          }}
         />
 
-        {/* 分页组件 */}
-        <div style={{ marginTop: 24, textAlign: 'center' }}>
-          <Pagination
-            total={data?.total || 0}
-            current={data?.currentPage || 1}
-            pageSize={data?.pageSize || 10}
-            onChange={handleTableChange}
-            showSizeChanger
-            showQuickJumper
-            showTotal={(total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`}
+        {/* 表格区域 */}
+        <TableContainer loading={loading}>
+          <Tree
+            treeData={buildCommentTree(commentsData)}
+            defaultExpandAll
+            showLine={false}
+            style={{ background: 'transparent', padding: 8 }}
+            titleRender={nodeData => (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  background: '#fff',
+                  borderRadius: 16,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  marginBottom: 0,
+                  padding: '18px 24px',
+                  minHeight: 64,
+                  transition: 'box-shadow 0.2s, border 0.2s',
+                  gap: 16,
+                  border: '2px solid transparent',
+                  position: 'relative',
+                  marginTop: 18,
+                }}
+              >
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16,
+                    flexDirection: 'row',
+                  }}
+                >
+                  <Avatar
+                    size={40}
+                    style={{
+                      background: getAvatarColor(nodeData.user_id),
+                      fontSize: 20,
+                      marginTop: 2,
+                    }}
+                  >
+                    {String(nodeData.user_id).charAt(0).toUpperCase()}
+                  </Avatar>
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        fontSize: 17,
+                        marginBottom: 6,
+                        color: '#222',
+                        wordBreak: 'break-all',
+                      }}
+                    >
+                      <FoldableContent content={nodeData.content} />
+                    </div>
+                    <div style={{ color: '#888', fontSize: 14, lineHeight: 1.7 }}>
+                      <span>ID: {nodeData.id}</span>
+                      <span style={{ marginLeft: 18 }}>用户ID: {nodeData.user_id}</span>
+                      <span style={{ marginLeft: 18 }}>
+                        时间:{' '}
+                        {nodeData.created_at
+                          ? dayjs(nodeData.created_at).format('YYYY-MM-DD HH:mm')
+                          : '-'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <Space size={12} style={{ marginTop: 2, flexWrap: 'wrap' }}>
+                  <Button
+                    size='middle'
+                    icon={<EditOutlined />}
+                    style={{ color: '#3b82f6', borderColor: '#3b82f6', background: '#f0f7ff' }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleEdit(nodeData);
+                    }}
+                    disabled={!hasPermission('update')}
+                  />
+                  <Button
+                    size='middle'
+                    icon={<DeleteOutlined />}
+                    danger
+                    style={{ background: '#fff0f0', color: '#f43f5e', borderColor: '#f43f5e' }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleDelete(nodeData);
+                    }}
+                    disabled={!hasPermission('delete')}
+                  />
+                  <Button
+                    size='middle'
+                    type='primary'
+                    ghost
+                    style={{ borderRadius: 20, fontWeight: 500 }}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleReply(nodeData);
+                    }}
+                    disabled={!hasPermission('create')}
+                  >
+                    回复
+                  </Button>
+                </Space>
+              </div>
+            )}
           />
-        </div>
-      </Card>
+        </TableContainer>
+      </div>
       <FormModal
         title={isEdit ? '编辑评论' : replyParent ? `回复评论(ID:${replyParent.id})` : '新增评论'}
         visible={modalVisible}

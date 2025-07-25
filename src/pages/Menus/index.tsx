@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card, Tree, Empty, message, Form, Input, Button } from 'antd';
+import { Tree, Empty, message, Form, Input } from 'antd';
 import styles from './index.module.css';
+import pageStyles from '../../styles/page-layout.module.css';
 import { TableColumn, Menu } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
@@ -8,14 +9,17 @@ import {
   FormModal,
   DeleteModal,
   MenuForm,
-  CommonTableButton,
   CommonTable,
   ActionButtons,
+  SearchCard,
+  TableToolbar,
+  TableContainer,
 } from '../../components';
 import { getMenuTree, addMenu, updateMenu, deleteMenu } from '../../api/menu';
 
 const Menus: React.FC = () => {
   const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [searchParams, setSearchParams] = useState({
     name: '',
     path: '',
@@ -235,99 +239,95 @@ const Menus: React.FC = () => {
     },
   ];
   return (
-    <div className={styles.root}>
-      {/* 搜索表单 */}
-      <Form
-        form={form}
-        layout='inline'
-        onFinish={onFinish}
-        initialValues={{ name: '', path: '' }}
-        style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}
-      >
-        <Form.Item name='name' label='菜单名'>
-          <Input allowClear placeholder='输入菜单名' style={{ width: 140 }} />
-        </Form.Item>
-        <Form.Item name='path' label='路径'>
-          <Input allowClear placeholder='输入路径' style={{ width: 160 }} />
-        </Form.Item>
-        <Form.Item>
-          <Button type='primary' htmlType='submit'>
-            查询
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <Button onClick={handleReset}>重置</Button>
-        </Form.Item>
-      </Form>
+    <div className={`${styles.root} ${pageStyles.pageContainer}`}>
+      <div className={pageStyles.pageContent}>
+        {/* 搜索区域 */}
+        <SearchCard
+          title='查询条件'
+          form={form}
+          onFinish={onFinish}
+          onReset={handleReset}
+          loading={treeLoading}
+          collapsed={searchCollapsed}
+          onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+        >
+          <Form.Item name='name' label='菜单名'>
+            <Input allowClear placeholder='输入菜单名' style={{ width: 140 }} />
+          </Form.Item>
+          <Form.Item name='path' label='路径'>
+            <Input allowClear placeholder='输入路径' style={{ width: 160 }} />
+          </Form.Item>
+        </SearchCard>
 
-      <div style={{ display: 'flex', gap: 24 }}>
-        {/* 左侧树形菜单 */}
-        <div style={{ width: 260, background: '#fff' }}>
-          {menuTree && menuTree.length > 0 ? (
-            <Tree
-              treeData={normalizeTree(menuTree)}
-              fieldNames={{ title: 'name', key: 'id', children: 'children' }}
-              onSelect={keys => setSelectedKey(keys[0] as number)}
-              selectedKeys={selectedKey ? [selectedKey] : []}
-              defaultExpandAll
-              showIcon={false}
-              draggable
-              onDrop={handleTreeDrop}
-              style={{ width: '100%' }}
-            />
-          ) : (
-            <Empty description='暂无菜单' />
-          )}
+        {/* 操作栏 */}
+        <TableToolbar
+          title='菜单管理'
+          showAdd={hasPermission('create')}
+          addButtonText='新增菜单'
+          onAdd={showCreateModal}
+          onReload={fetchMenuTree}
+          loading={treeLoading}
+          selectedRowKeys={[]}
+          operations={{
+            create: hasPermission('create'),
+            export: hasPermission('read'),
+          }}
+        />
+
+        <div style={{ display: 'flex', gap: 24 }}>
+          {/* 左侧树形菜单 */}
+          <div style={{ width: 260, background: '#fff' }}>
+            {menuTree && menuTree.length > 0 ? (
+              <Tree
+                treeData={normalizeTree(menuTree)}
+                fieldNames={{ title: 'name', key: 'id', children: 'children' }}
+                onSelect={keys => setSelectedKey(keys[0] as number)}
+                selectedKeys={selectedKey ? [selectedKey] : []}
+                defaultExpandAll
+                showIcon={false}
+                draggable
+                onDrop={handleTreeDrop}
+                style={{ width: '100%' }}
+              />
+            ) : (
+              <Empty description='暂无菜单' />
+            )}
+          </div>
+          {/* 右侧表格 */}
+          <div style={{ flex: 1 }}>
+            <TableContainer loading={treeLoading}>
+              <CommonTable
+                columns={columns as TableColumn[]}
+                dataSource={getTableData()}
+                rowKey='id'
+                pagination={{}}
+                loading={treeLoading}
+                error={treeError}
+                scroll={{ x: 800 }}
+              />
+            </TableContainer>
+          </div>
         </div>
-        {/* 右侧表格 */}
-        <div style={{ flex: 1 }}>
-          <CommonTableButton
-            addButtonText='新增菜单'
-            onAdd={showCreateModal}
-            title='菜单管理'
-            onReload={() => {
-              fetchMenuTree();
-            }}
-            loading={treeLoading}
-            operations={{
-              create: hasPermission('create'),
-              update: hasPermission('update'),
-              delete: hasPermission('delete'),
-              read: hasPermission('read'),
-            }}
-          />
-          <Card style={{ borderRadius: 16 }}>
-            <CommonTable
-              columns={columns as TableColumn[]}
-              dataSource={getTableData()}
-              rowKey='id'
-              pagination={{}}
-              loading={treeLoading}
-              error={treeError}
-              scroll={{ x: 800 }}
-            />
-          </Card>
-          {/* 新增/编辑弹窗 */}
-          <FormModal
-            title={isEdit ? '编辑菜单' : '新增菜单'}
-            visible={modalVisible}
-            loading={crudLoading}
-            initialValues={getInitialValues()}
-            onCancel={hideModal}
-            onSubmit={handleSubmit}
-            width={600}
-          >
-            <MenuForm menus={menuTree || []} currentId={isEdit ? currentRecord?.id : null} />
-          </FormModal>
-          {/* 删除确认弹窗 */}
-          <DeleteModal
-            visible={deleteModalVisible}
-            loading={crudLoading}
-            recordName={currentRecord?.name}
-            onCancel={hideDeleteModal}
-            onConfirm={handleDeleteConfirmAction}
-          />
-        </div>
+        {/* 新增/编辑弹窗 */}
+        <FormModal
+          title={isEdit ? '编辑菜单' : '新增菜单'}
+          visible={modalVisible}
+          loading={crudLoading}
+          initialValues={getInitialValues()}
+          onCancel={hideModal}
+          onSubmit={handleSubmit}
+          width={600}
+        >
+          <MenuForm menus={menuTree || []} currentId={isEdit ? currentRecord?.id : null} />
+        </FormModal>
+        {/* 删除确认弹窗 */}
+        <DeleteModal
+          visible={deleteModalVisible}
+          loading={crudLoading}
+          recordName={currentRecord?.name}
+          onCancel={hideDeleteModal}
+          onConfirm={handleDeleteConfirmAction}
+        />
       </div>
     </div>
   );

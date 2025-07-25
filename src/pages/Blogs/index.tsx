@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { Card, Tag, Space, Image, Input, Form, Select, Button, Row, Col } from 'antd';
+import { Tag, Space, Image, Input, Form, Select } from 'antd';
 import styles from './index.module.css';
+import pageStyles from '../../styles/page-layout.module.css';
 import { getBlogsPage, createBlog, updateBlog, deleteBlog } from '../../api/blog';
 import { BlogData, TagData, TableColumn, User } from '../../types';
 import { useApi, useCrud, useInitialEffect, useMountEffect } from '../../hooks';
-import { DeleteModal, ActionButtons, CommonTable, CommonTableButton } from '../../components';
+import {
+  DeleteModal,
+  ActionButtons,
+  CommonTable,
+  SearchCard,
+  TableToolbar,
+  TableContainer,
+} from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useNavigate } from 'react-router-dom';
 import { tagColor } from '../../constants';
@@ -14,6 +22,7 @@ const { Option } = Select;
 
 const Blogs: React.FC = () => {
   const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [queryParams, setQueryParams] = useState({
     currentPage: 1,
     pageSize: 10,
@@ -173,102 +182,84 @@ const Blogs: React.FC = () => {
   ];
 
   return (
-    <div className={styles.root}>
-      {/* 顶部统计区块 */}
-      <div className={styles.statsBar}>
-        <Row style={{ width: '100%' }} align='middle' gutter={24}>
-          <Col flex='180px'>
-            <div className={styles.statCard}>
-              <div className={styles.statNum}>{data?.total || 0}</div>
-              <div className={styles.statLabel}>博客总数</div>
-            </div>
-          </Col>
-          <Col flex='auto'>
-            <Form
-              form={form}
-              layout='inline'
-              onFinish={onFinish}
-              initialValues={{
-                title: '',
-                is_published: undefined,
-                is_choice: undefined,
-                author_id: '',
-              }}
-              style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}
-            >
-              <Form.Item name='title' label='标题'>
-                <Input allowClear placeholder='输入标题' style={{ width: 140 }} />
-              </Form.Item>
-              <Form.Item name='is_published' label='发布状态'>
-                <Select allowClear placeholder='全部' style={{ width: 110 }}>
-                  <Option value={1}>已发布</Option>
-                  <Option value={0}>未发布</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name='is_choice' label='精选'>
-                <Select allowClear placeholder='全部' style={{ width: 110 }}>
-                  <Option value={1}>已精选</Option>
-                  <Option value={0}>未精选</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name='author_id' label='作者'>
-                <Select allowClear placeholder='全部' style={{ width: 110 }}>
-                  {users?.map(user => (
-                    <Select.Option key={user.id} value={user.id}>
-                      {user.username}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item>
-                <Button type='primary' htmlType='submit'>
-                  查询
-                </Button>
-              </Form.Item>
-              <Form.Item>
-                <Button onClick={handleReset}>重置</Button>
-              </Form.Item>
-            </Form>
-          </Col>
-          <Col flex='220px' style={{ textAlign: 'right' }}>
-            <CommonTableButton
-              addButtonText='新增博客'
-              onAdd={handleAdd}
-              onReload={fetchBlogs}
-              loading={loading}
-              operations={{
-                create: hasPermission('create'),
-                update: hasPermission('update'),
-                delete: hasPermission('delete'),
-                read: hasPermission('read'),
-              }}
-            />
-          </Col>
-        </Row>
-      </div>
-      <Card style={{ borderRadius: 16, marginTop: 16 }}>
-        <CommonTable
-          columns={columns}
-          dataSource={data?.list || []}
-          rowKey='id'
-          pagination={{
-            current: queryParams.currentPage,
-            pageSize: queryParams.pageSize,
-            total: data?.total,
-            onChange: handleTableChange,
-          }}
+    <div className={`${styles.root} ${pageStyles.pageContainer}`}>
+      <div className={pageStyles.pageContent}>
+        {/* 搜索区域 */}
+        <SearchCard
+          title='查询条件'
+          form={form}
+          onFinish={onFinish}
+          onReset={handleReset}
           loading={loading}
-          error={error}
-          scroll={{ x: 1000 }}
+          collapsed={searchCollapsed}
+          onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+        >
+          <Form.Item name='title' label='标题'>
+            <Input allowClear placeholder='输入标题' style={{ width: 140 }} />
+          </Form.Item>
+          <Form.Item name='is_published' label='发布状态'>
+            <Select allowClear placeholder='全部' style={{ width: 110 }}>
+              <Option value={1}>已发布</Option>
+              <Option value={0}>未发布</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name='is_choice' label='精选'>
+            <Select allowClear placeholder='全部' style={{ width: 110 }}>
+              <Option value={1}>已精选</Option>
+              <Option value={0}>未精选</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name='author_id' label='作者'>
+            <Select allowClear placeholder='全部' style={{ width: 110 }}>
+              {users?.map(user => (
+                <Select.Option key={user.id} value={user.id}>
+                  {user.username}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </SearchCard>
+
+        {/* 操作栏 */}
+        <TableToolbar
+          title={`博客管理 (共 ${data?.total || 0} 篇)`}
+          showAdd={hasPermission('create')}
+          addButtonText='新增博客'
+          onAdd={handleAdd}
+          onReload={fetchBlogs}
+          loading={loading}
+          selectedRowKeys={[]}
+          operations={{
+            create: hasPermission('create'),
+            export: hasPermission('read'),
+          }}
         />
-      </Card>
-      <DeleteModal
-        visible={deleteModalVisible}
-        loading={crudLoading}
-        recordName={currentRecord?.title}
-        onCancel={hideDeleteModal}
-        onConfirm={handleDeleteConfirmAction}
-      />
+
+        {/* 表格区域 */}
+        <TableContainer loading={loading}>
+          <CommonTable
+            columns={columns}
+            dataSource={data?.list || []}
+            rowKey='id'
+            pagination={{
+              current: queryParams.currentPage,
+              pageSize: queryParams.pageSize,
+              total: data?.total,
+              onChange: handleTableChange,
+            }}
+            loading={loading}
+            error={error}
+            scroll={{ x: 1000 }}
+          />
+        </TableContainer>
+        <DeleteModal
+          visible={deleteModalVisible}
+          loading={crudLoading}
+          recordName={currentRecord?.title}
+          onCancel={hideDeleteModal}
+          onConfirm={handleDeleteConfirmAction}
+        />
+      </div>
     </div>
   );
 };

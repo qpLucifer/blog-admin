@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Form, Input } from 'antd';
 import styles from './index.module.css';
+import pageStyles from '../../styles/page-layout.module.css';
 import { TableColumn, DaySentence } from '../../types';
-import { useApi, useCrud, useInitialAsyncEffect } from '../../hooks';
+import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
-import { Card } from 'antd';
 
 import {
   getDaySentenceList,
@@ -13,27 +14,41 @@ import {
 } from '../../api/daySentence';
 import {
   CommonTable,
-  CommonTableButton,
   FormModal,
   DeleteModal,
   DaySentenceForm,
   ActionButtons,
+  SearchCard,
+  TableToolbar,
+  TableContainer,
 } from '../../components';
 
 const DaySentences: React.FC = () => {
+  const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
+  const [queryParams, setQueryParams] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    auth: '',
+    day_sentence: '',
+  });
+
   const {
-    data: daySentences,
+    data,
     loading: daySentencesLoading,
     error: daySentencesError,
     execute: fetchDaySentences,
-  } = useApi<DaySentence[]>(getDaySentenceList, {
-    showError: false,
-  });
+  } = useApi<{ list: DaySentence[]; total: number; pageSize: number; currentPage: number }>(
+    () => getDaySentenceList(queryParams),
+    { showError: false }
+  );
 
   const { hasPermission } = useMenuPermission();
 
-  // 只在组件挂载时调用一次
-  useInitialAsyncEffect(fetchDaySentences);
+  // 当查询参数变化时重新获取数据
+  useInitialEffect(() => {
+    fetchDaySentences();
+  }, [queryParams]);
 
   const columns = [
     { title: 'ID', dataIndex: 'id' },
@@ -101,6 +116,35 @@ const DaySentences: React.FC = () => {
     }
   };
 
+  // 处理分页变化
+  const handleTableChange = (page: number, pageSize: number) => {
+    setQueryParams(prev => ({
+      ...prev,
+      currentPage: page,
+      pageSize: pageSize,
+    }));
+  };
+
+  // 处理搜索
+  const onFinish = (values: any) => {
+    setQueryParams(prev => ({
+      ...prev,
+      ...values,
+      currentPage: 1,
+    }));
+  };
+
+  // 重置搜索
+  const handleReset = () => {
+    form.resetFields();
+    setQueryParams({
+      currentPage: 1,
+      pageSize: 10,
+      auth: '',
+      day_sentence: '',
+    });
+  };
+
   // 处理删除确认
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
@@ -117,52 +161,80 @@ const DaySentences: React.FC = () => {
   };
 
   return (
-    <div className={styles.root}>
-      <CommonTableButton
-        addButtonText='新增每日一句'
-        onAdd={showCreateModal}
-        title='每日一句管理'
-        onReload={fetchDaySentences}
-        loading={daySentencesLoading}
-        operations={{
-          create: hasPermission('create'),
-          update: hasPermission('update'),
-          delete: hasPermission('delete'),
-          read: hasPermission('read'),
-        }}
-      />
-      <Card style={{ borderRadius: 16 }}>
-        <CommonTable
-          onReload={fetchDaySentences}
-          columns={columns as TableColumn[]}
-          dataSource={daySentences || []}
-          error={daySentencesError}
+    <div className={`${styles.root} ${pageStyles.pageContainer}`}>
+      <div className={pageStyles.pageContent}>
+        {/* 搜索区域 */}
+        <SearchCard
+          title='查询条件'
+          form={form}
+          onFinish={onFinish}
+          onReset={handleReset}
           loading={daySentencesLoading}
-          pagination={{}}
+          collapsed={searchCollapsed}
+          onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+        >
+          <Form.Item name='auth' label='作者'>
+            <Input allowClear placeholder='输入作者' style={{ width: 140 }} />
+          </Form.Item>
+          <Form.Item name='day_sentence' label='内容'>
+            <Input allowClear placeholder='输入内容' style={{ width: 200 }} />
+          </Form.Item>
+        </SearchCard>
+
+        {/* 操作栏 */}
+        <TableToolbar
+          title='每日一句管理'
+          showAdd={hasPermission('create')}
+          addButtonText='新增每日一句'
+          onAdd={showCreateModal}
+          onReload={fetchDaySentences}
+          loading={daySentencesLoading}
+          selectedRowKeys={[]}
+          operations={{
+            create: hasPermission('create'),
+            export: hasPermission('read'),
+          }}
         />
-      </Card>
 
-      {/* 新增/编辑弹窗 */}
-      <FormModal
-        title={isEdit ? '编辑每日一句' : '新增每日一句'}
-        visible={modalVisible}
-        loading={crudLoading}
-        initialValues={getInitialValues()}
-        onCancel={hideModal}
-        onSubmit={handleSubmit}
-        width={600}
-      >
-        <DaySentenceForm />
-      </FormModal>
+        {/* 表格区域 */}
+        <TableContainer loading={daySentencesLoading}>
+          <CommonTable
+            onReload={fetchDaySentences}
+            columns={columns as TableColumn[]}
+            dataSource={data?.list || []}
+            error={daySentencesError}
+            loading={daySentencesLoading}
+            pagination={{
+              total: data?.total || 0,
+              current: data?.currentPage || 1,
+              pageSize: data?.pageSize || 10,
+              onChange: handleTableChange,
+            }}
+          />
+        </TableContainer>
 
-      {/* 删除确认弹窗 */}
-      <DeleteModal
-        visible={deleteModalVisible}
-        loading={crudLoading}
-        recordName={currentRecord?.auth}
-        onCancel={hideDeleteModal}
-        onConfirm={handleDeleteConfirmAction}
-      />
+        {/* 新增/编辑弹窗 */}
+        <FormModal
+          title={isEdit ? '编辑每日一句' : '新增每日一句'}
+          visible={modalVisible}
+          loading={crudLoading}
+          initialValues={getInitialValues()}
+          onCancel={hideModal}
+          onSubmit={handleSubmit}
+          width={600}
+        >
+          <DaySentenceForm />
+        </FormModal>
+
+        {/* 删除确认弹窗 */}
+        <DeleteModal
+          visible={deleteModalVisible}
+          loading={crudLoading}
+          recordName={currentRecord?.auth}
+          onCancel={hideDeleteModal}
+          onConfirm={handleDeleteConfirmAction}
+        />
+      </div>
     </div>
   );
 };
