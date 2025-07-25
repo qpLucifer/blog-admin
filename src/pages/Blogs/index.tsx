@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Card, Tag, Space, Image, Input, Form, Select, Button, Row, Col } from 'antd';
 import styles from './index.module.css';
-import { getBlogs, createBlog, updateBlog, deleteBlog } from '../../api/blog';
+import { getBlogsPage, createBlog, updateBlog, deleteBlog } from '../../api/blog';
 import { BlogData, TagData, TableColumn, User } from '../../types';
 import { useApi, useCrud, useInitialEffect, useMountEffect } from '../../hooks';
 import { DeleteModal, ActionButtons, CommonTable, CommonTableButton } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useNavigate } from 'react-router-dom';
 import { tagColor } from '../../constants';
-import { getUsersList } from '../../api/user';
+import { getUsersAll } from '../../api/user';
 
 const { Option } = Select;
 
@@ -28,11 +28,11 @@ const Blogs: React.FC = () => {
     loading,
     error,
     execute: fetchBlogs,
-  } = useApi<{ list: BlogData[]; total: number }>(() => getBlogs(queryParams), {
+  } = useApi<{ list: BlogData[]; total: number }>(() => getBlogsPage(queryParams), {
     showError: false,
   });
 
-  const { data: users, execute: fetchUsers } = useApi<User[]>(() => getUsersList(), {
+  const { data: users, execute: fetchUsers } = useApi<User[]>(() => getUsersAll(), {
     showError: false,
   });
 

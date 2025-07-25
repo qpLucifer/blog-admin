@@ -3,7 +3,7 @@ import { Card, Tree, Select, Button, Space, Avatar, Form, Input, Pagination } fr
 import styles from './index.module.css';
 import { getComments, createComment, updateComment, deleteComment } from '../../api/comment';
 import { CommentData, BlogData, authReducer } from '../../types';
-import { getBlogs } from '../../api/blog';
+import { getBlogsAll } from '../../api/blog';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { FormModal, DeleteModal, CommonTableButton } from '../../components';
 import CommentForm from '../../components/forms/CommentForm';
@@ -84,7 +84,7 @@ const Comments: React.FC = () => {
     { showError: false }
   );
 
-  const { data: blogs, execute: fetchBlogs } = useApi<BlogData[]>(getBlogs, {
+  const { data: blogs, execute: fetchBlogs } = useApi<BlogData[]>(getBlogsAll, {
     showError: false,
   });
 
@@ -377,7 +377,7 @@ const Comments: React.FC = () => {
         width={500}
         form={form}
       >
-        <CommentForm blogs={blogs || []} comments={data || []} form={form} />
+        <CommentForm blogs={blogs || []} comments={data?.list || []} form={form} />
       </FormModal>
       <DeleteModal
         visible={deleteModalVisible}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input } from 'antd';
 import styles from './index.module.css';
 import { Role, TableColumn, Menu } from '../../types';
-import { getRoles, createRole, updateRole, deleteRole } from '../../api/role';
+import { getRolesPage, createRole, updateRole, deleteRole } from '../../api/role';
 import { getMenuList } from '../../api/menu';
 import { useApi, useCrud, useInitialEffect, useMenuPermission } from '../../hooks';
 
@@ -32,7 +32,7 @@ const Roles: React.FC = () => {
     error,
     execute: fetchRoles,
   } = useApi<{ list: Role[]; total: number; pageSize: number; currentPage: number }>(
-    () => getRoles(queryParams),
+    () => getRolesPage(queryParams),
     { showError: false }
   );
 

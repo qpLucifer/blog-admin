@@ -32,6 +32,14 @@ interface TableToolbarProps {
   };
 }
 
+interface IMenuItem {
+  key: string;
+  icon: React.ReactNode;
+  label: React.ReactNode;
+  onClick?: () => void;
+  danger?: boolean;
+}
+
 const TableToolbar: React.FC<TableToolbarProps> = ({
   title,
   showAdd = true,
@@ -110,7 +118,11 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
             </Tooltip>
 
             {moreMenuItems.length > 0 && (
-              <Dropdown menu={{ items: moreMenuItems }} placement='bottomRight' trigger={['click']}>
+              <Dropdown
+                menu={{ items: moreMenuItems as IMenuItem[] }}
+                placement='bottomRight'
+                trigger={['click']}
+              >
                 <Button icon={<MoreOutlined />} className={styles.iconButton} />
               </Dropdown>
             )}

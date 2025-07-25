@@ -4,7 +4,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import BlogForm from '../../components/forms/BlogForm';
 import { getBlog, createBlog, updateBlog } from '../../api/blog';
-import { getTags } from '../../api/tag';
+import { getTagsAll } from '../../api/tag';
 import { BlogData, TagData, authReducer } from '../../types';
 import styles from './index.module.css';
 import { useApi, useInitialAsyncEffect } from '../../hooks';
@@ -21,7 +21,7 @@ const EditBlog: React.FC = () => {
     data: tags,
     loading: tagsLoading,
     execute: fetchTags,
-  } = useApi<TagData[]>(getTags, { showError: false });
+  } = useApi<TagData[]>(getTagsAll, { showError: false });
   const {
     data: blog,
     loading: blogLoading,

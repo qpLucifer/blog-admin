@@ -1,9 +1,14 @@
 import api from './index';
 import { TagData } from '../types';
 
-// 获取标签列表
-export const getTags = (data: { name: string; pageSize: number; currentPage: number }) => {
-  return api.get('/api/tag/list', data);
+// 获取所有标签列表
+export const getTagsAll = () => {
+  return api.get('/api/tag/listAll');
+};
+
+// 分页获取标签列表
+export const getTagsPage = (data: { name: string; pageSize: number; currentPage: number }) => {
+  return api.get('/api/tag/listPage', data);
 };
 
 // 新建标签

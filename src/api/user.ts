@@ -2,18 +2,18 @@ import api from './index';
 import { CreateUserData, UpdateUserData } from '../types';
 
 // 获取用户列表
-export const getUsersList = () => {
-  return api.get('/api/user/list');
+export const getUsersAll = () => {
+  return api.get('/api/user/listAll');
 };
 // 获取用户列表
-export const getUsers = (params?: {
+export const getUsersPage = (params?: {
   currentPage?: number;
   pageSize?: number;
   username?: string;
   email?: string;
   is_active?: number;
 }) => {
-  return api.get('/api/user/users', { params });
+  return api.get('/api/user/listPage', { params });
 };
 
 // 注册用户

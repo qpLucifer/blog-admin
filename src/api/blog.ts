@@ -1,8 +1,13 @@
 import api from './index';
 import { BlogData } from '../types';
 
-// 获取博客列表
-export const getBlogs = (data: {
+// 获取所有博客列表
+export const getBlogsAll = () => {
+  return api.get('/api/blog/listAll');
+};
+
+// 分页获取博客列表
+export const getBlogsPage = (data: {
   title?: string;
   is_published?: number;
   is_choice?: number;
@@ -10,7 +15,7 @@ export const getBlogs = (data: {
   pageSize?: number;
   currentPage?: number;
 }) => {
-  return api.get('/api/blog/list?', data);
+  return api.get('/api/blog/listPage?', data);
 };
 
 // 新建博客

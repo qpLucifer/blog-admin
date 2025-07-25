@@ -9,7 +9,7 @@ export const getComments = (params?: {
   user_id?: string;
   blog_id?: number;
 }) => {
-  return api.get('/api/comments/list', { params });
+  return api.get('/api/comments/list', params);
 };
 
 // 新建评论

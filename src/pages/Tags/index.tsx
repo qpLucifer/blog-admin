@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Input, Button } from 'antd';
 import styles from './index.module.css';
-import { getTags, createTag, updateTag, deleteTag } from '../../api/tag';
+import { getTagsPage, createTag, updateTag, deleteTag } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import {
@@ -23,7 +23,7 @@ const Tags: React.FC = () => {
     error,
     execute: fetchTags,
   } = useApi<{ list: TagData[]; total: number; pageSize: number; currentPage: number }>(
-    () => getTags(queryParams),
+    () => getTagsPage(queryParams),
     { showError: false }
   );
   // useInitialAsyncEffect(fetchTags);

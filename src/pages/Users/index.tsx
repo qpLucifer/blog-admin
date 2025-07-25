@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Space, Tag, Form, Input, Select } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { getUsers, createUser, updateUser, deleteUser } from '../../api/user';
-import { getRoles } from '../../api/role';
+import { getUsersPage, createUser, updateUser, deleteUser } from '../../api/user';
+import { getRolesAll } from '../../api/role';
 import { User, TableColumn, Role } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import {
@@ -40,7 +40,7 @@ const Users: React.FC = () => {
     error,
     execute: fetchUsers,
   } = useApi<{ list: User[]; total: number; pageSize: number; currentPage: number }>(
-    () => getUsers(queryParams),
+    () => getUsersPage(queryParams),
     { showError: false }
   );
 
@@ -49,7 +49,7 @@ const Users: React.FC = () => {
     loading: rolesLoading,
     error: rolesError,
     execute: fetchRoles,
-  } = useApi<Role[]>(getRoles, {
+  } = useApi<Role[]>(getRolesAll, {
     showError: true,
   });
 
