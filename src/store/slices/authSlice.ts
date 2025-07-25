@@ -166,7 +166,7 @@ export const selectToken = (state: { auth: AuthState }) => state.auth.token;
 export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
 export const selectLoading = (state: { auth: AuthState }) => state.auth.loading;
 export const selectError = (state: { auth: AuthState }) => state.auth.error;
-export const selectUserMenus = (state: { auth: AuthState }) => state.auth.userMenus || [];
+export const selectUserMenus = (state: { auth: AuthState }) => state.auth.userMenus;
 
 // 导出reducer
 export default authSlice.reducer;

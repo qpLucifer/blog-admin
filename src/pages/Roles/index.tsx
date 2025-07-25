@@ -48,7 +48,7 @@ const Roles: React.FC = () => {
   // 当查询参数变化时重新获取数据
   useInitialEffect(() => {
     fetchRoles();
-  }, [queryParams]);
+  }, [queryParams.currentPage, queryParams.pageSize, queryParams.name]);
 
   useInitialEffect(() => {
     fetchMenus();

@@ -56,7 +56,13 @@ const Users: React.FC = () => {
   // 当查询参数变化时重新获取数据
   useInitialEffect(() => {
     fetchUsers();
-  }, [queryParams]);
+  }, [
+    queryParams.currentPage,
+    queryParams.pageSize,
+    queryParams.username,
+    queryParams.email,
+    queryParams.is_active,
+  ]);
 
   useInitialEffect(() => {
     fetchRoles();

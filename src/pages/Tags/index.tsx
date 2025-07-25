@@ -33,7 +33,7 @@ const Tags: React.FC = () => {
   // useInitialAsyncEffect(fetchTags);
   useInitialEffect(() => {
     fetchTags();
-  }, [queryParams]);
+  }, [queryParams.currentPage, queryParams.pageSize, queryParams.name]);
   const { hasPermission } = useMenuPermission();
   const {
     modalVisible,

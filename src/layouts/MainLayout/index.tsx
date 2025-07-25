@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Layout, Avatar, Dropdown, message, Badge, Tooltip } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -14,6 +14,7 @@ import {
   DashboardOutlined,
   TeamOutlined,
   FileTextOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
@@ -65,24 +66,30 @@ const MainLayout: React.FC = () => {
   }
 
   // 递归生成 items 数组
-  const buildMenuItems = (menus: MenuType[]): any[] =>
-    menus.map(menu => {
-      const IconComponent = (AllIcons as any)[menu.icon as keyof typeof AllIcons];
-      return {
-        key: menu.path,
-        icon: menu.icon ? <IconComponent /> : null,
-        label: menu.name,
-        children:
-          menu.children && menu.children.length > 0 ? buildMenuItems(menu.children) : undefined,
-      };
-    });
-  const menuItems = buildMenuItems(userMenus);
+  const buildMenuItems = useCallback(
+    (menus: MenuType[]): any[] =>
+      menus.map(menu => {
+        const IconComponent = (AllIcons as any)[menu.icon as keyof typeof AllIcons];
+        return {
+          key: menu.path,
+          icon: menu.icon ? <IconComponent /> : null,
+          label: menu.name,
+          children:
+            menu.children && menu.children.length > 0 ? buildMenuItems(menu.children) : undefined,
+        };
+      }),
+    []
+  );
+
+  const menuItems = useMemo(() => {
+    return userMenus ? buildMenuItems(userMenus) : [];
+  }, [userMenus, buildMenuItems]);
 
   // 修正菜单高亮逻辑
   const selectedKey = location.pathname === '/' ? '/dashboard' : location.pathname;
 
   // 递归查找当前路径的所有父级key
-  const getOpenKeys = (menus: MenuType[], pathname: string): string[] => {
+  const getOpenKeys = useCallback((menus: MenuType[], pathname: string): string[] => {
     let keys: string[] = [];
     for (const menu of menus) {
       if (menu.children && menu.children.length > 0) {
@@ -94,15 +101,23 @@ const MainLayout: React.FC = () => {
       }
     }
     return keys;
-  };
+  }, []);
 
   // 用useState管理openKeys
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  // 路由变化时自动同步openKeys
+  // 使用 useMemo 来计算 openKeys，避免 useEffect 的依赖问题
+  const currentOpenKeys = useMemo(() => {
+    if (userMenus && userMenus.length > 0) {
+      return getOpenKeys(userMenus, location.pathname);
+    }
+    return [];
+  }, [userMenus, location.pathname, getOpenKeys]);
+
+  // 只在计算结果变化时更新 state
   useEffect(() => {
-    setOpenKeys(getOpenKeys(userMenus, location.pathname));
-  }, [userMenus, location.pathname]);
+    setOpenKeys(currentOpenKeys);
+  }, [currentOpenKeys]);
 
   const handleLogout = async () => {
     try {
@@ -169,22 +184,34 @@ const MainLayout: React.FC = () => {
           <div className={styles.headerLeft}>
             <div className={styles.headerTitle}>{getPageTitle()}</div>
             <div className={styles.headerStats}>
-              <Tooltip title='在线用户'>
+              <Tooltip title='在线用户数量' placement='bottom'>
                 <div className={styles.statItem}>
                   <TeamOutlined className={styles.statIcon} />
-                  <span>{stats.onlineUsers}</span>
+                  <div className={styles.statNumber}>{stats.onlineUsers}</div>
+                  <div className={styles.statLabel}>在线</div>
                 </div>
               </Tooltip>
-              <Tooltip title='今日访问'>
+              <Tooltip title='今日访问量' placement='bottom'>
                 <div className={styles.statItem}>
                   <DashboardOutlined className={styles.statIcon} />
-                  <span>{stats.todayVisits}</span>
+                  <div className={styles.statNumber}>
+                    {stats.todayVisits > 999 ? '1.2K' : stats.todayVisits}
+                  </div>
+                  <div className={styles.statLabel}>访问</div>
                 </div>
               </Tooltip>
-              <Tooltip title='博客总数'>
+              <Tooltip title='博客文章总数' placement='bottom'>
                 <div className={styles.statItem}>
                   <FileTextOutlined className={styles.statIcon} />
-                  <span>{stats.totalBlogs}</span>
+                  <div className={styles.statNumber}>{stats.totalBlogs}</div>
+                  <div className={styles.statLabel}>博客</div>
+                </div>
+              </Tooltip>
+              <Tooltip title='待处理评论' placement='bottom'>
+                <div className={styles.statItem}>
+                  <ClockCircleOutlined className={styles.statIcon} />
+                  <div className={styles.statNumber}>{stats.pendingComments}</div>
+                  <div className={styles.statLabel}>待处理</div>
                 </div>
               </Tooltip>
             </div>
@@ -193,16 +220,26 @@ const MainLayout: React.FC = () => {
           {/* Header右侧 */}
           <div className={styles.headerRight}>
             {/* 通知铃铛 */}
-            <Tooltip title='通知'>
-              <Badge count={stats.pendingComments} size='small'>
-                <BellOutlined
-                  style={{
-                    fontSize: 18,
-                    color: '#667eea',
-                    cursor: 'pointer',
-                  }}
-                />
-              </Badge>
+            <Tooltip title='通知消息' placement='bottom'>
+              <div
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '12px',
+                  background: 'rgba(102, 126, 234, 0.05)',
+                  border: '1px solid rgba(102, 126, 234, 0.1)',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                }}
+              >
+                <Badge count={stats.pendingComments} size='small'>
+                  <BellOutlined
+                    style={{
+                      fontSize: 18,
+                      color: '#667eea',
+                    }}
+                  />
+                </Badge>
+              </div>
             </Tooltip>
 
             {/* 用户信息 */}

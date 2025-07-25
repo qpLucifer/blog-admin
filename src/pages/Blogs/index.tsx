@@ -51,7 +51,14 @@ const Blogs: React.FC = () => {
 
   useInitialEffect(() => {
     fetchBlogs();
-  }, [queryParams]);
+  }, [
+    queryParams.currentPage,
+    queryParams.pageSize,
+    queryParams.title,
+    queryParams.is_published,
+    queryParams.is_choice,
+    queryParams.author_id,
+  ]);
 
   const { hasPermission } = useMenuPermission();
   const navigate = useNavigate();

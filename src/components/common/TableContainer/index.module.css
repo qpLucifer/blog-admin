@@ -39,6 +39,24 @@
   overflow: hidden;
 }
 
+/* 隐藏表格内部的滚动条 */
+.tableWrapper :global(.ant-table-body) {
+  overflow: hidden !important;
+}
+
+.tableWrapper :global(.ant-table-tbody) {
+  overflow: hidden !important;
+}
+
+/* 确保表格不会出现横向滚动条 */
+.tableWrapper :global(.ant-table) {
+  overflow: hidden !important;
+}
+
+.tableWrapper :global(.ant-table-content) {
+  overflow: hidden !important;
+}
+
 /* 表格样式优化 */
 .tableWrapper :global(.ant-table) {
   border-radius: 0;
@@ -53,22 +71,34 @@
   padding: 20px 16px;
   font-size: 14px;
   position: relative;
-}
-
-.tableWrapper :global(.ant-table-thead > tr > th::before) {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  cursor: default !important; /* 移除光标 */
 }
 
 .tableWrapper :global(.ant-table-thead > tr > th:hover::before) {
   opacity: 1;
+}
+
+/* 移除表头排序相关的光标样式 */
+.tableWrapper :global(.ant-table-thead > tr > th .ant-table-column-sorters) {
+  cursor: default !important;
+}
+
+.tableWrapper :global(.ant-table-thead > tr > th .ant-table-column-title) {
+  cursor: default !important;
+}
+
+/* 隐藏表头的列调整竖线 */
+.tableWrapper :global(.ant-table-thead > tr > th::after) {
+  display: none !important;
+}
+
+.tableWrapper :global(.ant-table-thead > tr > th .ant-table-column-sorters::after) {
+  display: none !important;
+}
+
+/* 移除表头的resize功能 */
+.tableWrapper :global(.ant-table-thead > tr > th .ant-table-resize-handle) {
+  display: none !important;
 }
 
 .tableWrapper :global(.ant-table-tbody > tr > td) {
@@ -79,8 +109,9 @@
 }
 
 .tableWrapper :global(.ant-table-tbody > tr:hover > td) {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-  transform: scale(1.01);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
 }
 
 .tableWrapper :global(.ant-table-tbody > tr:last-child > td) {

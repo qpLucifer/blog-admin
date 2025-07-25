@@ -92,7 +92,13 @@ const Comments: React.FC = () => {
 
   useInitialEffect(() => {
     fetchComments();
-  }, [queryParams]);
+  }, [
+    queryParams.currentPage,
+    queryParams.pageSize,
+    queryParams.content,
+    queryParams.user_id,
+    queryParams.blog_id,
+  ]);
 
   useInitialEffect(() => {
     fetchBlogs();

@@ -39,7 +39,7 @@ const Menus: React.FC = () => {
   // 当搜索参数变化时重新获取数据
   useInitialEffect(() => {
     fetchMenuTree();
-  }, [searchParams]);
+  }, [searchParams.name, searchParams.path]);
 
   // 选中树节点时，右侧表格只显示该节点的children
   const getTableData = () => {

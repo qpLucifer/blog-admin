@@ -48,7 +48,7 @@ const DaySentences: React.FC = () => {
   // 当查询参数变化时重新获取数据
   useInitialEffect(() => {
     fetchDaySentences();
-  }, [queryParams]);
+  }, [queryParams.currentPage, queryParams.pageSize, queryParams.auth, queryParams.day_sentence]);
 
   const columns = [
     { title: 'ID', dataIndex: 'id' },
