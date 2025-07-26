@@ -48,7 +48,10 @@ const UserForm: React.FC<UserFormProps> = ({ isEdit = false, roles = [] }) => {
       <Form.Item
         name='email'
         label='邮箱'
-        rules={[{ type: 'email', message: '请输入正确的邮箱格式' }]}
+        rules={[
+          { required: true, message: '请输入邮箱' },
+          { type: 'email', message: '请输入正确的邮箱格式' },
+        ]}
       >
         <Input prefix={<MailOutlined />} placeholder='请输入邮箱' />
       </Form.Item>
@@ -63,7 +66,7 @@ const UserForm: React.FC<UserFormProps> = ({ isEdit = false, roles = [] }) => {
         >
           {roles.map(role => (
             <Option key={role.id} value={role.id}>
-              {role.description}
+              {role.name}
             </Option>
           ))}
         </Select>

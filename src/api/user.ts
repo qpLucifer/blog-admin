@@ -13,7 +13,7 @@ export const getUsersPage = (params?: {
   email?: string;
   is_active?: number;
 }) => {
-  return api.get('/api/user/listPage', { params });
+  return api.get('/api/user/listPage', params);
 };
 
 // 注册用户
@@ -47,4 +47,14 @@ export const deleteUser = (id: number | string) => {
 // 获取用户详情
 export const getUserById = (id: number) => {
   return api.get(`/api/user/users/${id}`);
+};
+
+// 导出用户
+export const exportUsers = (data: { username?: string; email?: string; is_active?: boolean }) => {
+  return api.get('/api/user/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
 };

@@ -1,7 +1,7 @@
 import api from './index';
 import { BlogData } from '../types';
 
-// 获取所有博客列表
+// 获取所有博客
 export const getBlogsAll = () => {
   return api.get('/api/blog/listAll');
 };
@@ -36,4 +36,19 @@ export const deleteBlog = (id: number | string) => {
 // 获取单篇博客
 export const getBlog = (id: number) => {
   return api.get(`/api/blog/${id}`);
+};
+
+// 导出博客
+export const exportBlogs = (data: {
+  title?: string;
+  is_published?: boolean;
+  is_choice?: boolean;
+  author_id?: string;
+}) => {
+  return api.get('/api/blog/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
 };

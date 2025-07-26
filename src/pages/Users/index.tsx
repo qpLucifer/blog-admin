@@ -2,21 +2,22 @@ import React, { useState } from 'react';
 import { Space, Tag, Form, Input, Select } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { getUsersPage, createUser, updateUser, deleteUser } from '../../api/user';
+import { getUsersPage, createUser, updateUser, deleteUser, exportUsers } from '../../api/user';
 import { getRolesAll } from '../../api/role';
-import { User, TableColumn, Role } from '../../types';
+import { User, Role, TableColumn } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import {
   FormModal,
   DeleteModal,
   ActionButtons,
-  UserForm,
   CommonTable,
   SearchCard,
   TableToolbar,
   TableContainer,
 } from '../../components';
+import UserForm from '../../components/forms/UserForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
+import { createExportHandler } from '../../utils/exportUtils';
 
 interface UserWithRoles {
   roles: Role[];
@@ -53,9 +54,9 @@ const Users: React.FC = () => {
     showError: true,
   });
 
-  // 当查询参数变化时重新获取数据
   useInitialEffect(() => {
     fetchUsers();
+    fetchRoles();
   }, [
     queryParams.currentPage,
     queryParams.pageSize,
@@ -64,19 +65,14 @@ const Users: React.FC = () => {
     queryParams.is_active,
   ]);
 
-  useInitialEffect(() => {
-    fetchRoles();
-  }, []);
-
   const { hasPermission } = useMenuPermission();
 
-  // CRUD 管理
   const {
     modalVisible,
     deleteModalVisible,
     loading: crudLoading,
-    currentRecord,
     isEdit,
+    currentRecord,
     showCreateModal,
     showEditModal,
     showDeleteModal,
@@ -92,9 +88,17 @@ const Users: React.FC = () => {
     createSuccessMessage: '用户创建成功',
     updateSuccessMessage: '用户更新成功',
     deleteSuccessMessage: '用户删除成功',
-    onSuccess: () => {
-      // 操作成功后刷新列表
-      fetchUsers();
+    onSuccess: fetchUsers,
+  });
+
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportUsers as (params: any) => Promise<any>,
+    filename: '用户列表',
+    params: {
+      username: queryParams.username || undefined,
+      email: queryParams.email || undefined,
+      is_active: queryParams.is_active,
     },
   });
 
@@ -163,9 +167,18 @@ const Users: React.FC = () => {
     };
   };
 
-  const columns = [
-    { title: 'ID', dataIndex: 'id', width: 80 },
-    { title: '用户名', dataIndex: 'username', width: 120 },
+  const columns: TableColumn[] = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 80,
+    },
+    {
+      title: '用户名',
+      dataIndex: 'username',
+      key: 'username',
+    },
     {
       title: '邮箱',
       dataIndex: 'email',
@@ -189,15 +202,26 @@ const Users: React.FC = () => {
     {
       title: '状态',
       dataIndex: 'is_active',
+      key: 'is_active',
       width: 100,
-      render: (status: number) => (
-        <Tag color={status ? 'green' : 'red'}>{status ? '启用' : '禁用'}</Tag>
+      render: (is_active: boolean) => (
+        <span style={{ color: is_active ? '#52c41a' : '#ff4d4f' }}>
+          {is_active ? '启用' : '禁用'}
+        </span>
       ),
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 180,
+      render: (text: string) => new Date(text).toLocaleString(),
     },
     {
       title: '操作',
       key: 'action',
       width: 150,
+      dataIndex: 'action',
       fixed: 'right' as const,
       render: (_: any, record: User) => (
         <ActionButtons
@@ -247,6 +271,7 @@ const Users: React.FC = () => {
           onReload={fetchUsers}
           loading={loading || rolesLoading}
           selectedRowKeys={[]}
+          onExport={hasPermission('read') ? handleExport : undefined}
           operations={{
             create: hasPermission('create'),
             export: hasPermission('read'),
@@ -282,7 +307,7 @@ const Users: React.FC = () => {
           onSubmit={handleSubmit}
           width={600}
         >
-          <UserForm isEdit={isEdit} roles={roles || []} />
+          <UserForm roles={roles || []} isEdit={isEdit} />
         </FormModal>
 
         {/* 删除确认弹窗 */}

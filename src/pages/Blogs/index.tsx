@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Tag, Space, Image, Input, Form, Select } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { getBlogsPage, createBlog, updateBlog, deleteBlog } from '../../api/blog';
-import { BlogData, TagData, TableColumn, User } from '../../types';
+import { getBlogsPage, createBlog, updateBlog, deleteBlog, exportBlogs } from '../../api/blog';
+import { getUsersAll } from '../../api/user';
+import { BlogData, TagData, User, TableColumn } from '../../types';
 import { useApi, useCrud, useInitialEffect, useMountEffect } from '../../hooks';
 import {
   DeleteModal,
@@ -14,9 +15,9 @@ import {
   TableContainer,
 } from '../../components';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
+import { createExportHandler } from '../../utils/exportUtils';
 import { useNavigate } from 'react-router-dom';
 import { tagColor } from '../../constants';
-import { getUsersAll } from '../../api/user';
 
 const { Option } = Select;
 
@@ -80,15 +81,30 @@ const Blogs: React.FC = () => {
     onSuccess: fetchBlogs,
   });
 
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportBlogs as (params: any) => Promise<any>,
+    filename: '博客列表',
+    params: {
+      title: queryParams.title || undefined,
+      is_published: queryParams.is_published,
+      is_choice: queryParams.is_choice,
+      author_id: queryParams.author_id || undefined,
+    },
+  });
+
   function handleEdit(record: BlogData) {
     navigate(`/blogsManage/blogs/edit/${record.id}`);
   }
+
   function handleDelete(record: BlogData) {
     showDeleteModal(record);
   }
+
   const handleAdd = () => {
     navigate('/blogsManage/blogs/new');
   };
+
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
   };
@@ -109,6 +125,7 @@ const Blogs: React.FC = () => {
       currentPage: 1,
     }));
   };
+
   // 重置
   const handleReset = () => {
     form.resetFields();
@@ -236,6 +253,7 @@ const Blogs: React.FC = () => {
           onReload={fetchBlogs}
           loading={loading}
           selectedRowKeys={[]}
+          onExport={hasPermission('read') ? handleExport : undefined}
           operations={{
             create: hasPermission('create'),
             export: hasPermission('read'),
@@ -245,13 +263,13 @@ const Blogs: React.FC = () => {
         {/* 表格区域 */}
         <TableContainer loading={loading}>
           <CommonTable
-            columns={columns}
+            columns={columns as TableColumn[]}
             dataSource={data?.list || []}
             rowKey='id'
             pagination={{
-              current: queryParams.currentPage,
-              pageSize: queryParams.pageSize,
-              total: data?.total,
+              total: data?.total || 0,
+              current: queryParams.currentPage || 1,
+              pageSize: queryParams.pageSize || 10,
               onChange: handleTableChange,
             }}
             loading={loading}
@@ -259,6 +277,8 @@ const Blogs: React.FC = () => {
             scroll={{ x: 1000 }}
           />
         </TableContainer>
+
+        {/* 删除确认弹窗 */}
         <DeleteModal
           visible={deleteModalVisible}
           loading={crudLoading}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, message } from 'antd';
+import { Form, Input } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import { getTagsPage, createTag, updateTag, deleteTag, exportTags } from '../../api/tag';
@@ -16,6 +16,7 @@ import {
 } from '../../components';
 import TagForm from '../../components/forms/TagForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
+import { createExportHandler } from '../../utils/exportUtils';
 
 const Tags: React.FC = () => {
   const [form] = Form.useForm();
@@ -30,17 +31,19 @@ const Tags: React.FC = () => {
     () => getTagsPage(queryParams),
     { showError: false }
   );
-  // useInitialAsyncEffect(fetchTags);
+
   useInitialEffect(() => {
     fetchTags();
   }, [queryParams.currentPage, queryParams.pageSize, queryParams.name]);
+
   const { hasPermission } = useMenuPermission();
+
   const {
     modalVisible,
     deleteModalVisible,
     loading: crudLoading,
-    currentRecord,
     isEdit,
+    currentRecord,
     showCreateModal,
     showEditModal,
     showDeleteModal,
@@ -58,12 +61,27 @@ const Tags: React.FC = () => {
     deleteSuccessMessage: '标签删除成功',
     onSuccess: fetchTags,
   });
+
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportTags as (params: any) => Promise<any>,
+    filename: '标签列表',
+    params: {
+      name: queryParams.name || undefined,
+    },
+  });
+
+  // 处理编辑
   function handleEdit(record: TagData) {
     showEditModal(record);
   }
+
+  // 处理删除
   function handleDelete(record: TagData) {
     showDeleteModal(record);
   }
+
+  // 处理表单提交
   const handleSubmit = async (values: any) => {
     if (isEdit) {
       await handleUpdate(values);
@@ -71,14 +89,13 @@ const Tags: React.FC = () => {
       await handleCreate(values);
     }
   };
+
+  // 处理删除确认
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
   };
-  const getInitialValues = () => {
-    if (!currentRecord) return {};
-    return { ...currentRecord };
-  };
 
+  // 处理分页变化
   const handleTableChange = (page: number, pageSize: number) => {
     setQueryParams(prev => ({
       ...prev,
@@ -87,7 +104,7 @@ const Tags: React.FC = () => {
     }));
   };
 
-  // 查询
+  // 处理搜索
   const onFinish = (values: any) => {
     setQueryParams(prev => ({
       ...prev,
@@ -95,61 +112,58 @@ const Tags: React.FC = () => {
       currentPage: 1,
     }));
   };
-  // 重置
+
+  // 重置搜索
   const handleReset = () => {
     form.resetFields();
-    setQueryParams({ currentPage: 1, pageSize: 10, name: '' });
+    setQueryParams({
+      currentPage: 1,
+      pageSize: 10,
+      name: '',
+    });
   };
 
-  // 导出功能
-  const handleExport = async () => {
-    try {
-      const exportParams = {
-        name: queryParams.name || undefined,
-      };
-
-      const response = await exportTags(exportParams);
-
-      // 创建下载链接
-      const blob = new Blob([response as any], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `标签列表_${new Date().toISOString().split('T')[0]}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      message.success('导出成功');
-    } catch (error) {
-      message.error('导出失败');
-    }
+  // 获取表单初始值
+  const getInitialValues = () => {
+    if (!currentRecord) return {};
+    return { ...currentRecord };
   };
 
   const columns: TableColumn[] = [
-    { title: 'ID', dataIndex: 'id', width: 80 },
-    { title: '标签名', dataIndex: 'name', width: 200 },
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 80,
+    },
+    {
+      title: '标签名',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 180,
+      render: (text: string) => new Date(text).toLocaleString(),
+    },
     {
       title: '操作',
       key: 'action',
       dataIndex: 'operation',
       width: 150,
       fixed: 'right',
-      render: (_: any, record: TagData) => (
+      render: (_, record) => (
         <ActionButtons
           record={record}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          editDisabled={!hasPermission('update')}
-          deleteDisabled={!hasPermission('delete')}
+          onEdit={hasPermission('update') ? handleEdit : undefined}
+          onDelete={hasPermission('delete') ? handleDelete : undefined}
         />
       ),
     },
   ];
+
   return (
     <div className={`${styles.root} ${pageStyles.pageContainer}`}>
       <div className={pageStyles.pageContent}>
@@ -189,7 +203,7 @@ const Tags: React.FC = () => {
         {/* 表格区域 */}
         <TableContainer loading={loading}>
           <CommonTable
-            columns={columns}
+            columns={columns as TableColumn[]}
             dataSource={data?.list || []}
             rowKey='id'
             pagination={{
@@ -200,9 +214,11 @@ const Tags: React.FC = () => {
             }}
             loading={loading}
             error={error}
-            scroll={{ x: 600 }}
+            scroll={{ x: 800 }}
           />
         </TableContainer>
+
+        {/* 新增/编辑弹窗 */}
         <FormModal
           title={isEdit ? '编辑标签' : '新增标签'}
           visible={modalVisible}
@@ -210,10 +226,11 @@ const Tags: React.FC = () => {
           initialValues={getInitialValues()}
           onCancel={hideModal}
           onSubmit={handleSubmit}
-          width={400}
         >
           <TagForm />
         </FormModal>
+
+        {/* 删除确认弹窗 */}
         <DeleteModal
           visible={deleteModalVisible}
           loading={crudLoading}
