@@ -48,8 +48,8 @@ export function useApi<T = any>(
       } catch (err: any) {
         const errorMessage = err.response?.data?.message || err.message || '操作失败';
         setError(errorMessage);
-
-        if (showError) {
+        // 只有在错误未被axios拦截器处理时才显示错误消息
+        if (showError && !err.handled) {
           message.error(errorMessage);
         }
 
@@ -58,8 +58,8 @@ export function useApi<T = any>(
         setLoading(false);
       }
     },
-    [apiFunction]
-  ); // 只依赖 apiFunction
+    [apiFunction, showError, showSuccess, successMessage]
+  );
 
   const reset = useCallback(() => {
     setData(null);

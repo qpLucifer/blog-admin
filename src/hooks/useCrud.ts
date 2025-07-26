@@ -110,7 +110,9 @@ export function useCrud<T = any>(options: UseCrudOptions<T> = {}): UseCrudReturn
         onSuccess?.('create', result);
       } catch (error: any) {
         const errorMessage = error.response?.data?.message || error.message || '创建失败';
-        message.error(errorMessage);
+        if (!error.handled) {
+          message.error(errorMessage);
+        }
         onError?.('create', error);
       } finally {
         setLoading(false);
@@ -136,7 +138,9 @@ export function useCrud<T = any>(options: UseCrudOptions<T> = {}): UseCrudReturn
         onSuccess?.('update', result);
       } catch (error: any) {
         const errorMessage = error.response?.data?.message || error.message || '更新失败';
-        message.error(errorMessage);
+        if (!error.handled) {
+          message.error(errorMessage);
+        }
         onError?.('update', error);
       } finally {
         setLoading(false);
@@ -161,7 +165,9 @@ export function useCrud<T = any>(options: UseCrudOptions<T> = {}): UseCrudReturn
       onSuccess?.('delete');
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || '删除失败';
-      message.error(errorMessage);
+      if (!error.handled) {
+        message.error(errorMessage);
+      }
       onError?.('delete', error);
     } finally {
       setLoading(false);

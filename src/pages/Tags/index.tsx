@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, message } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { getTagsPage, createTag, updateTag, deleteTag } from '../../api/tag';
+import { getTagsPage, createTag, updateTag, deleteTag, exportTags } from '../../api/tag';
 import { TagData, TableColumn } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import {
@@ -101,6 +101,35 @@ const Tags: React.FC = () => {
     setQueryParams({ currentPage: 1, pageSize: 10, name: '' });
   };
 
+  // 导出功能
+  const handleExport = async () => {
+    try {
+      const exportParams = {
+        name: queryParams.name || undefined,
+      };
+
+      const response = await exportTags(exportParams);
+
+      // 创建下载链接
+      const blob = new Blob([response as any], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `标签列表_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      message.success('导出成功');
+    } catch (error) {
+      message.error('导出失败');
+    }
+  };
+
   const columns: TableColumn[] = [
     { title: 'ID', dataIndex: 'id', width: 80 },
     { title: '标签名', dataIndex: 'name', width: 200 },
@@ -146,11 +175,14 @@ const Tags: React.FC = () => {
           addButtonText='新增标签'
           onAdd={showCreateModal}
           onReload={fetchTags}
+          onExport={handleExport}
           loading={loading}
           selectedRowKeys={[]}
           operations={{
             create: hasPermission('create'),
             export: hasPermission('read'),
+            batchDelete: hasPermission('delete'),
+            import: hasPermission('create'),
           }}
         />
 

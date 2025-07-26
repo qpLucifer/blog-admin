@@ -25,3 +25,13 @@ export const updateTag = (id: number | string, data: TagData) => {
 export const deleteTag = (id: number | string) => {
   return api.delete(`/api/tag/delete/${id}`);
 };
+
+// 导出标签
+export const exportTags = (data: { name?: string }) => {
+  return api.get('/api/tag/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+};
