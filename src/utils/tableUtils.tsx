@@ -2,6 +2,7 @@ import React from 'react';
 import { Tag } from 'antd';
 import { TableColumn } from '../types';
 import { ActionButtons } from '../components';
+import { formatDateTime } from './dateUtils';
 
 /**
  * 创建通用的操作列
@@ -63,11 +64,12 @@ export const createTimeColumn = (config: {
   dataIndex: string;
   title?: string;
   width?: number;
+  format?: string;
 }): TableColumn => ({
   title: config.title || '创建时间',
   dataIndex: config.dataIndex,
   width: config.width || 180,
-  render: (time: string) => (time ? new Date(time).toLocaleString() : '-'),
+  render: (time: string) => formatDateTime(time, config.format),
 });
 
 /**

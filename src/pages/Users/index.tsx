@@ -18,6 +18,7 @@ import {
 import UserForm from '../../components/forms/UserForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { createExportHandler } from '../../utils/exportUtils';
+import { formatDateTime } from '../../utils/dateUtils';
 
 interface UserWithRoles {
   roles: Role[];
@@ -212,10 +213,10 @@ const Users: React.FC = () => {
     },
     {
       title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'created_at',
+      key: 'created_at',
       width: 180,
-      render: (text: string) => new Date(text).toLocaleString(),
+      render: (text: string) => formatDateTime(text),
     },
     {
       title: '操作',

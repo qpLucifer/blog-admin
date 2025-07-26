@@ -36,25 +36,49 @@
 
 .tableWrapper {
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
-/* 隐藏表格内部的滚动条 */
+/* 表格滚动配置 - 允许横向滚动但优化滚动条样式 */
 .tableWrapper :global(.ant-table-body) {
-  overflow: hidden !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
 }
 
 .tableWrapper :global(.ant-table-tbody) {
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
-/* 确保表格不会出现横向滚动条 */
+/* 允许表格横向滚动 */
 .tableWrapper :global(.ant-table) {
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .tableWrapper :global(.ant-table-content) {
-  overflow: hidden !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+/* TableWrapper 滚动条样式 */
+.tableWrapper::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.6);
 }
 
 /* 表格样式优化 */
@@ -175,14 +199,42 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .tableContainer {
+    margin: 0 -8px;
+    border-radius: 8px;
+  }
+
+  .tableWrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+  }
+
   .tableWrapper :global(.ant-table-thead > tr > th),
   .tableWrapper :global(.ant-table-tbody > tr > td) {
     padding: 12px 8px;
     font-size: 12px;
+    white-space: nowrap; /* 防止文字换行 */
   }
 
   .tableWrapper :global(.ant-pagination) {
     padding: 12px 16px;
     text-align: center;
+  }
+
+  /* 确保操作按钮在小屏幕上可见 */
+  .tableWrapper :global(.ant-table-tbody > tr > td:last-child) {
+    position: sticky;
+    right: 0;
+    background: #fff;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
+
+  .tableWrapper :global(.ant-table-thead > tr > th:last-child) {
+    position: sticky;
+    right: 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
   }
 }

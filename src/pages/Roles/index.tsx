@@ -57,12 +57,14 @@ const Roles: React.FC = () => {
   const { hasPermission } = useMenuPermission();
 
   const columns = [
-    { title: 'ID', dataIndex: 'id' },
-    { title: '角色名', dataIndex: 'name' },
+    { title: 'ID', dataIndex: 'id', width: 80 },
+    { title: '角色名', dataIndex: 'name', width: 120 },
     { title: '描述', dataIndex: 'description' },
     {
       title: '操作',
       key: 'action',
+      width: 150,
+      fixed: 'right' as const,
       render: (_: any, record: Role) => (
         <ActionButtons
           record={record}
@@ -215,6 +217,7 @@ const Roles: React.FC = () => {
             pageSize: data?.pageSize || 10,
             onChange: handleTableChange,
           }}
+          scroll={{ x: 900 }}
         />
       </TableContainer>
 

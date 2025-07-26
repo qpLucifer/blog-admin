@@ -219,14 +219,16 @@ const Menus: React.FC = () => {
   };
 
   const columns = [
-    { title: 'ID', dataIndex: 'id' },
-    { title: '菜单名', dataIndex: 'name' },
-    { title: '路径', dataIndex: 'path' },
-    { title: '排序', dataIndex: 'order' },
-    { title: '图标', dataIndex: 'icon' },
+    { title: 'ID', dataIndex: 'id', width: 80 },
+    { title: '菜单名', dataIndex: 'name', width: 120 },
+    { title: '路径', dataIndex: 'path', width: 200 },
+    { title: '排序', dataIndex: 'order', width: 80 },
+    { title: '图标', dataIndex: 'icon', width: 100 },
     {
       title: '操作',
       key: 'action',
+      width: 150,
+      fixed: 'right' as const,
       render: (_: any, record: any) => (
         <ActionButtons
           record={record}
@@ -294,8 +296,8 @@ const Menus: React.FC = () => {
             )}
           </div>
           {/* 右侧表格 */}
-          <div style={{ flex: 1 }}>
-            <TableContainer loading={treeLoading}>
+          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+            <TableContainer loading={treeLoading} className={styles.tableContainer}>
               <CommonTable
                 columns={columns as TableColumn[]}
                 dataSource={getTableData()}

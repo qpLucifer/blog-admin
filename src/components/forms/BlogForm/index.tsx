@@ -82,6 +82,13 @@ const BlogForm: React.FC<BlogFormProps> = ({
     const [previewVisible, setPreviewVisible] = useState(false);
     const [editor, setEditor] = useState<IDomEditor | null>(null);
 
+    // 监听 value 变化，更新编辑器内容
+    useEffect(() => {
+      if (editor && value !== editor.getHtml()) {
+        editor.setHtml(value);
+      }
+    }, [value, editor]);
+
     useEffect(() => {
       return () => {
         if (editorRef.current) {
@@ -90,6 +97,7 @@ const BlogForm: React.FC<BlogFormProps> = ({
         }
       };
     }, []);
+
     const handleEditorChange = (editor: IDomEditor) => {
       onChange(editor.getHtml());
     };

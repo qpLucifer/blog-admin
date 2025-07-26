@@ -51,12 +51,14 @@ const DaySentences: React.FC = () => {
   }, [queryParams.currentPage, queryParams.pageSize, queryParams.auth, queryParams.day_sentence]);
 
   const columns = [
-    { title: 'ID', dataIndex: 'id' },
-    { title: '作者', dataIndex: 'auth' },
+    { title: 'ID', dataIndex: 'id', width: 80 },
+    { title: '作者', dataIndex: 'auth', width: 120 },
     { title: '每日一句', dataIndex: 'day_sentence' },
     {
       title: '操作',
       dataIndex: 'operation',
+      width: 150,
+      fixed: 'right' as const,
       render: (_: any, record: DaySentence) => (
         <ActionButtons
           record={record}
@@ -210,6 +212,7 @@ const DaySentences: React.FC = () => {
               pageSize: data?.pageSize || 10,
               onChange: handleTableChange,
             }}
+            scroll={{ x: 800 }}
           />
         </TableContainer>
 

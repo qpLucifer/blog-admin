@@ -17,6 +17,7 @@ import {
 import TagForm from '../../components/forms/TagForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { createExportHandler } from '../../utils/exportUtils';
+import { formatDateTime } from '../../utils/dateUtils';
 
 const Tags: React.FC = () => {
   const [form] = Form.useForm();
@@ -146,7 +147,7 @@ const Tags: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 180,
-      render: (text: string) => new Date(text).toLocaleString(),
+      render: (text: string) => formatDateTime(text),
     },
     {
       title: '操作',

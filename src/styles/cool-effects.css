@@ -259,19 +259,31 @@
   background: rgba(102, 126, 234, 0.6);
 }
 
-/* 隐藏表格内的滚动条 */
+/* 表格滚动条样式优化 */
 .ant-table-body::-webkit-scrollbar {
-  display: none !important;
+  width: 6px !important;
+  height: 6px !important;
 }
 
-.ant-table-tbody::-webkit-scrollbar {
-  display: none !important;
+.ant-table-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 3px !important;
 }
 
-/* 确保表格内容不会出现滚动条 */
+.ant-table-body::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.3) !important;
+  border-radius: 3px !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.6) !important;
+}
+
+/* Firefox 滚动条样式 */
 .ant-table-body {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(102, 126, 234, 0.3) rgba(0, 0, 0, 0.05) !important;
 }
 
 /* 全局动画 */
