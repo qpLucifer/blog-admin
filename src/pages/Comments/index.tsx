@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tree, Select, Space, Avatar, Form, Input, Button } from 'antd';
+import { Tree, Select, Avatar, Form, Input, Button, Tag, Tooltip, Typography, Card } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import {
@@ -16,9 +16,17 @@ import { FormModal, DeleteModal, SearchCard, TableToolbar, TableContainer } from
 import CommentForm from '../../components/forms/CommentForm';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useSelector } from 'react-redux';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  DeleteOutlined,
+  MessageOutlined,
+  UserOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { createExportHandler } from '../../utils/exportUtils';
+
+const { Text } = Typography;
 
 // 生成头像颜色
 function getAvatarColor(userId: number) {
@@ -26,25 +34,30 @@ function getAvatarColor(userId: number) {
   return colors[userId % colors.length];
 }
 
+// 获取博客标题
+const getBlogTitle = (blogId: number, blogs: BlogData[] | null = []) => {
+  const blog = blogs?.find(b => b.id === blogId);
+  return blog?.title || `博客 #${blogId}`;
+};
+
 // 评论内容折叠组件
 const FoldableContent: React.FC<{ content: string }> = ({ content }) => {
   const [expanded, setExpanded] = useState(false);
-  if (content.length <= 40)
-    return <span style={{ color: '#222', fontWeight: 600 }}>{content}</span>;
+  if (content.length <= 60) return <Text style={{ color: '#333' }}>{content}</Text>;
   return (
     <>
-      <span style={{ color: '#222', fontWeight: 600 }}>
-        {expanded ? content : content.slice(0, 40) + '...'}
-      </span>
-      <a
-        style={{ marginLeft: 8, fontSize: 12 }}
+      <Text style={{ color: '#333' }}>{expanded ? content : content.slice(0, 60) + '...'}</Text>
+      <Button
+        type='link'
+        size='small'
+        style={{ padding: 0, marginLeft: 8, fontSize: 12, height: 'auto' }}
         onClick={e => {
           e.stopPropagation();
           setExpanded(v => !v);
         }}
       >
         {expanded ? '收起' : '展开'}
-      </a>
+      </Button>
     </>
   );
 };
@@ -268,108 +281,128 @@ const Comments: React.FC = () => {
             treeData={buildCommentTree(commentsData)}
             defaultExpandAll
             showLine={false}
-            style={{ background: 'transparent', padding: 8 }}
+            style={{ background: 'transparent', padding: '8px 0' }}
+            className={styles.commentTree}
             titleRender={nodeData => (
-              <div
+              <Card
+                size='small'
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  background: '#fff',
-                  borderRadius: 16,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                  marginBottom: 0,
-                  padding: '18px 24px',
-                  minHeight: 64,
-                  transition: 'box-shadow 0.2s, border 0.2s',
-                  gap: 16,
-                  border: '2px solid transparent',
-                  position: 'relative',
-                  marginTop: 18,
+                  marginBottom: 8,
+                  borderRadius: 8,
+                  border: '1px solid #f0f0f0',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  transition: 'all 0.2s ease',
                 }}
+                styles={{ body: { padding: '12px 16px' } }}
+                hoverable
               >
-                <div
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 16,
-                    flexDirection: 'row',
-                  }}
-                >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                  {/* 头像 */}
                   <Avatar
-                    size={40}
+                    size={32}
                     style={{
                       background: getAvatarColor(nodeData.user_id),
-                      fontSize: 20,
-                      marginTop: 2,
+                      fontSize: 14,
+                      flexShrink: 0,
                     }}
+                    icon={<UserOutlined />}
                   >
                     {String(nodeData.user_id).charAt(0).toUpperCase()}
                   </Avatar>
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        fontSize: 17,
-                        marginBottom: 6,
-                        color: '#222',
-                        wordBreak: 'break-all',
-                      }}
-                    >
+
+                  {/* 主要内容 */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* 博客标题标签 */}
+                    <div style={{ marginBottom: 8 }}>
+                      <Tag
+                        color='blue'
+                        style={{
+                          fontSize: 12,
+                          padding: '2px 8px',
+                          borderRadius: 12,
+                          border: 'none',
+                        }}
+                      >
+                        <MessageOutlined style={{ marginRight: 4, fontSize: 11 }} />
+                        {getBlogTitle(nodeData.blog_id, blogs)}
+                      </Tag>
+                    </div>
+
+                    {/* 评论内容 */}
+                    <div style={{ marginBottom: 8, lineHeight: 1.5 }}>
                       <FoldableContent content={nodeData.content} />
                     </div>
-                    <div style={{ color: '#888', fontSize: 14, lineHeight: 1.7 }}>
-                      <span>ID: {nodeData.id}</span>
-                      <span style={{ marginLeft: 18 }}>用户ID: {nodeData.user_id}</span>
-                      <span style={{ marginLeft: 18 }}>
-                        时间:{' '}
+
+                    {/* 元信息 */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                        fontSize: 12,
+                        color: '#999',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <span>
+                        <UserOutlined style={{ marginRight: 4 }} />
+                        用户 {nodeData.user_id}
+                      </span>
+                      <span>
+                        <ClockCircleOutlined style={{ marginRight: 4 }} />
                         {nodeData.created_at
-                          ? dayjs(nodeData.created_at).format('YYYY-MM-DD HH:mm')
+                          ? dayjs(nodeData.created_at).format('MM-DD HH:mm')
                           : '-'}
                       </span>
+                      <span>ID: {nodeData.id}</span>
                     </div>
                   </div>
+
+                  {/* 操作按钮 */}
+                  <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                    <Tooltip title='编辑'>
+                      <Button
+                        type='text'
+                        size='small'
+                        icon={<EditOutlined />}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleEdit(nodeData);
+                        }}
+                        disabled={!hasPermission('update')}
+                        style={{ color: '#1890ff' }}
+                      />
+                    </Tooltip>
+                    <Tooltip title='删除'>
+                      <Button
+                        type='text'
+                        size='small'
+                        icon={<DeleteOutlined />}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleDelete(nodeData);
+                        }}
+                        disabled={!hasPermission('delete')}
+                        danger
+                      />
+                    </Tooltip>
+                    <Tooltip title='回复'>
+                      <Button
+                        type='primary'
+                        size='small'
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleReply(nodeData);
+                        }}
+                        disabled={!hasPermission('create')}
+                        style={{ fontSize: 12, height: 24, padding: '0 8px' }}
+                      >
+                        回复
+                      </Button>
+                    </Tooltip>
+                  </div>
                 </div>
-                <Space size={12} style={{ marginTop: 2, flexWrap: 'wrap' }}>
-                  <Button
-                    size='middle'
-                    icon={<EditOutlined />}
-                    style={{ color: '#3b82f6', borderColor: '#3b82f6', background: '#f0f7ff' }}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleEdit(nodeData);
-                    }}
-                    disabled={!hasPermission('update')}
-                  />
-                  <Button
-                    size='middle'
-                    icon={<DeleteOutlined />}
-                    danger
-                    style={{ background: '#fff0f0', color: '#f43f5e', borderColor: '#f43f5e' }}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleDelete(nodeData);
-                    }}
-                    disabled={!hasPermission('delete')}
-                  />
-                  <Button
-                    size='middle'
-                    type='primary'
-                    ghost
-                    style={{ borderRadius: 20, fontWeight: 500 }}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleReply(nodeData);
-                    }}
-                    disabled={!hasPermission('create')}
-                  >
-                    回复
-                  </Button>
-                </Space>
-              </div>
+              </Card>
             )}
           />
         </TableContainer>

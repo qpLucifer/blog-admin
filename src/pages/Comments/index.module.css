@@ -27,3 +27,38 @@
 .card:hover {
   box-shadow: 0 8px 32px rgba(106, 75, 198, 0.12);
 }
+
+/* 评论树样式 */
+.commentTree :global(.ant-tree-treenode) {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.commentTree :global(.ant-tree-node-content-wrapper) {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+.commentTree :global(.ant-tree-node-content-wrapper:hover) {
+  background: transparent !important;
+}
+
+.commentTree :global(.ant-tree-title) {
+  width: 100% !important;
+  display: block !important;
+}
+
+.commentTree :global(.ant-tree-switcher) {
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  margin-top: 6px !important;
+}
+
+.commentTree :global(.ant-tree-child-tree) {
+  margin-left: 24px !important;
+  padding-left: 16px !important;
+  border-left: 2px solid #f0f0f0;
+}
