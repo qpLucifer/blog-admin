@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input } from 'antd';
 import styles from './index.module.css';
 import { Role, TableColumn, Menu } from '../../types';
-import { getRolesPage, createRole, updateRole, deleteRole } from '../../api/role';
+import { getRolesPage, createRole, updateRole, deleteRole, exportRoles } from '../../api/role';
 import { getMenuList } from '../../api/menu';
 import { useApi, useCrud, useInitialEffect, useMenuPermission } from '../../hooks';
 
@@ -16,6 +16,7 @@ import {
   TableToolbar,
   TableContainer,
 } from '../../components';
+import { createExportHandler } from '../../utils/exportUtils';
 
 const Roles: React.FC = () => {
   const [form] = Form.useForm();
@@ -55,6 +56,15 @@ const Roles: React.FC = () => {
   }, []);
 
   const { hasPermission } = useMenuPermission();
+
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportRoles as (params: any) => Promise<any>,
+    filename: '角色列表',
+    params: {
+      name: queryParams.name || undefined,
+    },
+  });
 
   const columns = [
     { title: 'ID', dataIndex: 'id', width: 80 },
@@ -195,6 +205,7 @@ const Roles: React.FC = () => {
         addButtonText='新增角色'
         onAdd={showCreateModal}
         onReload={fetchRoles}
+        onExport={handleExport}
         loading={loading || menusLoading}
         selectedRowKeys={[]}
         operations={{

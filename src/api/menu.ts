@@ -20,3 +20,13 @@ export const updateMenu = (id: number | string, data: UpdateMenuData) => {
 export const deleteMenu = (id: number | string) => {
   return api.delete(`/api/menu/${id}`);
 };
+
+// 导出菜单
+export const exportMenus = (data: { name?: string; path?: string }) => {
+  return api.get('/api/menu/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+};

@@ -31,3 +31,13 @@ export const updateComment = (id: number | string, data: CommentData) => {
 export const deleteComment = (id: number | string) => {
   return api.delete(`/api/comments/delete/${id}`);
 };
+
+// 导出评论
+export const exportComments = (data: { content?: string; user_id?: string; blog_id?: string }) => {
+  return api.get('/api/comments/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+};

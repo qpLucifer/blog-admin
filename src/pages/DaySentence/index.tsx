@@ -11,6 +11,7 @@ import {
   addDaySentence,
   updateDaySentence,
   deleteDaySentence,
+  exportDaySentences,
 } from '../../api/daySentence';
 import {
   CommonTable,
@@ -22,6 +23,7 @@ import {
   TableToolbar,
   TableContainer,
 } from '../../components';
+import { createExportHandler } from '../../utils/exportUtils';
 
 const DaySentences: React.FC = () => {
   const [form] = Form.useForm();
@@ -44,6 +46,16 @@ const DaySentences: React.FC = () => {
   );
 
   const { hasPermission } = useMenuPermission();
+
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportDaySentences as (params: any) => Promise<any>,
+    filename: '每日一句列表',
+    params: {
+      auth: queryParams.auth || undefined,
+      day_sentence: queryParams.day_sentence || undefined,
+    },
+  });
 
   // 当查询参数变化时重新获取数据
   useInitialEffect(() => {
@@ -190,6 +202,7 @@ const DaySentences: React.FC = () => {
           addButtonText='新增每日一句'
           onAdd={showCreateModal}
           onReload={fetchDaySentences}
+          onExport={handleExport}
           loading={daySentencesLoading}
           selectedRowKeys={[]}
           operations={{

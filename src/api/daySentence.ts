@@ -26,6 +26,16 @@ export const deleteDaySentence = (id: number | string) => {
   return api.delete(`/api/daySentence/delete/${id}`);
 };
 
+// 导出每日一句
+export const exportDaySentences = (data: { auth?: string; day_sentence?: string }) => {
+  return api.get('/api/daySentence/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+};
+
 // 更新每日一句
 export const updateDaySentence = (id: number | string, data: UpdateDaySentenceData) => {
   return api.put(`/api/daySentence/update/${id}`, data);

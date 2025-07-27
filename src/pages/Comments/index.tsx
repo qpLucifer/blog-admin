@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { Tree, Select, Space, Avatar, Form, Input, Button } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { getCommentsPage, createComment, updateComment, deleteComment } from '../../api/comment';
+import {
+  getCommentsPage,
+  createComment,
+  updateComment,
+  deleteComment,
+  exportComments,
+} from '../../api/comment';
 import { CommentData, BlogData, authReducer } from '../../types';
 import { getBlogsAll } from '../../api/blog';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
@@ -12,6 +18,7 @@ import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { useSelector } from 'react-redux';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { createExportHandler } from '../../utils/exportUtils';
 
 // 生成头像颜色
 function getAvatarColor(userId: number) {
@@ -105,6 +112,18 @@ const Comments: React.FC = () => {
   }, []);
 
   const { hasPermission } = useMenuPermission();
+
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportComments as (params: any) => Promise<any>,
+    filename: '评论列表',
+    params: {
+      content: queryParams.content || undefined,
+      user_id: queryParams.user_id || undefined,
+      blog_id: queryParams.blog_id || undefined,
+    },
+  });
+
   const {
     modalVisible,
     deleteModalVisible,
@@ -234,6 +253,7 @@ const Comments: React.FC = () => {
           addButtonText='新增评论'
           onAdd={showCreateModal}
           onReload={fetchComments}
+          onExport={handleExport}
           loading={loading}
           selectedRowKeys={[]}
           operations={{

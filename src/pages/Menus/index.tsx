@@ -15,7 +15,8 @@ import {
   TableToolbar,
   TableContainer,
 } from '../../components';
-import { getMenuTree, addMenu, updateMenu, deleteMenu } from '../../api/menu';
+import { getMenuTree, addMenu, updateMenu, deleteMenu, exportMenus } from '../../api/menu';
+import { createExportHandler } from '../../utils/exportUtils';
 
 const Menus: React.FC = () => {
   const [form] = Form.useForm();
@@ -139,6 +140,16 @@ const Menus: React.FC = () => {
     });
 
   const { hasPermission } = useMenuPermission();
+
+  // 创建导出处理函数
+  const handleExport = createExportHandler({
+    api: exportMenus as (params: any) => Promise<any>,
+    filename: '菜单列表',
+    params: {
+      name: searchParams.name || undefined,
+      path: searchParams.path || undefined,
+    },
+  });
 
   // CRUD 管理
   const {
@@ -268,6 +279,7 @@ const Menus: React.FC = () => {
           addButtonText='新增菜单'
           onAdd={showCreateModal}
           onReload={fetchMenuTree}
+          onExport={handleExport}
           loading={treeLoading}
           selectedRowKeys={[]}
           operations={{

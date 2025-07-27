@@ -30,6 +30,16 @@ export const deleteRole = (id: number | string) => {
   return api.delete(`/api/role/roles/${id}`);
 };
 
+// 导出角色
+export const exportRoles = (data: { name?: string }) => {
+  return api.get('/api/role/export', data, {
+    responseType: 'blob',
+    headers: {
+      Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    },
+  });
+};
+
 // 获取角色详情
 export const getRoleById = (id: number) => {
   return api.get(`/api/role/roles/${id}`);
