@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { message } from 'antd';
+import { handleApiError } from '../utils/errorHandler';
 
 interface UseApiOptions {
   showError?: boolean; // 是否显示错误提示
@@ -48,9 +49,10 @@ export function useApi<T = any>(
       } catch (err: any) {
         const errorMessage = err.response?.data?.message || err.message || '操作失败';
         setError(errorMessage);
-        // 只有在错误未被axios拦截器处理时才显示错误消息
+
+        // 使用新的错误处理系统
         if (showError && !err.handled) {
-          message.error(errorMessage);
+          handleApiError(err);
         }
 
         return null;

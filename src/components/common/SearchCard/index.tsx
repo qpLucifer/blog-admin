@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { Card, Form, Button, Space } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { SearchCardProps } from '../../../types';
@@ -15,6 +15,12 @@ const SearchCard: React.FC<SearchCardProps> = ({
   onToggleCollapse,
   showCollapse = true,
 }) => {
+  // 使用useCallback优化事件处理函数
+  const handleReset = useCallback(() => {
+    form?.resetFields();
+    onReset();
+  }, [form, onReset]);
+
   return (
     <Card
       className={styles.searchCard}
@@ -46,7 +52,7 @@ const SearchCard: React.FC<SearchCardProps> = ({
               <Button type='primary' htmlType='submit' icon={<SearchOutlined />} loading={loading}>
                 查询
               </Button>
-              <Button onClick={onReset} icon={<ReloadOutlined />}>
+              <Button onClick={handleReset} icon={<ReloadOutlined />}>
                 重置
               </Button>
             </Space>
@@ -57,4 +63,4 @@ const SearchCard: React.FC<SearchCardProps> = ({
   );
 };
 
-export default SearchCard;
+export default memo(SearchCard);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { Table, Empty, Spin, Button } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { CommonTableProps } from '../../../types';
@@ -20,43 +20,65 @@ function CommonTable<T = any>({
   className,
   size = 'middle',
 }: CommonTableProps<T>) {
-  // 渲染加载状态
-  const renderLoading = () => (
-    <div className={styles.loadingContainer}>
-      <Spin size='large' />
-      <div className={styles.loadingText}>加载中...</div>
-    </div>
+  // 使用useCallback优化渲染函数
+  const renderLoading = useCallback(
+    () => (
+      <div className={styles.loadingContainer}>
+        <Spin size='large' />
+        <div className={styles.loadingText}>加载中...</div>
+      </div>
+    ),
+    []
   );
 
-  // 渲染错误状态
-  const renderError = () => (
-    <div className={styles.errorContainer}>
-      <Empty
-        description={
-          <div>
-            <div className={styles.errorTitle}>加载失败</div>
-            <div className={styles.errorMessage}>{error}</div>
-            {onReload && (
-              <Button
-                type='primary'
-                icon={<ReloadOutlined />}
-                onClick={onReload}
-                className={styles.reloadButton}
-              >
-                重新加载
-              </Button>
-            )}
-          </div>
-        }
-      />
-    </div>
+  // 使用useCallback优化渲染函数
+  const renderError = useCallback(
+    () => (
+      <div className={styles.errorContainer}>
+        <Empty
+          description={
+            <div>
+              <div className={styles.errorTitle}>加载失败</div>
+              <div className={styles.errorMessage}>{error}</div>
+              {onReload && (
+                <Button
+                  type='primary'
+                  icon={<ReloadOutlined />}
+                  onClick={onReload}
+                  className={styles.reloadButton}
+                >
+                  重新加载
+                </Button>
+              )}
+            </div>
+          }
+        />
+      </div>
+    ),
+    [error, onReload]
   );
 
   // 渲染空数据状态
-  const renderEmpty = () => <Empty description='暂无数据' image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  const renderEmpty = useCallback(
+    () => <Empty description='暂无数据' image={Empty.PRESENTED_IMAGE_SIMPLE} />,
+    []
+  );
+
+  // 使用useMemo优化分页配置
+  const paginationConfig = useMemo(() => {
+    if (!pagination) return false;
+    return {
+      pageSize: 10,
+      showSizeChanger: true,
+      showQuickJumper: true,
+      showTotal: (total: number, range: [number, number]) =>
+        `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
+      ...pagination,
+    };
+  }, [pagination]);
 
   // 渲染表格内容
-  const renderTable = () => {
+  const renderTable = useCallback(() => {
     if (loading) {
       return renderLoading();
     }
@@ -71,29 +93,33 @@ function CommonTable<T = any>({
 
     return (
       <Table<T>
-        columns={columns}
         dataSource={dataSource}
+        columns={columns}
         rowKey={rowKey}
-        pagination={
-          pagination
-            ? {
-                pageSize: 10,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
-                ...pagination,
-              }
-            : false
-        }
-        loading={loading}
+        pagination={paginationConfig}
         scroll={scroll}
         size={size}
         className={className}
+        locale={{ emptyText: renderEmpty() }}
       />
     );
-  };
+  }, [
+    loading,
+    error,
+    dataSource,
+    columns,
+    rowKey,
+    paginationConfig,
+    scroll,
+    size,
+    className,
+    renderLoading,
+    renderError,
+    renderEmpty,
+  ]);
 
   return <div className={styles.tableContainer}>{renderTable()}</div>;
 }
 
-export default CommonTable;
+// 使用memo优化组件性能
+export default memo(CommonTable) as typeof CommonTable;
