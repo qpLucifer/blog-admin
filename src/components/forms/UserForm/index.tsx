@@ -1,13 +1,8 @@
 import React from 'react';
 import { Form, Input, Select, Switch } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, TeamOutlined } from '@ant-design/icons';
-import { Role } from '../../../types';
+import { UserFormProps } from '../../../types';
 const { Option } = Select;
-
-interface UserFormProps {
-  isEdit?: boolean;
-  roles?: Role[];
-}
 
 /**
  * 用户表单组件

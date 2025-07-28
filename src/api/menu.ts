@@ -1,11 +1,11 @@
 import api from './index';
-import { CreateMenuData, UpdateMenuData } from '../types';
+import { CreateMenuData, UpdateMenuData, MenuQueryParams } from '../types';
 
 export const getMenuList = () => {
   return api.get('/api/menu');
 };
 
-export const getMenuTree = (params?: { name?: string; path?: string }) => {
+export const getMenuTree = (params?: Pick<MenuQueryParams, 'name' | 'path'>) => {
   return api.get('/api/menu/tree', params);
 };
 

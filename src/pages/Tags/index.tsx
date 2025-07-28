@@ -3,7 +3,7 @@ import { Form, Input } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import { getTagsPage, createTag, updateTag, deleteTag, exportTags } from '../../api/tag';
-import { TagData, TableColumn } from '../../types';
+import { TagData, TableColumn, TagQueryParams, ListResponse } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import {
   FormModal,
@@ -22,16 +22,17 @@ import { formatDateTime } from '../../utils/dateUtils';
 const Tags: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
-  const [queryParams, setQueryParams] = useState({ currentPage: 1, pageSize: 10, name: '' });
+  const [queryParams, setQueryParams] = useState<TagQueryParams>({
+    currentPage: 1,
+    pageSize: 10,
+    name: '',
+  });
   const {
     data,
     loading,
     error,
     execute: fetchTags,
-  } = useApi<{ list: TagData[]; total: number; pageSize: number; currentPage: number }>(
-    () => getTagsPage(queryParams),
-    { showError: false }
-  );
+  } = useApi<ListResponse<TagData>>(() => getTagsPage(queryParams), { showError: false });
 
   useInitialEffect(() => {
     fetchTags();

@@ -1,20 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Button, Spin } from 'antd';
-import { FormInstance } from 'antd/lib/form';
-
-interface FormModalProps {
-  title: string;
-  visible: boolean;
-  loading?: boolean;
-  initialValues?: any;
-  onCancel: () => void;
-  onSubmit: (values: any) => void | Promise<void>;
-  children: React.ReactNode;
-  width?: number;
-  okText?: string;
-  cancelText?: string;
-  form?: FormInstance;
-}
+import { FormModalProps } from '../../types';
 
 /**
  * 通用表单弹窗组件

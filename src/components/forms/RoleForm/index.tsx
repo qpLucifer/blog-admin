@@ -1,20 +1,15 @@
 import React from 'react';
 import { Form, Input, Select, Table, Checkbox } from 'antd';
 import { LockOutlined, TeamOutlined } from '@ant-design/icons';
-import { Menu } from '../../../types';
+import { RoleFormProps } from '../../../types';
 
 const { Option } = Select;
-
-interface UserFormProps {
-  isEdit?: boolean;
-  menus?: Menu[];
-}
 
 /**
  * 角色表单组件
  * 用于新增和编辑角色
  */
-const RoleForm: React.FC<UserFormProps> = ({ isEdit = false, menus = [] }) => {
+const RoleForm: React.FC<RoleFormProps> = ({ isEdit = false, menus = [] }) => {
   // 自定义表单控件 - 菜单权限选择器
   const MenuPermissionSelector = ({ value = [], onChange }: any) => {
     // 处理菜单选择变化

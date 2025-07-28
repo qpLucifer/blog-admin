@@ -22,7 +22,15 @@ import {
   deleteComment,
   exportComments,
 } from '../../api/comment';
-import { CommentData, BlogData, TableColumn, authReducer } from '../../types';
+import {
+  CommentData,
+  BlogData,
+  TableColumn,
+  authReducer,
+  CommentQueryParams,
+  ListResponse,
+  User,
+} from '../../types';
 import { getBlogsAll } from '../../api/blog';
 import { getUsersAll } from '../../api/user';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
@@ -51,7 +59,7 @@ const Comments: React.FC = () => {
   const [selectedComment, setSelectedComment] = useState<CommentData | null>(null);
   const [replyParentId, setReplyParentId] = useState<number | null>(null);
   const [replyParentComment, setReplyParentComment] = useState<CommentData | null>(null);
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<CommentQueryParams>({
     currentPage: 1,
     pageSize: 10,
     content: '',
@@ -64,7 +72,7 @@ const Comments: React.FC = () => {
     data,
     loading,
     execute: fetchComments,
-  } = useApi<{ list: CommentData[]; total: number; pageSize: number; currentPage: number }>(
+  } = useApi<ListResponse<CommentData>>(
     () => {
       const params = {
         ...queryParams,
@@ -80,7 +88,7 @@ const Comments: React.FC = () => {
   });
 
   // 获取用户数据
-  const { data: users, execute: fetchUsers } = useApi<any[]>(getUsersAll, {
+  const { data: users, execute: fetchUsers } = useApi<User[]>(getUsersAll, {
     showError: false,
   });
 

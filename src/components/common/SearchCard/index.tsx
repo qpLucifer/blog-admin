@@ -1,19 +1,8 @@
 import React from 'react';
 import { Card, Form, Button, Space } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { SearchCardProps } from '../../../types';
 import styles from './index.module.css';
-
-interface SearchCardProps {
-  title?: string;
-  form: any;
-  onFinish: (values: any) => void;
-  onReset: () => void;
-  loading?: boolean;
-  children: React.ReactNode;
-  collapsed?: boolean;
-  onToggleCollapse?: () => void;
-  showCollapse?: boolean;
-}
 
 const SearchCard: React.FC<SearchCardProps> = ({
   title = '查询条件',

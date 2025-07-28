@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input } from 'antd';
 import styles from './index.module.css';
-import { Role, TableColumn, Menu } from '../../types';
+import { Role, TableColumn, Menu, RoleQueryParams, ListResponse } from '../../types';
 import { getRolesPage, createRole, updateRole, deleteRole, exportRoles } from '../../api/role';
 import { getMenuList } from '../../api/menu';
 import { useApi, useCrud, useInitialEffect, useMenuPermission } from '../../hooks';
@@ -21,7 +21,7 @@ import { createExportHandler } from '../../utils/exportUtils';
 const Roles: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<RoleQueryParams>({
     currentPage: 1,
     pageSize: 10,
     name: '',
@@ -32,10 +32,7 @@ const Roles: React.FC = () => {
     loading,
     error,
     execute: fetchRoles,
-  } = useApi<{ list: Role[]; total: number; pageSize: number; currentPage: number }>(
-    () => getRolesPage(queryParams),
-    { showError: false }
-  );
+  } = useApi<ListResponse<Role>>(() => getRolesPage(queryParams), { showError: false });
 
   const {
     data: menus,

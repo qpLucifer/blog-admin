@@ -1,19 +1,8 @@
 import React, { useMemo } from 'react';
 import { Form, Input, Select } from 'antd';
-import { CommentData, BlogData } from '../../../types';
+import { CommentFormProps } from '../../../types';
 
 const { Option } = Select;
-
-interface CommentFormProps {
-  blogs?: BlogData[];
-  comments?: CommentData[];
-  isReply?: boolean;
-  replyInfo?: {
-    parentId: number | undefined;
-    blogId: number;
-    blogTitle: string;
-  };
-}
 
 const CommentForm: React.FC<CommentFormProps> = ({
   blogs = [],

@@ -1,42 +1,6 @@
 import { useState, useCallback } from 'react';
 import { message } from 'antd';
-
-interface UseCrudOptions<T = any> {
-  // API 函数
-  createApi?: (data: any) => any;
-  updateApi?: (id: number | string, data: any) => any;
-  deleteApi?: (id: number | string) => any;
-
-  // 消息提示
-  createSuccessMessage?: string;
-  updateSuccessMessage?: string;
-  deleteSuccessMessage?: string;
-
-  // 回调函数
-  onSuccess?: (type: 'create' | 'update' | 'delete', data?: T) => void;
-  onError?: (type: 'create' | 'update' | 'delete', error: any) => void;
-}
-
-interface UseCrudReturn<T = any> {
-  // 状态
-  modalVisible: boolean;
-  deleteModalVisible: boolean;
-  loading: boolean;
-  currentRecord: T | null;
-  isEdit: boolean;
-
-  // 操作方法
-  showCreateModal: () => void;
-  showEditModal: (record: T) => void;
-  showDeleteModal: (record: T) => void;
-  hideModal: () => void;
-  hideDeleteModal: () => void;
-
-  // 提交方法
-  handleCreate: (values: any) => Promise<void>;
-  handleUpdate: (values: any) => Promise<void>;
-  handleDelete: () => Promise<void>;
-}
+import { UseCrudOptions, UseCrudReturn } from '../types';
 
 /**
  * 通用CRUD管理Hook

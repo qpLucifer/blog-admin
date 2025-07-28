@@ -1,5 +1,5 @@
 import api from './index';
-import { BlogData } from '../types';
+import { BlogData, BlogQueryParams } from '../types';
 
 // 获取所有博客
 export const getBlogsAll = () => {
@@ -7,14 +7,7 @@ export const getBlogsAll = () => {
 };
 
 // 分页获取博客列表
-export const getBlogsPage = (data: {
-  title?: string;
-  is_published?: number;
-  is_choice?: number;
-  author_id?: string;
-  pageSize?: number;
-  currentPage?: number;
-}) => {
+export const getBlogsPage = (data: BlogQueryParams) => {
   return api.get('/api/blog/listPage?', data);
 };
 

@@ -1,20 +1,7 @@
 import React from 'react';
 import { Button, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-
-interface ActionButtonsProps {
-  record: any;
-  onEdit?: (record: any) => void;
-  onDelete?: (record: any) => void;
-  editText?: string;
-  deleteText?: string;
-  deleteConfirmText?: string;
-  showEdit?: boolean;
-  showDelete?: boolean;
-  editDisabled?: boolean;
-  deleteDisabled?: boolean;
-  size?: 'small' | 'middle' | 'large';
-}
+import { ActionButtonsProps } from '../../types';
 
 /**
  * 通用操作按钮组件

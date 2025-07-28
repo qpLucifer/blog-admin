@@ -1,20 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Input, Select, Switch, Upload, Button, Modal, InputNumber } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
-import { TagData } from '../../../types';
+import { BlogFormProps } from '../../../types';
 import '@wangeditor/editor/dist/css/style.css';
 import { Editor, Toolbar } from '@wangeditor/editor-for-react';
 import { IDomEditor } from '@wangeditor/editor';
 import axios from 'axios';
 
 const { Option } = Select;
-
-interface BlogFormProps {
-  isEdit?: boolean;
-  tags?: TagData[];
-  initialValues?: any;
-  onSubmit?: (values: any) => void;
-}
 
 const BlogForm: React.FC<BlogFormProps> = ({
   isEdit = false,

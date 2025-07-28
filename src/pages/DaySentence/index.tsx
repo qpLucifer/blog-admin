@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { TableColumn, DaySentence } from '../../types';
+import { TableColumn, DaySentence, DaySentenceQueryParams, ListResponse } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 
@@ -28,7 +28,7 @@ import { createExportHandler } from '../../utils/exportUtils';
 const DaySentences: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<DaySentenceQueryParams>({
     currentPage: 1,
     pageSize: 10,
     auth: '',
@@ -40,10 +40,9 @@ const DaySentences: React.FC = () => {
     loading: daySentencesLoading,
     error: daySentencesError,
     execute: fetchDaySentences,
-  } = useApi<{ list: DaySentence[]; total: number; pageSize: number; currentPage: number }>(
-    () => getDaySentenceList(queryParams),
-    { showError: false }
-  );
+  } = useApi<ListResponse<DaySentence>>(() => getDaySentenceList(queryParams), {
+    showError: false,
+  });
 
   const { hasPermission } = useMenuPermission();
 

@@ -1,4 +1,5 @@
 import { message } from 'antd';
+import { ExportParams } from '../types';
 
 /**
  * 文件下载处理
@@ -26,8 +27,8 @@ export const generateFilename = (baseName: string, extension: string = 'xlsx'): 
  * 统一的导出处理函数
  */
 export const handleExport = async (
-  exportApi: (params: any) => Promise<any>,
-  params: any = {},
+  exportApi: (params: ExportParams) => Promise<any>,
+  params: ExportParams = {},
   filename: string,
   options: {
     showLoading?: boolean;

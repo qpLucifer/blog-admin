@@ -8,29 +8,10 @@ import {
   SettingOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
+import { TableToolbarProps } from '../../../types';
 import styles from './index.module.css';
 
 const { Title } = Typography;
-
-interface TableToolbarProps {
-  title: string;
-  showAdd?: boolean;
-  addButtonText?: string;
-  onAdd?: () => void;
-  onReload?: () => void;
-  loading?: boolean;
-  selectedRowKeys?: React.Key[];
-  onBatchDelete?: () => void;
-  onExport?: () => void;
-  onImport?: () => void;
-  extra?: React.ReactNode;
-  operations?: {
-    create?: boolean;
-    export?: boolean;
-    import?: boolean;
-    batchDelete?: boolean;
-  };
-}
 
 interface IMenuItem {
   key: string;

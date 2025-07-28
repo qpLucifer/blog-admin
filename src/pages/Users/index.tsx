@@ -4,7 +4,7 @@ import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import { getUsersPage, createUser, updateUser, deleteUser, exportUsers } from '../../api/user';
 import { getRolesAll } from '../../api/role';
-import { User, Role, TableColumn } from '../../types';
+import { User, Role, TableColumn, ListResponse, UserQueryParams } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import {
   FormModal,
@@ -20,15 +20,13 @@ import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { createExportHandler } from '../../utils/exportUtils';
 import { formatDateTime } from '../../utils/dateUtils';
 
-interface UserWithRoles {
-  roles: Role[];
-}
+// UserWithRoles类型已在types/user.ts中定义为User类型
 
 const Users: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
 
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<UserQueryParams>({
     currentPage: 1,
     pageSize: 10,
     username: '',
@@ -41,10 +39,7 @@ const Users: React.FC = () => {
     loading,
     error,
     execute: fetchUsers,
-  } = useApi<{ list: User[]; total: number; pageSize: number; currentPage: number }>(
-    () => getUsersPage(queryParams),
-    { showError: false }
-  );
+  } = useApi<ListResponse<User>>(() => getUsersPage(queryParams), { showError: false });
 
   const {
     data: roles,
@@ -190,9 +185,9 @@ const Users: React.FC = () => {
       title: '角色',
       dataIndex: 'roles',
       width: 150,
-      render: (roles: UserWithRoles['roles']) => (
+      render: (roles: Role[]) => (
         <Space>
-          {roles?.map(role => (
+          {roles?.map((role: Role) => (
             <Tag key={role.id} color='blue'>
               {role.name}
             </Tag>

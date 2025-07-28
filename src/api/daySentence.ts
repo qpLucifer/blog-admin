@@ -1,5 +1,5 @@
 import api from './index';
-import { CreateDaySentenceData, UpdateDaySentenceData } from '../types';
+import { CreateDaySentenceData, UpdateDaySentenceData, DaySentenceQueryParams } from '../types';
 
 // 获取所有每日一句
 export const getDaySentenceAll = () => {
@@ -7,12 +7,7 @@ export const getDaySentenceAll = () => {
 };
 
 // 分页获取每日一句列表
-export const getDaySentenceList = (params?: {
-  currentPage?: number;
-  pageSize?: number;
-  auth?: string;
-  day_sentence?: string;
-}) => {
+export const getDaySentenceList = (params?: DaySentenceQueryParams) => {
   return api.get('/api/daySentence/listPage', params);
 };
 

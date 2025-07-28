@@ -4,7 +4,7 @@ import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import { getBlogsPage, createBlog, updateBlog, deleteBlog, exportBlogs } from '../../api/blog';
 import { getUsersAll } from '../../api/user';
-import { BlogData, TagData, User, TableColumn } from '../../types';
+import { BlogData, TagData, User, TableColumn, BlogQueryParams, ListResponse } from '../../types';
 import { useApi, useCrud, useInitialEffect, useMountEffect } from '../../hooks';
 import {
   DeleteModal,
@@ -24,7 +24,7 @@ const { Option } = Select;
 const Blogs: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<BlogQueryParams>({
     currentPage: 1,
     pageSize: 10,
     title: '',
@@ -38,7 +38,7 @@ const Blogs: React.FC = () => {
     loading,
     error,
     execute: fetchBlogs,
-  } = useApi<{ list: BlogData[]; total: number }>(() => getBlogsPage(queryParams), {
+  } = useApi<ListResponse<BlogData>>(() => getBlogsPage(queryParams), {
     showError: false,
   });
 

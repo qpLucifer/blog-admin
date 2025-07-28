@@ -1,5 +1,5 @@
 import api from './index';
-import { CommentData } from '../types';
+import { CommentData, CommentQueryParams } from '../types';
 
 // 获取所有评论
 export const getCommentsAll = () => {
@@ -7,14 +7,7 @@ export const getCommentsAll = () => {
 };
 
 // 分页获取评论列表
-export const getCommentsPage = (params?: {
-  currentPage?: number;
-  pageSize?: number;
-  content?: string;
-  user_id?: string;
-  blog_id?: number;
-  parent_id?: number | string | null; // 允许number、string或null
-}) => {
+export const getCommentsPage = (params?: CommentQueryParams) => {
   return api.get('/api/comments/listPage', params);
 };
 

@@ -1,18 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-
-interface DeleteModalProps {
-  visible: boolean;
-  loading?: boolean;
-  title?: string;
-  content?: string;
-  recordName?: string;
-  onCancel: () => void;
-  onConfirm: () => void | Promise<void>;
-  okText?: string;
-  cancelText?: string;
-}
+import { DeleteModalProps } from '../../types';
 
 /**
  * 通用删除确认弹窗组件

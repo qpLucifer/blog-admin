@@ -1,34 +1,8 @@
 import React from 'react';
 import { Table, Empty, Spin, Button } from 'antd';
-import type { SizeType } from 'antd/es/config-provider/SizeContext';
 import { ReloadOutlined } from '@ant-design/icons';
-import { TableColumn } from '../../../types';
+import { CommonTableProps } from '../../../types';
 import styles from './index.module.css';
-
-interface CommonTableProps<T = any> {
-  // 数据相关
-  dataSource: T[];
-  columns: TableColumn[];
-  loading?: boolean;
-  error?: string | null;
-
-  // 分页相关
-  pagination?: {
-    current?: number;
-    pageSize?: number;
-    total?: number;
-    onChange?: (page: number, pageSize: number) => void;
-  };
-
-  // 操作相关
-  onReload?: () => void;
-  rowKey?: string | ((record: T) => string);
-  scroll?: { x?: number | string; y?: number | string };
-
-  // 样式相关
-  className?: string;
-  size?: SizeType;
-}
 
 /**
  * 通用表格组件

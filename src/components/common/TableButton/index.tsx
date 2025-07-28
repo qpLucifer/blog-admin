@@ -1,20 +1,7 @@
 import { Button, Space } from 'antd';
-import styles from './index.module.css';
 import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
-
-interface CommonTableButtonProps {
-  loading?: boolean;
-  onReload?: () => void;
-  onAdd?: () => void;
-  title?: string;
-  addButtonText?: string;
-  operations?: {
-    create: boolean;
-    read: boolean;
-    update: boolean;
-    delete: boolean;
-  };
-}
+import { CommonTableButtonProps } from '../../../types';
+import styles from './index.module.css';
 
 function CommonTableButton({
   loading,

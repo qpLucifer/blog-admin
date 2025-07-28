@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tree, Empty, message, Form, Input } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { TableColumn, Menu } from '../../types';
+import { TableColumn, Menu, MenuQueryParams } from '../../types';
 import { useApi, useCrud, useInitialEffect } from '../../hooks';
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import {
@@ -21,7 +21,7 @@ import { createExportHandler } from '../../utils/exportUtils';
 const Menus: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
-  const [searchParams, setSearchParams] = useState({
+  const [searchParams, setSearchParams] = useState<Pick<MenuQueryParams, 'name' | 'path'>>({
     name: '',
     path: '',
   });

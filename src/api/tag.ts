@@ -1,5 +1,5 @@
 import api from './index';
-import { TagData } from '../types';
+import { TagData, TagQueryParams } from '../types';
 
 // 获取所有标签列表
 export const getTagsAll = () => {
@@ -7,7 +7,7 @@ export const getTagsAll = () => {
 };
 
 // 分页获取标签列表
-export const getTagsPage = (data: { name: string; pageSize: number; currentPage: number }) => {
+export const getTagsPage = (data: TagQueryParams) => {
   return api.get('/api/tag/listPage', data);
 };
 

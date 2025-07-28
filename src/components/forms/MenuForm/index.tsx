@@ -2,15 +2,12 @@ import React from 'react';
 import { Form, Input, TreeSelect } from 'antd';
 import { NumberOutlined, LinkOutlined, MenuOutlined } from '@ant-design/icons';
 import { IconSelector } from '../../index';
+import { MenuFormProps } from '../../../types';
 
 /**
  * 菜单表单组件
  * 用于新增和编辑菜单
  */
-interface MenuFormProps {
-  menus?: any[]; // 所有菜单树
-  currentId?: number | null; // 当前编辑菜单id
-}
 
 const MenuForm: React.FC<MenuFormProps> = ({ menus = [], currentId }) => {
   // 递归生成树形选项

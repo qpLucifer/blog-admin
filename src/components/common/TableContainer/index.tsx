@@ -1,12 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
+import { TableContainerProps } from '../../../types';
 import styles from './index.module.css';
-
-interface TableContainerProps {
-  children: React.ReactNode;
-  className?: string;
-  loading?: boolean;
-}
 
 const TableContainer: React.FC<TableContainerProps> = ({
   children,
