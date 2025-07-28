@@ -13,6 +13,7 @@ export const getCommentsPage = (params?: {
   content?: string;
   user_id?: string;
   blog_id?: number;
+  parent_id?: number | string | null; // 允许number、string或null
 }) => {
   return api.get('/api/comments/listPage', params);
 };

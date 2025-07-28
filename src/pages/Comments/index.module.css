@@ -62,3 +62,210 @@
   padding-left: 16px !important;
   border-left: 2px solid #f0f0f0;
 }
+
+/* 新的表格样式 */
+.commentContent {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #262626;
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+.commentMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.commentTime {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* 用户信息样式 */
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userId {
+  font-size: 12px;
+  color: #595959;
+}
+
+/* 博客信息样式 */
+.blogInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.blogIcon {
+  color: #1890ff;
+  font-size: 12px;
+}
+
+.blogTitle {
+  font-size: 12px;
+  color: #262626;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 回复相关样式 */
+.replyCount {
+  font-size: 11px;
+  color: #1890ff;
+  margin-left: 8px;
+}
+
+.replyStats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.repliesContainer {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+}
+
+.repliesHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1890ff;
+}
+
+.repliesTable {
+  background: white;
+  border-radius: 6px;
+}
+
+.replyContent {
+  padding: 8px 0;
+}
+
+.replyText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #262626;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.replyMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: #8c8c8c;
+}
+
+.replyUser {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.replyTime {
+  color: #8c8c8c;
+}
+
+.replyRelation {
+  color: #1890ff;
+  font-size: 11px;
+  background: #e6f7ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #91d5ff;
+}
+
+/* 回复模式样式 */
+.replyModeIndicator {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-left: 4px solid #0ea5e9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.1);
+}
+
+.replyModeTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0369a1;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.replyModeContent {
+  font-size: 13px;
+  color: #0c4a6e;
+  line-height: 1.5;
+}
+
+.replyModeTip {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* 新的回复渲染样式 */
+.repliesContainer {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.replyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.replyItem:last-child {
+  border-bottom: none;
+}
+
+.replyContent {
+  flex: 1;
+}
+
+.replyText {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.replyMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.replyActions {
+  margin-left: 16px;
+}
+
+.subReplies {
+  margin-top: 12px;
+  padding-left: 20px;
+  border-left: 2px solid #e8e8e8;
+}

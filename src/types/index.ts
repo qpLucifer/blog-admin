@@ -232,6 +232,7 @@ export interface CommentData {
   user_id: number;
   content: string;
   parent_id?: number;
+  reply_count?: number; // 回复数量（仅主评论有此字段）
   created_at?: string;
   updated_at?: string;
 }
