@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { message } from 'antd';
-import { handleApiError } from '../utils/errorHandler';
 
 interface UseApiOptions {
   showError?: boolean; // 是否显示错误提示
@@ -50,9 +49,8 @@ export function useApi<T = any>(
         const errorMessage = err.response?.data?.message || err.message || '操作失败';
         setError(errorMessage);
 
-        // 使用新的错误处理系统
         if (showError && !err.handled) {
-          handleApiError(err);
+          message.error(errorMessage);
         }
 
         return null;
