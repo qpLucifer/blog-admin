@@ -17,8 +17,6 @@ const Blogs = lazy(() => import('../pages/Blogs'));
 const Comments = lazy(() => import('../pages/Comments'));
 const Tags = lazy(() => import('../pages/Tags'));
 const EditBlog = lazy(() => import('../pages/Blogs/Edit'));
-const Logs = lazy(() => import('../pages/Logs'));
-const Performance = lazy(() => import('../pages/Performance'));
 
 const AppRouter = () => (
   <Router>
@@ -46,9 +44,9 @@ const AppRouter = () => (
         >
           <Route index element={<Navigate to='dashboard' replace />} />
           <Route path='dashboard' element={<Dashboard />} />
-          <Route path='admin/users' element={<Users />} />
-          <Route path='admin/roles' element={<Roles />} />
-          <Route path='admin/menus' element={<Menus />} />
+          <Route path='system/users' element={<Users />} />
+          <Route path='system/roles' element={<Roles />} />
+          <Route path='system/menus' element={<Menus />} />
           <Route path='day-sentence' element={<DaySentence />} />
           <Route path='profile' element={<Profile />} />
           <Route path='blogsManage/blogs' element={<Blogs />} />
@@ -56,8 +54,6 @@ const AppRouter = () => (
           <Route path='blogsManage/blogs/edit/:id' element={<EditBlog />} />
           <Route path='blogsManage/comments' element={<Comments />} />
           <Route path='blogsManage/tags' element={<Tags />} />
-          <Route path='system/logs' element={<Logs />} />
-          <Route path='system/performance' element={<Performance />} />
         </Route>
         {/* 404页面，放在所有路由最后 */}
         <Route path='*' element={<NotFound />} />
