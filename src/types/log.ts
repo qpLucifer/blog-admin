@@ -1,75 +1,75 @@
 /**
- * 日志相关类型定义
- * 包含日志文件、日志条目、统计信息等相关类型
+ * 简化的操作日志相关类型定义
  */
 
-// 日志文件类型
-export type LogFileType =
-  | 'error'
+// 操作类型
+export type UserLogAction = 'login' | 'logout' | 'create' | 'update' | 'delete' | 'view';
+
+// 模块类型
+export type UserLogModule =
   | 'auth'
-  | 'business'
-  | 'system'
-  | 'api'
-  | 'security'
-  | 'database';
+  | 'user'
+  | 'blog'
+  | 'comment'
+  | 'tag'
+  | 'role'
+  | 'menu'
+  | 'daySentence'
+  | 'upload';
 
-// 日志级别类型
-export type LogLevel = 'error' | 'warn' | 'info' | 'debug' | 'verbose';
+// 操作状态
+export type UserLogStatus = 'success' | 'failed' | 'error';
 
-// 日志文件信息
-export interface LogFile {
-  name: string;
-  size: number;
-  modified: string | Date;
-  type: LogFileType;
-  path: string; // 新增：文件路径，格式为 type/filename
-}
-
-// 日志条目
-export interface LogEntry {
+// 用户操作日志
+export interface UserLog {
   id: number;
-  timestamp: string;
-  level: LogLevel;
-  message: string;
-  meta: Record<string, any>;
-  raw: string;
+  user_id?: number;
+  username?: string;
+  action: UserLogAction;
+  module: UserLogModule;
+  target_id?: number;
+  target_name?: string;
+  ip_address?: string;
+  user_agent?: string;
+  details?: string;
+  status: UserLogStatus;
+  created_at: string;
+  updated_at: string;
 }
 
-// 日志内容响应
-export interface LogContentResponse {
-  list: LogEntry[];
+// 用户日志查询参数
+export interface UserLogQueryParams {
+  username?: string;
+  action?: UserLogAction;
+  module?: UserLogModule;
+  ip_address?: string;
+  status?: UserLogStatus;
+  start_date?: string;
+  end_date?: string;
+  pageSize?: number;
+  currentPage?: number;
+}
+
+// 用户日志列表响应
+export interface UserLogListResponse {
+  list: UserLog[];
   total: number;
-  page: number;
   pageSize: number;
-  filename: string;
+  currentPage: number;
 }
 
 // 日志统计信息
 export interface LogStats {
-  totalFiles: number;
-  totalSize: number;
-  fileTypes: {
-    error: number;
-    auth: number;
-    business: number;
-    system: number;
-    api: number;
-    security: number;
-    database: number;
-  };
-  recentLogs: Array<{
-    name: string;
-    size: number;
-    modified: string | Date;
+  todayCount: number;
+  recentCount: number;
+  moduleStats: Array<{
+    module: string;
+    count: number;
   }>;
-}
-
-// 日志查询参数
-export interface LogQueryParams {
-  page?: number;
-  pageSize?: number;
-  level?: LogLevel;
-  search?: string;
+  actionStats: Array<{
+    action: string;
+    count: number;
+  }>;
 }
 
 // 日志清理参数
@@ -82,46 +82,28 @@ export interface LogCleanResponse {
   deletedCount: number;
 }
 
-// 日志文件查询参数
-export interface LogFileQueryParams {
-  type?: LogFileType;
-  sortBy?: 'name' | 'size' | 'modified';
-  sortOrder?: 'asc' | 'desc';
-}
-
-// 日志级别配置
-export interface LogLevelConfig {
-  level: LogLevel;
+// 操作类型配置
+export interface UserLogActionConfig {
+  action: UserLogAction;
+  label: string;
   color: string;
-  backgroundColor: string;
   icon: string;
-  priority: number;
 }
 
-// 日志过滤器
-export interface LogFilter {
-  levels: LogLevel[];
-  timeRange?: {
-    start: string;
-    end: string;
-  };
-  keyword?: string;
-  includeMetadata?: boolean;
+// 模块类型配置
+export interface UserLogModuleConfig {
+  module: UserLogModule;
+  label: string;
+  color: string;
+  icon: string;
 }
 
-// 日志导出参数
-export interface LogExportParams {
-  filename: string;
-  format?: 'json' | 'csv' | 'txt';
-  filter?: LogFilter;
-}
-
-// 日志实时更新配置
-export interface LogRealtimeConfig {
-  enabled: boolean;
-  interval: number; // 刷新间隔（毫秒）
-  maxEntries: number; // 最大显示条目数
-  autoScroll: boolean; // 自动滚动到底部
+// 状态类型配置
+export interface UserLogStatusConfig {
+  status: UserLogStatus;
+  label: string;
+  color: string;
+  icon: string;
 }
 
 // 日志查看器配置
