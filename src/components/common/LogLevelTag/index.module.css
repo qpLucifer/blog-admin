@@ -1,0 +1,88 @@
+/* LogLevelTag 组件样式 */
+
+.logLevelTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin: 0 4px 0 0;
+  transition: all 0.2s ease;
+  border-width: 1px;
+  border-style: solid;
+  min-width: 60px;
+  justify-content: center;
+}
+
+.logLevelTag.small {
+  font-size: 10px;
+  padding: 1px 6px;
+  min-width: 50px;
+}
+
+.logLevelTag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.small .icon {
+  font-size: 10px;
+}
+
+.text {
+  font-weight: 700;
+}
+
+/* 特定级别的样式 */
+.logLevelTag.error {
+  animation: pulse 2s infinite;
+}
+
+.logLevelTag.warn {
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 4px rgba(255, 77, 79, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 2px rgba(250, 173, 20, 0.5);
+  }
+  to {
+    box-shadow: 0 0 8px rgba(250, 173, 20, 0.8);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .logLevelTag {
+    font-size: 10px;
+    padding: 1px 6px;
+    min-width: 45px;
+  }
+
+  .icon {
+    font-size: 10px;
+  }
+}

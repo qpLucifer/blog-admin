@@ -18,5 +18,8 @@ export * from './api';
 // 导出组件相关类型
 export * from './component';
 
+// 导出日志相关类型
+export * from './log';
+
 // 为了向后兼容，保留一些常用的类型别名
 export type { AuthReducer as authReducer } from './user';

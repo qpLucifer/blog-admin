@@ -90,9 +90,9 @@ const api = {
     };
     return instance.get(url, finalConfig);
   },
-  post: (url: string, data?: any) => instance.post(url, data),
-  put: (url: string, data?: any) => instance.put(url, data),
-  delete: (url: string) => instance.delete(url),
+  post: (url: string, data?: any, config?: any) => instance.post(url, data, config),
+  put: (url: string, data?: any, config?: any) => instance.put(url, data, config),
+  delete: (url: string, data?: any, config?: any) => instance.delete(url, { data, ...config }),
 };
 
 export default api;

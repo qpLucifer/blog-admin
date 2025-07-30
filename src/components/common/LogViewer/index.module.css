@@ -1,0 +1,182 @@
+/* LogViewer 组件样式 */
+
+.logViewerCard {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.logViewerCard.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  border-radius: 0;
+  margin: 0;
+}
+
+.toolbar {
+  padding: 12px 0;
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.logContent {
+  height: 500px;
+  overflow-y: auto;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  border-radius: 6px;
+  padding: 16px;
+  position: relative;
+}
+
+.logContent.light {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #d9d9d9;
+}
+
+.logContent.dark {
+  background: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.fullscreen .logContent {
+  height: calc(100vh - 200px);
+}
+
+.logEntry {
+  display: flex;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s;
+  animation: slideIn 0.3s ease-out;
+}
+
+.logEntry:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.light .logEntry {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.light .logEntry:hover {
+  background-color: #f9f9f9;
+}
+
+.lineNumber {
+  flex-shrink: 0;
+  width: 50px;
+  color: #888;
+  font-size: 12px;
+  text-align: right;
+  margin-right: 12px;
+  user-select: none;
+}
+
+.timestamp {
+  flex-shrink: 0;
+  width: 180px;
+  color: #888;
+  font-size: 12px;
+  margin-right: 12px;
+}
+
+.message {
+  flex: 1;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.metadata {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 11px;
+  color: #999;
+  border-left: 3px solid #1890ff;
+}
+
+.light .metadata {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.highlight {
+  background: #fadb14;
+  color: #000;
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+/* 动画效果 */
+@keyframes slideIn {
+  from {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 滚动条样式 */
+.logContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.logContent::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.logContent::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.logContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.light .logContent::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.light .logContent::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+}
+
+.light .logContent::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .logContent {
+    height: 400px;
+    font-size: 12px;
+  }
+
+  .lineNumber {
+    width: 40px;
+    font-size: 11px;
+  }
+
+  .timestamp {
+    width: 140px;
+    font-size: 11px;
+  }
+
+  .toolbar {
+    padding: 8px 12px;
+  }
+}
