@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Card,
-  Table,
   Button,
   Space,
   Tag,
@@ -30,7 +29,7 @@ import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
-import { SearchCard } from '../../components';
+import { SearchCard, TableContainer, CommonTable } from '../../components';
 import { getUserLogs, getLogStats, cleanLogFiles, exportLogFiles } from '../../api/logs';
 import {
   UserLog,
@@ -40,6 +39,7 @@ import {
   UserLogModule,
   UserLogType,
   UserLogStatus,
+  TableColumn,
 } from '../../types';
 import { useApi, useInitialEffect } from '../../hooks';
 
@@ -368,7 +368,7 @@ const UserLogs: React.FC = () => {
             </Select>
           </Form.Item>
           <Form.Item name='dateRange' label='时间范围'>
-            <DatePicker.RangePicker style={{ width: 240 }} />
+            <DatePicker.RangePicker allowClear style={{ width: 200 }} />
           </Form.Item>
         </SearchCard>
 
@@ -387,29 +387,26 @@ const UserLogs: React.FC = () => {
           </Space>
         </Card>
 
-        {/* 日志表格 */}
-        <Card>
-          <Table
-            columns={columns}
+        {/* 表格区域 */}
+        <TableContainer loading={logsLoading}>
+          <CommonTable
+            columns={columns as TableColumn[]}
             dataSource={logsData?.list || []}
             rowKey='id'
-            loading={logsLoading}
             pagination={{
               current: queryParams.currentPage,
               pageSize: queryParams.pageSize,
               total: logsData?.data?.total || 0,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
               onChange: (page, size) => {
                 const newParams = { ...queryParams, currentPage: page, pageSize: size };
                 setQueryParams(newParams);
                 fetchLogs(newParams);
               },
             }}
+            loading={logsLoading}
             scroll={{ x: 1200 }}
           />
-        </Card>
+        </TableContainer>
       </div>
     </div>
   );
