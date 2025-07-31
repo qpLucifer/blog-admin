@@ -11,6 +11,7 @@ import {
   Row,
   Col,
   Statistic,
+  Form,
   message,
   Modal,
   Tooltip,
@@ -19,7 +20,6 @@ import {
   ReloadOutlined,
   DownloadOutlined,
   DeleteOutlined,
-  SearchOutlined,
   BarChartOutlined,
   UserOutlined,
   LoginOutlined,
@@ -30,6 +30,7 @@ import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
+import { SearchCard } from '../../components';
 import { getUserLogs, getLogStats, cleanLogFiles, exportLogFiles } from '../../api/logs';
 import {
   UserLog,
@@ -37,11 +38,11 @@ import {
   LogStats,
   UserLogAction,
   UserLogModule,
+  UserLogType,
   UserLogStatus,
 } from '../../types';
 import { useApi, useInitialEffect } from '../../hooks';
 
-const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -53,6 +54,7 @@ const actionConfigs = {
   update: { label: '更新', color: 'orange', icon: <FileTextOutlined /> },
   delete: { label: '删除', color: 'red', icon: <DeleteOutlined /> },
   view: { label: '查看', color: 'cyan', icon: <FileTextOutlined /> },
+  error: { label: '错误', color: 'volcano', icon: <ExclamationCircleOutlined /> },
 };
 
 // 模块类型配置
@@ -66,6 +68,15 @@ const moduleConfigs = {
   menu: { label: '菜单管理', color: 'lime' },
   daySentence: { label: '每日一句', color: 'gold' },
   upload: { label: '文件上传', color: 'volcano' },
+  logs: { label: '日志管理', color: 'geekblue' },
+};
+
+// 日志类型配置
+const logTypeConfigs = {
+  operation: { label: '操作日志', color: 'blue' },
+  security: { label: '安全日志', color: 'red' },
+  system: { label: '系统日志', color: 'green' },
+  error: { label: '错误日志', color: 'volcano' },
 };
 
 // 状态配置
@@ -76,6 +87,8 @@ const statusConfigs = {
 };
 
 const UserLogs: React.FC = () => {
+  const [form] = Form.useForm();
+  const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [queryParams, setQueryParams] = useState<UserLogQueryParams>({
     pageSize: 20,
     currentPage: 1,
@@ -100,9 +113,17 @@ const UserLogs: React.FC = () => {
   });
 
   // 搜索处理
-  const handleSearch = () => {
-    setQueryParams(prev => ({ ...prev, currentPage: 1 }));
-    fetchLogs({ ...queryParams, currentPage: 1 });
+  const onFinish = (values: any) => {
+    const searchParams = {
+      ...values,
+      start_date: values.dateRange?.[0]?.format('YYYY-MM-DD'),
+      end_date: values.dateRange?.[1]?.format('YYYY-MM-DD'),
+      pageSize: 20,
+      currentPage: 1,
+    };
+    delete searchParams.dateRange;
+    setQueryParams(searchParams);
+    fetchLogs(searchParams);
   };
 
   // 重置搜索
@@ -197,6 +218,15 @@ const UserLogs: React.FC = () => {
       width: 120,
       render: (module: UserLogModule) => {
         const config = moduleConfigs[module];
+        return <Tag color={config.color}>{config.label}</Tag>;
+      },
+    },
+    {
+      title: '日志类型',
+      dataIndex: 'log_type',
+      width: 100,
+      render: (logType: UserLogType) => {
+        const config = logTypeConfigs[logType];
         return <Tag color={config.color}>{config.label}</Tag>;
       },
     },
@@ -297,78 +327,50 @@ const UserLogs: React.FC = () => {
           </Col>
         </Row>
 
-        {/* 搜索表单 */}
-        <Card className={pageStyles.searchCard} style={{ marginBottom: 16 }}>
-          <Row gutter={16}>
-            <Col span={6}>
-              <Input
-                placeholder='用户名'
-                value={queryParams.username}
-                onChange={e => setQueryParams(prev => ({ ...prev, username: e.target.value }))}
-              />
-            </Col>
-            <Col span={4}>
-              <Select
-                placeholder='操作类型'
-                value={queryParams.action}
-                onChange={value => setQueryParams(prev => ({ ...prev, action: value }))}
-                allowClear
-              >
-                {Object.entries(actionConfigs).map(([key, config]) => (
-                  <Option key={key} value={key}>
-                    {config.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            <Col span={4}>
-              <Select
-                placeholder='模块'
-                value={queryParams.module}
-                onChange={value => setQueryParams(prev => ({ ...prev, module: value }))}
-                allowClear
-              >
-                {Object.entries(moduleConfigs).map(([key, config]) => (
-                  <Option key={key} value={key}>
-                    {config.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            <Col span={6}>
-              <RangePicker
-                value={
-                  queryParams.start_date && queryParams.end_date
-                    ? [dayjs(queryParams.start_date), dayjs(queryParams.end_date)]
-                    : null
-                }
-                onChange={dates => {
-                  if (dates) {
-                    setQueryParams(prev => ({
-                      ...prev,
-                      start_date: dates[0]?.format('YYYY-MM-DD'),
-                      end_date: dates[1]?.format('YYYY-MM-DD'),
-                    }));
-                  } else {
-                    setQueryParams(prev => ({
-                      ...prev,
-                      start_date: undefined,
-                      end_date: undefined,
-                    }));
-                  }
-                }}
-              />
-            </Col>
-            <Col span={4}>
-              <Space>
-                <Button type='primary' icon={<SearchOutlined />} onClick={handleSearch}>
-                  搜索
-                </Button>
-                <Button onClick={handleReset}>重置</Button>
-              </Space>
-            </Col>
-          </Row>
-        </Card>
+        {/* 搜索区域 */}
+        <SearchCard
+          title='查询条件'
+          form={form}
+          onFinish={onFinish}
+          onReset={handleReset}
+          loading={logsLoading}
+          collapsed={searchCollapsed}
+          onToggleCollapse={() => setSearchCollapsed(!searchCollapsed)}
+        >
+          <Form.Item name='username' label='用户名'>
+            <Input allowClear placeholder='输入用户名' style={{ width: 140 }} />
+          </Form.Item>
+          <Form.Item name='action' label='操作类型'>
+            <Select allowClear placeholder='选择操作类型' style={{ width: 120 }}>
+              {Object.entries(actionConfigs).map(([key, config]) => (
+                <Option key={key} value={key}>
+                  {config.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name='module' label='模块'>
+            <Select allowClear placeholder='选择模块' style={{ width: 110 }}>
+              {Object.entries(moduleConfigs).map(([key, config]) => (
+                <Option key={key} value={key}>
+                  {config.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name='log_type' label='日志类型'>
+            <Select allowClear placeholder='选择日志类型' style={{ width: 120 }}>
+              {Object.entries(logTypeConfigs).map(([key, config]) => (
+                <Option key={key} value={key}>
+                  {config.label}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name='dateRange' label='时间范围'>
+            <DatePicker.RangePicker style={{ width: 240 }} />
+          </Form.Item>
+        </SearchCard>
 
         {/* 操作按钮 */}
         <Card style={{ marginBottom: 16 }}>

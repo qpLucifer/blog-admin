@@ -17,6 +17,9 @@ export type UserLogModule =
   | 'daySentence'
   | 'upload';
 
+// 日志类型
+export type UserLogType = 'operation' | 'security' | 'system' | 'error';
+
 // 操作状态
 export type UserLogStatus = 'success' | 'failed' | 'error';
 
@@ -27,6 +30,7 @@ export interface UserLog {
   username?: string;
   action: UserLogAction;
   module: UserLogModule;
+  log_type: UserLogType;
   target_id?: number;
   target_name?: string;
   ip_address?: string;
@@ -42,6 +46,7 @@ export interface UserLogQueryParams {
   username?: string;
   action?: UserLogAction;
   module?: UserLogModule;
+  log_type?: UserLogType;
   ip_address?: string;
   status?: UserLogStatus;
   start_date?: string;
@@ -70,6 +75,10 @@ export interface LogStats {
     action: string;
     count: number;
   }>;
+  logTypeStats: Array<{
+    log_type: string;
+    count: number;
+  }>;
 }
 
 // 日志清理参数
@@ -93,6 +102,14 @@ export interface UserLogActionConfig {
 // 模块类型配置
 export interface UserLogModuleConfig {
   module: UserLogModule;
+  label: string;
+  color: string;
+  icon: string;
+}
+
+// 日志类型配置
+export interface UserLogTypeConfig {
+  log_type: UserLogType;
   label: string;
   color: string;
   icon: string;
