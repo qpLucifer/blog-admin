@@ -114,16 +114,6 @@ export interface TableContainerProps {
   loading?: boolean;
 }
 
-// 表格按钮组件Props
-export interface CommonTableButtonProps {
-  loading?: boolean;
-  onReload?: () => void;
-  onAdd?: () => void;
-  title?: string;
-  addButtonText?: string;
-  operations?: OperationPermissions;
-}
-
 // 错误边界组件Props
 export interface ErrorBoundaryProps {
   children: React.ReactNode;

@@ -22,19 +22,3 @@ export const exportLogFiles = (params?: UserLogQueryParams) => {
     responseType: 'blob',
   });
 };
-
-// 获取日志级别统计
-export const getLogLevelStats = (type: string, filename: string) => {
-  return api.get(`/api/logs/content/${type}/${filename}/stats`);
-};
-
-// 批量下载日志文件
-export const batchDownloadLogs = (filenames: string[]) => {
-  return api.post(
-    '/api/logs/batch-download',
-    { filenames },
-    {
-      responseType: 'blob',
-    }
-  );
-};

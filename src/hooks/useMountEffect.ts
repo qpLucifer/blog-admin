@@ -14,18 +14,3 @@ export function useMountEffect(effect: () => void | (() => void)) {
     }
   }, []); // 空依赖数组，只在挂载时调用一次
 }
-
-/**
- * 自定义Hook，用于在组件挂载时执行一次异步函数，防止React.StrictMode下的重复调用
- * @param asyncFunction 异步函数
- */
-export function useMountAsyncEffect(asyncFunction: () => Promise<any>) {
-  const hasMounted = useRef(false);
-
-  useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      asyncFunction();
-    }
-  }, []); // 空依赖数组，只在挂载时调用一次
-}
