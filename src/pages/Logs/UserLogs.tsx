@@ -40,6 +40,7 @@ import {
   UserLogType,
   UserLogStatus,
   TableColumn,
+  ListResponse,
 } from '../../types';
 import { useApi, useInitialEffect } from '../../hooks';
 
@@ -90,12 +91,16 @@ const UserLogs: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [queryParams, setQueryParams] = useState<UserLogQueryParams>({
-    pageSize: 20,
+    pageSize: 10,
     currentPage: 1,
   });
 
   // API hooks
-  const { data: logsData, loading: logsLoading, execute: fetchLogs } = useApi(getUserLogs);
+  const {
+    data: logsData,
+    loading: logsLoading,
+    execute: fetchLogs,
+  } = useApi<ListResponse<UserLog>>(getUserLogs);
 
   const {
     data: statsData,
@@ -368,7 +373,7 @@ const UserLogs: React.FC = () => {
             </Select>
           </Form.Item>
           <Form.Item name='dateRange' label='时间范围'>
-            <DatePicker.RangePicker allowClear style={{ width: 200 }} />
+            <DatePicker.RangePicker allowClear style={{ width: 300, height: 38 }} />
           </Form.Item>
         </SearchCard>
 
@@ -396,7 +401,7 @@ const UserLogs: React.FC = () => {
             pagination={{
               current: queryParams.currentPage,
               pageSize: queryParams.pageSize,
-              total: logsData?.data?.total || 0,
+              total: logsData?.total || 0,
               onChange: (page, size) => {
                 const newParams = { ...queryParams, currentPage: page, pageSize: size };
                 setQueryParams(newParams);
