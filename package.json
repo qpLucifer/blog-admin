@@ -24,6 +24,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.30.1",
     "react-scripts": "5.0.1",
+    "socket.io-client": "^4.8.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -89,6 +90,7 @@
     "@commitlint/config-conventional": "^19.8.1",
     "@types/axios": "^0.9.36",
     "@types/react-router-dom": "^5.3.3",
+    "@types/socket.io-client": "^3.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
     "husky": "^9.1.7",
