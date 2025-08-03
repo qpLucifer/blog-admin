@@ -9,12 +9,7 @@ const TableContainer: React.FC<TableContainerProps> = ({
   loading = false,
 }) => {
   return (
-    <Card
-      className={`${styles.tableContainer} ${className || ''}`}
-      loading={loading}
-      size='small'
-      bodyStyle={{ padding: 0 }}
-    >
+    <Card className={`${styles.tableContainer} ${className || ''}`} loading={loading} size='small'>
       <div className={styles.tableWrapper}>{children}</div>
     </Card>
   );

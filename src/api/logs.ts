@@ -22,3 +22,8 @@ export const exportLogFiles = (params?: UserLogQueryParams) => {
     responseType: 'blob',
   });
 };
+
+// 标记日志为已读
+export const markLogAsRead = (logId: number) => {
+  return api.post('/api/logs/mark-read', { logId });
+};

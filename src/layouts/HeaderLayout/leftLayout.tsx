@@ -18,6 +18,7 @@ const LeftLayout: React.FC = () => {
     totalBlogs: 0,
     totalViews: 0,
     pendingComments: 0,
+    errorLogs: 0,
   });
 
   useEffect(() => {
@@ -31,6 +32,7 @@ const LeftLayout: React.FC = () => {
     checkConnection();
 
     const handleStatsUpdate = (data: StatsData) => {
+      debugger;
       setStats(data);
     };
 

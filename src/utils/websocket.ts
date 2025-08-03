@@ -32,6 +32,7 @@ export interface StatsData {
   totalBlogs: number;
   totalViews: number;
   pendingComments: number;
+  errorLogs: number;
 }
 
 class WebSocketManager {
@@ -88,10 +89,15 @@ class WebSocketManager {
     });
 
     // 错误日志推送
-    this.socket.on('log:error', (data: ErrorLogData) => {
-      console.log('收到错误日志:', data);
-      message.error(`系统错误: ${data.module} - ${data.target_name}`);
+    this.socket.on('log:error', (data: number) => {
+      message.info(`您收到一条错误日志，当前错误日志数量为: ${data}`);
       this.emit('errorLog', data);
+    });
+
+    // 错误日志减少通知
+    this.socket.on('log:errorDecrease', (data: { message: string; timestamp: string }) => {
+      message.success(data.message);
+      this.emit('errorLogDecrease', data);
     });
 
     // 统计数据更新

@@ -23,15 +23,23 @@ const RightLayout: React.FC = () => {
   }
 
   useEffect(() => {
-    const errorLogUpdate = (count: number) => {
-      setErrLog(count);
+    const errorLogUpdate = (errLogData: number) => {
+      setErrLog(errLogData);
     };
 
+    const handleStatsUpdate = (statsData: any) => {
+      debugger;
+      setErrLog(statsData.errorLogs);
+    };
+
+    wsManager.on('statsUpdate', handleStatsUpdate);
     wsManager.on('errorLog', errorLogUpdate);
+    wsManager.on('errorLogDecrease', errorLogUpdate);
 
     return () => {
       // 清理事件监听器
       wsManager.off('errorLog', errorLogUpdate);
+      wsManager.off('errorLogDecrease', errorLogUpdate);
     };
   }, []);
 

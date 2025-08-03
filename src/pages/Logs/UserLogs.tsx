@@ -13,7 +13,10 @@ import {
   Form,
   message,
   Modal,
-  Tooltip,
+  Drawer,
+  Descriptions,
+  Typography,
+  Divider,
 } from 'antd';
 import {
   ReloadOutlined,
@@ -30,7 +33,13 @@ import dayjs from 'dayjs';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import { SearchCard, TableContainer, CommonTable } from '../../components';
-import { getUserLogs, getLogStats, cleanLogFiles, exportLogFiles } from '../../api/logs';
+import {
+  getUserLogs,
+  getLogStats,
+  cleanLogFiles,
+  exportLogFiles,
+  markLogAsRead as markLogAsReadAPI,
+} from '../../api/logs';
 import {
   UserLog,
   UserLogQueryParams,
@@ -90,6 +99,8 @@ const statusConfigs = {
 const UserLogs: React.FC = () => {
   const [form] = Form.useForm();
   const [searchCollapsed, setSearchCollapsed] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [queryParams, setQueryParams] = useState<UserLogQueryParams>({
     pageSize: 10,
     currentPage: 1,
@@ -185,6 +196,33 @@ const UserLogs: React.FC = () => {
     }
   };
 
+  // 打开日志详情抽屉
+  const handleViewLogDetail = (log: UserLog) => {
+    setSelectedLog(log);
+    setDrawerVisible(true);
+  };
+
+  // 关闭抽屉
+  const handleCloseDrawer = () => {
+    setDrawerVisible(false);
+    setSelectedLog(null);
+  };
+
+  // 标记日志为已读
+  const handleMarkLogAsRead = async () => {
+    if (!selectedLog) return;
+
+    try {
+      await markLogAsReadAPI(selectedLog.id);
+      message.success('日志已标记为已读');
+
+      handleCloseDrawer();
+      handleRefresh();
+    } catch (error) {
+      message.error('标记日志失败');
+    }
+  };
+
   // 表格列定义
   const columns: ColumnsType<UserLog> = [
     {
@@ -258,6 +296,14 @@ const UserLogs: React.FC = () => {
       },
     },
     {
+      title: '已读',
+      dataIndex: 'hasRead',
+      width: 80,
+      render: (hasRead: boolean) => (
+        <Tag color={hasRead ? 'green' : 'red'}>{hasRead ? '是' : '否'}</Tag>
+      ),
+    },
+    {
       title: '时间',
       dataIndex: 'created_at',
       width: 180,
@@ -268,16 +314,11 @@ const UserLogs: React.FC = () => {
       title: '详情',
       dataIndex: 'details',
       width: 100,
-      render: details => {
-        if (!details || details === '{}') return '-';
-        return (
-          <Tooltip title={<pre>{JSON.stringify(JSON.parse(details), null, 2)}</pre>}>
-            <Button type='link' size='small'>
-              查看详情
-            </Button>
-          </Tooltip>
-        );
-      },
+      render: (_, record) => (
+        <Button type='link' size='small' onClick={() => handleViewLogDetail(record)}>
+          查看详情
+        </Button>
+      ),
     },
   ];
 
@@ -412,6 +453,124 @@ const UserLogs: React.FC = () => {
             scroll={{ x: 1200 }}
           />
         </TableContainer>
+
+        {/* 日志详情抽屉 */}
+        <Drawer
+          title='日志详情'
+          placement='right'
+          width={600}
+          open={drawerVisible}
+          onClose={handleCloseDrawer}
+          footer={
+            <div style={{ textAlign: 'right' }}>
+              <Space>
+                <Button onClick={handleCloseDrawer}>返回</Button>
+                {selectedLog && !selectedLog.hasRead && (
+                  <Button type='primary' onClick={handleMarkLogAsRead}>
+                    标记已读
+                  </Button>
+                )}
+              </Space>
+            </div>
+          }
+        >
+          {selectedLog && (
+            <div>
+              <Descriptions title='基本信息' bordered column={1} size='small'>
+                <Descriptions.Item label='日志ID'>{selectedLog.id}</Descriptions.Item>
+                <Descriptions.Item label='用户'>
+                  <Space>
+                    <UserOutlined />
+                    {selectedLog.username || '匿名用户'}
+                    {selectedLog.user_id && <Tag color='blue'>ID: {selectedLog.user_id}</Tag>}
+                  </Space>
+                </Descriptions.Item>
+                <Descriptions.Item label='操作类型'>
+                  <Tag color={actionConfigs[selectedLog.action as UserLogAction]?.color}>
+                    {actionConfigs[selectedLog.action as UserLogAction]?.label}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label='模块'>
+                  <Tag color={moduleConfigs[selectedLog.module as UserLogModule]?.color}>
+                    {moduleConfigs[selectedLog.module as UserLogModule]?.label}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label='日志类型'>
+                  <Tag color={logTypeConfigs[selectedLog.log_type as UserLogType]?.color}>
+                    {logTypeConfigs[selectedLog.log_type as UserLogType]?.label}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label='状态'>
+                  <Tag color={statusConfigs[selectedLog.status as UserLogStatus]?.color}>
+                    {statusConfigs[selectedLog.status as UserLogStatus]?.label}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label='已读状态'>
+                  <Tag color={selectedLog.hasRead ? 'green' : 'red'}>
+                    {selectedLog.hasRead ? '已读' : '未读'}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label='IP地址'>
+                  {selectedLog.ip_address || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label='操作时间'>
+                  {dayjs(selectedLog.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                </Descriptions.Item>
+              </Descriptions>
+
+              {selectedLog.target_name && (
+                <>
+                  <Divider />
+                  <Descriptions title='目标信息' bordered column={1} size='small'>
+                    <Descriptions.Item label='目标ID'>
+                      {selectedLog.target_id || '-'}
+                    </Descriptions.Item>
+                    <Descriptions.Item label='目标名称'>
+                      {selectedLog.target_name}
+                    </Descriptions.Item>
+                  </Descriptions>
+                </>
+              )}
+
+              {selectedLog.user_agent && (
+                <>
+                  <Divider />
+                  <Descriptions title='客户端信息' bordered column={1} size='small'>
+                    <Descriptions.Item label='User-Agent'>
+                      <Typography.Text copyable style={{ fontSize: '12px' }}>
+                        {selectedLog.user_agent}
+                      </Typography.Text>
+                    </Descriptions.Item>
+                  </Descriptions>
+                </>
+              )}
+
+              {selectedLog.details && selectedLog.details !== '{}' && (
+                <>
+                  <Divider />
+                  <Descriptions title='详细信息' bordered column={1} size='small'>
+                    <Descriptions.Item label='详情'>
+                      <Typography.Text copyable>
+                        <pre
+                          style={{
+                            background: '#f5f5f5',
+                            padding: '8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            maxHeight: '200px',
+                            overflow: 'auto',
+                          }}
+                        >
+                          {JSON.stringify(JSON.parse(selectedLog.details), null, 2)}
+                        </pre>
+                      </Typography.Text>
+                    </Descriptions.Item>
+                  </Descriptions>
+                </>
+              )}
+            </div>
+          )}
+        </Drawer>
       </div>
     </div>
   );

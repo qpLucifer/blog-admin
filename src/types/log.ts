@@ -37,6 +37,7 @@ export interface UserLog {
   user_agent?: string;
   details?: string;
   status: UserLogStatus;
+  hasRead?: boolean;
   created_at: string;
   updated_at: string;
 }
