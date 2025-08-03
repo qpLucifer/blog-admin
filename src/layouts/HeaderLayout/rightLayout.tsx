@@ -28,7 +28,6 @@ const RightLayout: React.FC = () => {
     };
 
     const handleStatsUpdate = (statsData: any) => {
-      debugger;
       setErrLog(statsData.errorLogs);
     };
 
@@ -38,6 +37,7 @@ const RightLayout: React.FC = () => {
 
     return () => {
       // 清理事件监听器
+      wsManager.off('statsUpdate', handleStatsUpdate);
       wsManager.off('errorLog', errorLogUpdate);
       wsManager.off('errorLogDecrease', errorLogUpdate);
     };

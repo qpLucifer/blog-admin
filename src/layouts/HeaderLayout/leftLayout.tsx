@@ -22,6 +22,8 @@ const LeftLayout: React.FC = () => {
   });
 
   useEffect(() => {
+    // 初始化WebSocket连接
+    wsManager.initStats();
     // 监听WebSocket连接状态
     const checkConnection = () => {
       setIsConnected(wsManager.isConnected());
@@ -32,7 +34,6 @@ const LeftLayout: React.FC = () => {
     checkConnection();
 
     const handleStatsUpdate = (data: StatsData) => {
-      debugger;
       setStats(data);
     };
 
@@ -114,7 +115,9 @@ const LeftLayout: React.FC = () => {
         <Tooltip title='待处理评论' placement='bottom'>
           <div className={styles.statItem}>
             <ClockCircleOutlined className={styles.statIcon} />
-            <div className={styles.statNumber}>{stats.pendingComments}</div>
+            <div className={styles.statNumber}>
+              {stats.pendingComments > 99 ? '99+' : stats.pendingComments}
+            </div>
             <div className={styles.statLabel}>待处理</div>
           </div>
         </Tooltip>

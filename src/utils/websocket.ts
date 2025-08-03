@@ -95,9 +95,9 @@ class WebSocketManager {
     });
 
     // 错误日志减少通知
-    this.socket.on('log:errorDecrease', (data: { message: string; timestamp: string }) => {
-      message.success(data.message);
-      this.emit('errorLogDecrease', data);
+    this.socket.on('log:errorDecrease', (errorLogCount: number) => {
+      message.success(`有一条错误日志已被标记为已读，当前错误日志数量: ${errorLogCount}`);
+      this.emit('errorLogDecrease', errorLogCount);
     });
 
     // 统计数据更新
@@ -184,6 +184,13 @@ class WebSocketManager {
           console.error('WebSocket事件处理错误:', error);
         }
       });
+    }
+  }
+
+  //用户初始化数据
+  initStats() {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('initStats');
     }
   }
 
