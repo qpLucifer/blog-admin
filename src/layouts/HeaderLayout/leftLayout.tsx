@@ -22,8 +22,8 @@ const LeftLayout: React.FC = () => {
   });
 
   useEffect(() => {
-    // 初始化WebSocket连接
-    wsManager.initStats();
+    // // 初始化WebSocket连接
+    // wsManager.initStats();
     // 监听WebSocket连接状态
     const checkConnection = () => {
       setIsConnected(wsManager.isConnected());

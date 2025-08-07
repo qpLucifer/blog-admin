@@ -71,6 +71,9 @@ class WebSocketManager {
       console.log('✅ WebSocket连接成功');
       this.reconnectAttempts = 0;
       message.success('实时连接已建立');
+      // setTimeout(() => {
+      //   this.initStats();
+      // }, 1000);
     });
 
     // 连接错误
@@ -188,11 +191,11 @@ class WebSocketManager {
   }
 
   //用户初始化数据
-  initStats() {
-    if (this.socket && this.socket.connected) {
-      this.socket.emit('initStats');
-    }
-  }
+  // initStats() {
+  //   if (this.socket && this.socket.connected) {
+  //     this.socket.emit('initStats');
+  //   }
+  // }
 
   // 发送心跳
   ping() {

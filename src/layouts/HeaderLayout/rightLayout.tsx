@@ -73,6 +73,7 @@ const RightLayout: React.FC = () => {
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
+      wsManager.disconnect();
       message.success('登出成功');
     } catch (error) {
       message.error('登出失败');

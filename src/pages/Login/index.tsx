@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Form, Input, Button, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { loginUser, selectLoading, selectError, clearError } from '../../store/slices/authSlice';
+import { loginUser, selectLoading } from '../../store/slices/authSlice';
 import styles from './index.module.css';
+import wsManager from '../../utils/websocket';
 
 /**
  * 登录页面
@@ -17,17 +18,9 @@ const Login: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const loading = useAppSelector(selectLoading);
-  const error = useAppSelector(selectError);
 
   // 获取重定向地址，如果没有则默认到dashboard
   const from = (location.state as any)?.from?.pathname || '/dashboard';
-  // 监听错误信息变化
-  useEffect(() => {
-    if (error) {
-      message.error(error);
-      dispatch(clearError());
-    }
-  }, [error, dispatch]);
 
   const onFinish = async (values: any) => {
     try {
@@ -35,7 +28,7 @@ const Login: React.FC = () => {
       //unwrap 用于等待异步操作完成并返回结果
       await dispatch(loginUser(values)).unwrap();
       message.success('登录成功');
-
+      wsManager.connect(); // 登录成功后连接WebSocket
       // 重定向到之前的页面或dashboard
       navigate(from, { replace: true });
     } catch (error) {

@@ -14,7 +14,7 @@ const App: React.FC = () => {
   useEffect(() => {
     // 如果用户已登录，初始化WebSocket连接
     const token = getToken();
-    if (token) {
+    if (token && !wsManager.isConnected()) {
       wsManager.connect();
     }
 
