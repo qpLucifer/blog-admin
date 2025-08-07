@@ -1,6 +1,6 @@
 import { Tooltip } from 'antd';
 import styles from '../index.module.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Avatar, Dropdown, Badge, message } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import { selectUser } from '../../store/slices/authSlice';
@@ -8,40 +8,20 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../store/slices/authSlice';
 import wsManager from '../../utils/websocket';
+import { useSelector } from 'react-redux';
+import { selectStats } from '../../store/slices/statsSlice';
 import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
 const RightLayout: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  const [errLog, setErrLog] = useState(0);
-
+  const stats = useSelector(selectStats);
   interface MenuItemProps {
     key: string;
     label: string;
     icon?: React.ReactNode;
     children?: MenuItemProps[];
   }
-
-  useEffect(() => {
-    const errorLogUpdate = (errLogData: number) => {
-      setErrLog(errLogData);
-    };
-
-    const handleStatsUpdate = (statsData: any) => {
-      setErrLog(statsData.errorLogs);
-    };
-
-    wsManager.on('statsUpdate', handleStatsUpdate);
-    wsManager.on('errorLog', errorLogUpdate);
-    wsManager.on('errorLogDecrease', errorLogUpdate);
-
-    return () => {
-      // 清理事件监听器
-      wsManager.off('statsUpdate', handleStatsUpdate);
-      wsManager.off('errorLog', errorLogUpdate);
-      wsManager.off('errorLogDecrease', errorLogUpdate);
-    };
-  }, []);
 
   const userMenuItems = [
     {
@@ -110,7 +90,7 @@ const RightLayout: React.FC = () => {
             cursor: 'pointer',
           }}
         >
-          <Badge count={errLog} size='small'>
+          <Badge count={stats.errorLogs} size='small'>
             <BellOutlined
               style={{
                 fontSize: 18,

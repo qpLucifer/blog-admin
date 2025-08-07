@@ -2,7 +2,9 @@ import { Tooltip } from 'antd';
 import styles from '../index.module.css';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import wsManager, { StatsData, BlogStats } from '../../utils/websocket';
+import { useSelector } from 'react-redux';
+import wsManager from '../../utils/websocket';
+import { selectStats } from '../../store/slices/statsSlice';
 import {
   LinkOutlined,
   DashboardOutlined,
@@ -13,17 +15,9 @@ import {
 const LeftLayout: React.FC = () => {
   const location = useLocation();
   const [isConnected, setIsConnected] = useState(wsManager.isConnected());
-  const [stats, setStats] = useState<StatsData>({
-    onlineUsers: 0,
-    totalBlogs: 0,
-    totalViews: 0,
-    pendingComments: 0,
-    errorLogs: 0,
-  });
+  const stats = useSelector(selectStats);
 
   useEffect(() => {
-    // // 初始化WebSocket连接
-    // wsManager.initStats();
     // 监听WebSocket连接状态
     const checkConnection = () => {
       setIsConnected(wsManager.isConnected());
@@ -33,37 +27,12 @@ const LeftLayout: React.FC = () => {
     const connectionInterval = setInterval(checkConnection, 1000);
     checkConnection();
 
-    const handleStatsUpdate = (data: StatsData) => {
-      setStats(data);
-    };
-
-    const handleOnlineUsersUpdate = (count: number) => {
-      setStats(prev => ({ ...prev, onlineUsers: count }));
-    };
-
-    const handleBlogStatsUpdate = (data: BlogStats) => {
-      setStats(prev => ({
-        ...prev,
-        totalBlogs: data.totalBlogs,
-        totalViews: data.totalViews,
-      }));
-    };
-
-    // 注册事件监听器
-    wsManager.on('statsUpdate', handleStatsUpdate);
-    wsManager.on('onlineUsersUpdate', handleOnlineUsersUpdate);
-    wsManager.on('blogStatsUpdate', handleBlogStatsUpdate);
-
     // 心跳机制
     const heartbeatInterval = setInterval(() => {
       wsManager.ping();
     }, 5000);
 
     return () => {
-      // 清理事件监听器
-      wsManager.off('statsUpdate', handleStatsUpdate);
-      wsManager.off('onlineUsersUpdate', handleOnlineUsersUpdate);
-      wsManager.off('blogStatsUpdate', handleBlogStatsUpdate);
       clearInterval(heartbeatInterval);
       clearInterval(connectionInterval);
     };

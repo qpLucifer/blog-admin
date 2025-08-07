@@ -2,6 +2,13 @@
 import { io, Socket } from 'socket.io-client';
 import { message } from 'antd';
 import { getToken } from './auth';
+import { store } from '../store';
+import {
+  setStats,
+  updateOnlineUsers,
+  updateBlogStats,
+  updateErrorLogs,
+} from '../store/slices/statsSlice';
 
 export interface ErrorLogData {
   id: number;
@@ -71,9 +78,7 @@ class WebSocketManager {
       console.log('✅ WebSocket连接成功');
       this.reconnectAttempts = 0;
       message.success('实时连接已建立');
-      // setTimeout(() => {
-      //   this.initStats();
-      // }, 1000);
+      this.requestStats();
     });
 
     // 连接错误
@@ -94,28 +99,28 @@ class WebSocketManager {
     // 错误日志推送
     this.socket.on('log:error', (data: number) => {
       message.info(`您收到一条错误日志，当前错误日志数量为: ${data}`);
-      this.emit('errorLog', data);
+      store.dispatch(updateErrorLogs(data));
     });
 
     // 错误日志减少通知
     this.socket.on('log:errorDecrease', (errorLogCount: number) => {
       message.success(`有一条错误日志已被标记为已读，当前错误日志数量: ${errorLogCount}`);
-      this.emit('errorLogDecrease', errorLogCount);
+      store.dispatch(updateErrorLogs(errorLogCount));
     });
 
     // 统计数据更新
     this.socket.on('stats:update', (data: StatsData) => {
-      this.emit('statsUpdate', data);
+      store.dispatch(setStats(data));
     });
 
     // 在线用户数更新
     this.socket.on('stats:onlineUsers', (count: number) => {
-      this.emit('onlineUsersUpdate', count);
+      store.dispatch(updateOnlineUsers(count));
     });
 
     // 博客统计更新
     this.socket.on('stats:blogs', (data: BlogStats) => {
-      this.emit('blogStatsUpdate', data);
+      store.dispatch(updateBlogStats(data));
     });
 
     // 博客访问量更新
@@ -190,12 +195,12 @@ class WebSocketManager {
     }
   }
 
-  //用户初始化数据
-  // initStats() {
-  //   if (this.socket && this.socket.connected) {
-  //     this.socket.emit('initStats');
-  //   }
-  // }
+  // 请求统计数据
+  requestStats() {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('requestStats');
+    }
+  }
 
   // 发送心跳
   ping() {
