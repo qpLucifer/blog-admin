@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Tag, Space, Image, Input, Form, Select } from 'antd';
+import { Input, Form, Select } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
 import { getBlogsPage, createBlog, updateBlog, deleteBlog, exportBlogs } from '../../api/blog';
+import { getBlogColumns } from './columns';
 import { getUsersAll } from '../../api/user';
-import { BlogData, TagData, User, TableColumn, BlogQueryParams, ListResponse } from '../../types';
+import { BlogData, User, TableColumn, BlogQueryParams, ListResponse } from '../../types';
 import { useApi, useCrud, useInitialEffect, useMountEffect } from '../../hooks';
 import {
   DeleteModal,
-  ActionButtons,
   CommonTable,
   SearchCard,
   TableToolbar,
@@ -17,7 +17,6 @@ import {
 import { useMenuPermission } from '../../hooks/useMenuPermission';
 import { createExportHandler } from '../../utils/exportUtils';
 import { useNavigate } from 'react-router-dom';
-import { tagColor } from '../../constants';
 
 const { Option } = Select;
 
@@ -139,71 +138,11 @@ const Blogs: React.FC = () => {
     });
   };
 
-  const columns: TableColumn[] = [
-    { title: 'ID', dataIndex: 'id', width: 80 },
-    { title: '标题', dataIndex: 'title', width: 100 },
-    {
-      title: '封面图片',
-      dataIndex: 'cover_image',
-      width: 100,
-      render: (v: string) =>
-        v && (
-          <Image src={process.env.REACT_APP_IMAGE_BASE_URL + v} alt={v} style={{ width: '100%' }} />
-        ),
-    },
-    {
-      title: '标签',
-      dataIndex: 'tags',
-      width: 180,
-      render: (tags: TagData[]) => (
-        <Space>
-          {tags?.map((tag, index) => (
-            <Tag key={tag.id} style={{ color: tagColor[index] }}>
-              {tag.name}
-            </Tag>
-          )) || '-'}
-        </Space>
-      ),
-    },
-    { title: '作者', dataIndex: 'author_id', width: 100 },
-    {
-      title: '发布状态',
-      dataIndex: 'is_published',
-      width: 100,
-      render: (v: boolean) => <Tag color={v ? 'green' : 'red'}>{v ? '已发布' : '未发布'}</Tag>,
-    },
-    {
-      title: '精选状态',
-      dataIndex: 'is_choice',
-      width: 100,
-      render: (v: boolean) => <Tag color={v ? 'green' : 'red'}>{v ? '已精选' : '未精选'}</Tag>,
-    },
-    { title: '阅读量', dataIndex: 'views', width: 100 },
-    { title: '点赞数', dataIndex: 'likes', width: 100 },
-    { title: '评论数', dataIndex: 'comments_count', width: 100 },
-    {
-      title: '需要时间',
-      dataIndex: 'need_time',
-      width: 100,
-      render: (v: number) => (v ? `${v} 分钟` : ''),
-    },
-    {
-      title: '操作',
-      key: 'action',
-      dataIndex: 'operation',
-      width: 150,
-      fixed: 'right',
-      render: (_: any, record: BlogData) => (
-        <ActionButtons
-          record={record}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          editDisabled={!hasPermission('update')}
-          deleteDisabled={!hasPermission('delete')}
-        />
-      ),
-    },
-  ];
+  const columns: TableColumn[] = getBlogColumns({
+    hasPermission: (key: string) => hasPermission(key as any),
+    handleEdit,
+    handleDelete,
+  });
 
   return (
     <div className={`${styles.root} ${pageStyles.pageContainer}`}>
