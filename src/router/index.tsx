@@ -18,6 +18,7 @@ const Comments = lazy(() => import('../pages/Comments'));
 const Tags = lazy(() => import('../pages/Tags'));
 const EditBlog = lazy(() => import('../pages/Blogs/Edit'));
 const UserLogs = lazy(() => import('../pages/Logs/UserLogs'));
+const SystemSettings = lazy(() => import('../pages/SystemSettings'));
 
 const AppRouter = () => (
   <Router>
@@ -56,6 +57,7 @@ const AppRouter = () => (
           <Route path='blogsManage/comments' element={<Comments />} />
           <Route path='blogsManage/tags' element={<Tags />} />
           <Route path='system/logs' element={<UserLogs />} />
+          <Route path='system/settings' element={<SystemSettings />} />
         </Route>
         {/* 404页面，放在所有路由最后 */}
         <Route path='*' element={<NotFound />} />
