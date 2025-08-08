@@ -10,6 +10,7 @@ export { default as TableContainer } from './common/TableContainer';
 // 弹窗组件
 export { default as FormModal } from './FormModal';
 export { default as DeleteModal } from './DeleteModal';
+export { default as ErrorLogModal } from './ErrorLogModal';
 
 // 操作组件
 export { default as ActionButtons } from './ActionButtons';

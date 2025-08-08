@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Card,
   Button,
@@ -52,6 +52,7 @@ import {
   ListResponse,
 } from '../../types';
 import { useApi, useInitialEffect } from '../../hooks';
+import { useLocation } from 'react-router-dom';
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -69,6 +70,8 @@ const actionConfigs = {
 
 // 模块类型配置
 const moduleConfigs = {
+  login: { label: '登录', color: 'blue' },
+  logout: { label: '登出', color: 'default' },
   auth: { label: '认证', color: 'blue' },
   user: { label: '用户管理', color: 'green' },
   blog: { label: '博客管理', color: 'purple' },
@@ -98,13 +101,25 @@ const statusConfigs = {
 
 const UserLogs: React.FC = () => {
   const [form] = Form.useForm();
+  const location = useLocation();
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+
   const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [queryParams, setQueryParams] = useState<UserLogQueryParams>({
     pageSize: 10,
     currentPage: 1,
+    status: (searchParams.get('status') as UserLogStatus) || undefined,
   });
+
+  // 将 URL 中的默认筛选应用到表单
+  React.useEffect(() => {
+    const status = searchParams.get('status') as UserLogStatus | null;
+    if (status) {
+      form.setFieldsValue({ status });
+    }
+  }, [form, searchParams]);
 
   // API hooks
   const {
@@ -155,17 +170,37 @@ const UserLogs: React.FC = () => {
     fetchStats();
   };
 
-  // 清理日志
+  // 清理日志（可选择天数：0/7/15/30）
   const handleClean = () => {
+    let selectedDays = 30;
     confirm({
       title: '确认清理日志',
       icon: <ExclamationCircleOutlined />,
-      content: '确定要清理30天前的日志记录吗？此操作不可恢复。',
+      content: (
+        <div>
+          <div style={{ marginBottom: 8 }}>请选择要清理的时间范围：</div>
+          <Select
+            defaultValue={selectedDays}
+            style={{ width: '100%' }}
+            onChange={(v: number) => (selectedDays = v)}
+          >
+            <Option value={0}>清理所有历史记录（0 天）</Option>
+            <Option value={7}>清理 7 天前的记录</Option>
+            <Option value={15}>清理 15 天前的记录</Option>
+            <Option value={30}>清理 30 天前的记录</Option>
+          </Select>
+          <div style={{ marginTop: 8, color: '#faad14' }}>
+            提示：选择 0 天将清理当前时间之前的全部日志，请谨慎操作。
+          </div>
+        </div>
+      ),
       onOk: async () => {
         try {
-          const result = await executeClean({ days: 30 });
-          if (result?.data) {
-            message.success(`成功清理了 ${result.data.deletedCount} 条日志记录`);
+          const result = await executeClean({ days: selectedDays });
+          if (result) {
+            message.success(
+              `成功清理了 ${result.deletedCount} 条日志记录（阈值：${selectedDays} 天）`
+            );
             handleRefresh();
           }
         } catch (error) {
@@ -260,6 +295,7 @@ const UserLogs: React.FC = () => {
       dataIndex: 'module',
       width: 120,
       render: (module: UserLogModule) => {
+        console.log(module);
         const config = moduleConfigs[module];
         return <Tag color={config.color}>{config.label}</Tag>;
       },
@@ -411,6 +447,13 @@ const UserLogs: React.FC = () => {
                   {config.label}
                 </Option>
               ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name='status' label='状态'>
+            <Select allowClear placeholder='选择状态' style={{ width: 120 }}>
+              <Option value='success'>成功</Option>
+              <Option value='failed'>失败</Option>
+              <Option value='error'>错误</Option>
             </Select>
           </Form.Item>
           <Form.Item name='dateRange' label='时间范围'>

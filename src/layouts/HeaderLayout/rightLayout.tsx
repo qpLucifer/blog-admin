@@ -1,6 +1,6 @@
 import { Tooltip } from 'antd';
 import styles from '../index.module.css';
-import React from 'react';
+import React, { useState } from 'react';
 import { Avatar, Dropdown, Badge, message } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import { selectUser } from '../../store/slices/authSlice';
@@ -11,11 +11,15 @@ import wsManager from '../../utils/websocket';
 import { useSelector } from 'react-redux';
 import { selectStats } from '../../store/slices/statsSlice';
 import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
+import { ErrorLogModal } from '../../components';
+
 const RightLayout: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const stats = useSelector(selectStats);
+  const [logModalOpen, setLogModalOpen] = useState(false);
+
   interface MenuItemProps {
     key: string;
     label: string;
@@ -78,16 +82,19 @@ const RightLayout: React.FC = () => {
   };
   return (
     <>
-      <Tooltip title='错误日志通知' placement='bottom'>
+      <Tooltip title='失败日志通知' placement='bottom'>
         <Badge count={stats.errorLogs} size='small'>
           <BellOutlined
             style={{
               fontSize: 18,
               color: '#667eea',
             }}
+            onClick={() => setLogModalOpen(true)}
           />
         </Badge>
       </Tooltip>
+
+      <ErrorLogModal open={logModalOpen} onClose={() => setLogModalOpen(false)} />
 
       {/* 用户信息 */}
       <Dropdown
