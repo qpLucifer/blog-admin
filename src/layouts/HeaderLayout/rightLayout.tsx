@@ -78,27 +78,15 @@ const RightLayout: React.FC = () => {
   };
   return (
     <>
-      {/* 通知铃铛 */}
-      <Tooltip title='通知消息' placement='bottom'>
-        <div
-          style={{
-            padding: '8px 12px',
-            borderRadius: '12px',
-            background: 'rgba(102, 126, 234, 0.05)',
-            border: '1px solid rgba(102, 126, 234, 0.1)',
-            transition: 'all 0.3s ease',
-            cursor: 'pointer',
-          }}
-        >
-          <Badge count={stats.errorLogs} size='small'>
-            <BellOutlined
-              style={{
-                fontSize: 18,
-                color: '#667eea',
-              }}
-            />
-          </Badge>
-        </div>
+      <Tooltip title='错误日志通知' placement='bottom'>
+        <Badge count={stats.errorLogs} size='small'>
+          <BellOutlined
+            style={{
+              fontSize: 18,
+              color: '#667eea',
+            }}
+          />
+        </Badge>
       </Tooltip>
 
       {/* 用户信息 */}

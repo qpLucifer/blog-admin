@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { store } from '../store';
-import { API_BASE_URL, API_TIMEOUT, API_STATUS } from '../constants';
+import { API_BASE_URL, API_TIMEOUT, API_STATUS, API_ERROR_MESSAGES } from '../constants';
 import { logoutUser } from '../store/slices/authSlice';
 import { message } from 'antd';
 
@@ -30,7 +30,10 @@ instance.interceptors.response.use(
       if (data.code === API_STATUS.SUCCESS) {
         return data.data;
       } else {
-        const error = new Error(data.message || '请求失败');
+        const errorMessage = data.message || '请求失败';
+        // 业务失败的统一提示，防止被上层再次提示
+        message.error(errorMessage);
+        const error = new Error(errorMessage);
         (error as any).response = { data };
         (error as any).code = data.code;
         (error as any).handled = true; // 标记已处理
@@ -43,6 +46,9 @@ instance.interceptors.response.use(
     if (!error.response) {
       if (error.code === 'ECONNABORTED') {
         message.error('请求超时，请稍后重试');
+      } else if (error.message && error.message.includes('429')) {
+        // 某些代理/中间层可能只在错误消息里包含状态码，无response对象
+        message.error(API_ERROR_MESSAGES.TOO_MANY_REQUESTS);
       } else {
         message.error('网络连接失败，请检查网络设置');
       }
@@ -65,6 +71,9 @@ instance.interceptors.response.use(
         break;
       case API_STATUS.NOT_FOUND:
         message.error('请求的资源不存在');
+        break;
+      case API_STATUS.TOO_MANY_REQUESTS:
+        message.error(data?.message || API_ERROR_MESSAGES.TOO_MANY_REQUESTS);
         break;
       case API_STATUS.SERVER_ERROR:
         message.error('服务器内部错误，请稍后重试');

@@ -10,6 +10,7 @@ export const API_STATUS = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  TOO_MANY_REQUESTS: 429,
   SERVER_ERROR: 500,
 } as const;
 
@@ -21,4 +22,5 @@ export const API_ERROR_MESSAGES = {
   UNAUTHORIZED: '未授权访问',
   FORBIDDEN: '禁止访问',
   NOT_FOUND: '资源不存在',
+  TOO_MANY_REQUESTS: '请求频率过高，请稍后再试',
 } as const;
