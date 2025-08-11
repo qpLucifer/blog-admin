@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import { Input } from 'antd';
-import { Card, Form, InputNumber, Switch, Button, Space, message } from 'antd';
-import { getSystemSettings, updateSystemSettings, SystemSettings } from '../../api/system';
+import { Card, Form, InputNumber, Switch, Button, Space, message, Popconfirm } from 'antd';
+import {
+  getSystemSettings,
+  updateSystemSettings,
+  SystemSettings,
+  resetSystemSettings,
+} from '../../api/system';
 import pageStyles from '../../styles/page-layout.module.css';
 
 const SystemSettingsPage: React.FC = () => {
@@ -26,8 +31,20 @@ const SystemSettingsPage: React.FC = () => {
     try {
       await updateSystemSettings(values);
       message.success('系统设置已保存');
-    } catch (e) {
-      message.error('保存失败');
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || '保存失败';
+      if (e?.response?.status === 409) {
+        message.warning('设置已被他人修改，正在为你刷新最新配置...');
+        try {
+          const res = await getSystemSettings();
+          const data: SystemSettings = (res as any)?.rateLimit
+            ? (res as any)
+            : (res as any)?.data || (res as any);
+          form.setFieldsValue(data);
+        } catch (e2) {}
+      } else {
+        message.error(msg);
+      }
     }
   };
 
@@ -92,7 +109,7 @@ const SystemSettingsPage: React.FC = () => {
                 <Switch />
               </Form.Item>
             </Card>
-            <Card title='安全设置（CORS / Helmet / 日志级别）' style={{ marginTop: 16 }}>
+            <Card title='安全设置（CORS / Helmet）' style={{ marginTop: 16 }}>
               <Form.Item
                 label='CORS 白名单（逗号分隔）'
                 name={['security', 'corsOrigins']}
@@ -109,28 +126,57 @@ const SystemSettingsPage: React.FC = () => {
                 >
                   <Switch />
                 </Form.Item>
-                <Form.Item label='日志级别' name={['security', 'logLevel']}>
-                  <Input placeholder='error|warn|info|debug' style={{ width: 200 }} />
-                </Form.Item>
               </Space>
             </Card>
 
             <Card title='模块开关' style={{ marginTop: 16 }}>
-              <Form.Item
-                label='启用上传模块'
-                name={['validation', 'uploadEnabled']}
-                valuePropName='checked'
-              >
-                <Switch />
-              </Form.Item>
+              <Space size='large' direction='vertical' style={{ width: '100%' }}>
+                <Form.Item
+                  label='启用上传模块'
+                  name={['validation', 'uploadEnabled']}
+                  valuePropName='checked'
+                >
+                  <Switch />
+                </Form.Item>
+                <Form.Item
+                  label='启用评论模块'
+                  name={['validation', 'commentsEnabled']}
+                  valuePropName='checked'
+                >
+                  <Switch />
+                </Form.Item>
+                <Form.Item
+                  label='启用用户注册'
+                  name={['validation', 'registrationEnabled']}
+                  valuePropName='checked'
+                >
+                  <Switch />
+                </Form.Item>
+              </Space>
             </Card>
 
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
               <Space>
                 <Button type='primary' htmlType='submit'>
                   保存
                 </Button>
                 <Button onClick={() => form.resetFields()}>重置</Button>
+                <Popconfirm
+                  title='确定要重置为默认设置吗？'
+                  description='此操作将覆盖当前配置，且立即生效'
+                  onConfirm={async () => {
+                    try {
+                      const res = await resetSystemSettings();
+                      const data: any = (res as any)?.data || res;
+                      form.setFieldsValue(data);
+                      message.success('已重置为默认设置');
+                    } catch (e) {
+                      message.error('重置失败');
+                    }
+                  }}
+                >
+                  <Button danger>重置为默认</Button>
+                </Popconfirm>
               </Space>
             </div>
           </Form>

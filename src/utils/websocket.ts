@@ -98,13 +98,13 @@ class WebSocketManager {
 
     // 错误日志推送
     this.socket.on('log:error', (data: number) => {
-      message.info(`您收到一条错误日志，当前错误日志数量为: ${data}`);
+      // message.info(`您收到一条错误日志，当前错误日志数量为: ${data}`);
       store.dispatch(updateErrorLogs(data));
     });
 
     // 错误日志减少通知
     this.socket.on('log:errorDecrease', (errorLogCount: number) => {
-      message.success(`有一条错误日志已被标记为已读，当前错误日志数量: ${errorLogCount}`);
+      // message.success(`有一条错误日志已被标记为已读，当前错误日志数量: ${errorLogCount}`);
       store.dispatch(updateErrorLogs(errorLogCount));
     });
 
