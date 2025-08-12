@@ -82,6 +82,7 @@ const moduleConfigs = {
   daySentence: { label: '每日一句', color: 'gold' },
   upload: { label: '文件上传', color: 'volcano' },
   logs: { label: '日志管理', color: 'geekblue' },
+  system: { label: '系统', color: 'geekblue' },
 };
 
 // 日志类型配置
