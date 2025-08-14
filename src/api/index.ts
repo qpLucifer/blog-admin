@@ -60,7 +60,11 @@ instance.interceptors.response.use(
 
     switch (status) {
       case API_STATUS.UNAUTHORIZED:
-        message.error('登录已过期，请重新登录');
+        const errorMessages =
+          data?.message === '您的账号已在别处登录，请重新登录'
+            ? '您的账号已在别处登录，请重新登录'
+            : '登录已过期，请重新登录';
+        message.error(errorMessages);
         await store.dispatch(logoutUser());
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';

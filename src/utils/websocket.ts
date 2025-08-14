@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { message } from 'antd';
 import { getToken } from './auth';
 import { store } from '../store';
+import { logoutUser } from '../store/slices/authSlice';
 import {
   setStats,
   updateOnlineUsers,
@@ -132,6 +133,16 @@ class WebSocketManager {
     this.socket.on('pong', () => {
       // 心跳响应处理
       console.log('收到心跳响应');
+    });
+
+    // 强制下线
+    this.socket.on('force_logout', (data: { message: string }) => {
+      message.error(data.message || '您的账号已在别处登录，您已被强制下线。');
+      store.dispatch(logoutUser());
+      this.disconnect();
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     });
   }
 
