@@ -74,7 +74,7 @@ const RightLayout: React.FC = () => {
         navigate('/profile');
         break;
       case 'settings':
-        message.info('系统设置功能开发中...');
+        navigate('/system/settings');
         break;
       default:
         break;
