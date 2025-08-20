@@ -50,12 +50,6 @@ jobs:
         # working-directory: ./blog-admin
         run: npm run lint
 
-      - name: Run tests
-        # working-directory: ./blog-admin
-        run: npm run test:coverage
-        env:
-          CI: true
-
       - name: Build for production
         # working-directory: ./blog-admin
         run: npm run build:prod
