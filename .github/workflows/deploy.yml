@@ -19,15 +19,12 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        working-directory: blog-admin
         run: npm ci
 
       - name: Install env-cmd globally
-        working-directory: blog-admin
         run: npm install -g env-cmd
 
       - name: Create production environment file
-        working-directory: blog-admin
         run: |
           cat > .env.production << 'EOF'
           # 生产环境端口
@@ -47,19 +44,15 @@ jobs:
           EOF
 
       - name: Run type check
-        working-directory: blog-admin
         run: npm run type-check
 
       - name: Run linting
-        working-directory: blog-admin
         run: npm run lint
 
       - name: Build for production
-        working-directory: blog-admin
         run: npm run build:prod
 
       - name: Create deployment package
-        working-directory: blog-admin
         run: |
           # 创建部署包，包含构建文件和nginx配置
           mkdir -p deploy-package
@@ -112,9 +105,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "blog-admin/deploy-package/*"
+          source: "deploy-package/*"
           target: "/tmp/blog-admin-deploy"
-          strip_components: 2
+          strip_components: 1
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
