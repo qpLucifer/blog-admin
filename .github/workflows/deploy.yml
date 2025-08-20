@@ -19,14 +19,15 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        # working-directory: ./blog-admin
+        working-directory: ./blog-admin
         run: npm ci
 
       - name: Install env-cmd globally
+        working-directory: ./blog-admin
         run: npm install -g env-cmd
 
       - name: Create production environment file
-        # working-directory: ./blog-admin
+        working-directory: ./blog-admin
         run: |
           cat > .env.production << 'EOF'
           # 生产环境端口
@@ -46,19 +47,19 @@ jobs:
           EOF
 
       - name: Run type check
-        # working-directory: ./blog-admin
+        working-directory: ./blog-admin
         run: npm run type-check
 
       - name: Run linting
-        # working-directory: ./blog-admin
+        working-directory: ./blog-admin
         run: npm run lint
 
       - name: Build for production
-        # working-directory: ./blog-admin
+        working-directory: ./blog-admin
         run: npm run build:prod
 
       - name: Create deployment package
-        # working-directory: ./blog-admin
+        working-directory: ./blog-admin
         run: |
           # 创建部署包，包含构建文件和nginx配置
           mkdir -p deploy-package
@@ -98,6 +99,12 @@ jobs:
               add_header X-XSS-Protection "1; mode=block" always;
           }
           EOF
+          
+          # 验证部署包内容
+          echo "📦 部署包内容:"
+          ls -la deploy-package/
+          echo "📁 build目录内容:"
+          ls -la build/
 
       - name: Copy files to server
         uses: appleboy/scp-action@master
