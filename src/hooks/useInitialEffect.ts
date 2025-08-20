@@ -22,6 +22,7 @@ export function useInitialEffect(
       hasInitialized.current = true;
       return effect();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
 
@@ -49,5 +50,6 @@ export function useInitialAsyncEffect(
       hasInitialized.current = true;
       asyncFunction();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
