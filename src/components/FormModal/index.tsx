@@ -39,7 +39,7 @@ const FormModal: React.FC<FormModalProps> = ({
       currentForm.resetFields();
     } catch (error) {
       // 表单验证失败，不需要处理
-      console.log('表单验证失败:', error);
+      console.warn('表单验证失败:', error);
     }
   };
 

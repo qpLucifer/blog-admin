@@ -24,7 +24,6 @@ const Login: React.FC = () => {
 
   const onFinish = async (values: any) => {
     try {
-      console.log('登录信息:', values);
       //unwrap 用于等待异步操作完成并返回结果
       await dispatch(loginUser(values)).unwrap();
       message.success('登录成功');

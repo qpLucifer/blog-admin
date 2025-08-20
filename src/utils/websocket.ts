@@ -75,7 +75,6 @@ class WebSocketManager {
 
     // 连接成功
     this.socket.on('connect', () => {
-      console.log('✅ WebSocket连接成功');
       this.reconnectAttempts = 0;
       message.success('实时连接已建立');
       this.requestStats();
@@ -131,7 +130,7 @@ class WebSocketManager {
     // 心跳响应
     this.socket.on('pong', () => {
       // 心跳响应处理
-      console.log('收到心跳响应');
+      console.warn('收到心跳响应');
     });
   }
 
@@ -143,7 +142,7 @@ class WebSocketManager {
     }
 
     this.reconnectAttempts++;
-    console.log(`尝试重连 (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+    console.warn(`尝试重连 (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
 
     setTimeout(() => {
       this.connect();

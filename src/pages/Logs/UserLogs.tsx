@@ -296,7 +296,6 @@ const UserLogs: React.FC = () => {
       dataIndex: 'module',
       width: 120,
       render: (module: UserLogModule) => {
-        console.log(module);
         const config = moduleConfigs[module];
         return <Tag color={config.color}>{config.label}</Tag>;
       },

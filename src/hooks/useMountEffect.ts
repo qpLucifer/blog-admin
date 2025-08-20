@@ -12,5 +12,5 @@ export function useMountEffect(effect: () => void | (() => void)) {
       hasMounted.current = true;
       return effect();
     }
-  }, []); // 空依赖数组，只在挂载时调用一次
+  }, [effect]);
 }
