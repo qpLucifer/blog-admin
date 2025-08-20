@@ -1,0 +1,204 @@
+name: Deploy Blog Admin Frontend
+
+on:
+  push:
+    branches:
+      - main  # 或者你使用的主分支名
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'blog-admin/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./blog-admin
+        run: npm ci
+
+      - name: Create production environment file
+        working-directory: ./blog-admin
+        run: |
+          cat > .env.production << 'EOF'
+          # 生产环境端口
+          PORT=3001
+          
+          # 后端 API 服务地址 (使用你的服务器IP)
+          REACT_APP_API_BASE_URL=${{ secrets.PROD_API_BASE_URL }}
+          
+          # 图片等静态资源的基础 URL
+          REACT_APP_IMAGE_BASE_URL=${{ secrets.PROD_IMAGE_BASE_URL }}
+          
+          # WebSocket 服务地址
+          REACT_APP_WS_URL=${{ secrets.PROD_WS_URL }}
+          
+          # 生成时间戳
+          REACT_APP_BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          EOF
+
+      - name: Run type check
+        working-directory: ./blog-admin
+        run: npm run type-check
+
+      - name: Run linting
+        working-directory: ./blog-admin
+        run: npm run lint
+
+      - name: Run tests
+        working-directory: ./blog-admin
+        run: npm run test:coverage
+        env:
+          CI: true
+
+      - name: Build for production
+        working-directory: ./blog-admin
+        run: npm run build:prod
+
+      - name: Create deployment package
+        working-directory: ./blog-admin
+        run: |
+          # 创建部署包，包含构建文件和nginx配置
+          mkdir -p deploy-package
+          cp -r build/* deploy-package/
+          
+          # 创建nginx配置文件
+          cat > deploy-package/nginx.conf << 'EOF'
+          server {
+              listen 80;
+              server_name _;
+              root /var/www/blog-admin;
+              index index.html;
+              
+              # 处理React Router的前端路由
+              location / {
+                  try_files $uri $uri/ /index.html;
+              }
+              
+              # 缓存静态资源
+              location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+                  expires 1y;
+                  add_header Cache-Control "public, immutable";
+              }
+              
+              # API代理（如果需要）
+              location /api/ {
+                  proxy_pass ${{ secrets.PROD_API_BASE_URL }}/;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+              }
+              
+              # 安全头设置
+              add_header X-Frame-Options "SAMEORIGIN" always;
+              add_header X-Content-Type-Options "nosniff" always;
+              add_header X-XSS-Protection "1; mode=block" always;
+          }
+          EOF
+
+      - name: Copy files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "blog-admin/deploy-package/*"
+          target: "/tmp/blog-admin-deploy"
+          strip_components: 2
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 备份当前版本
+            if [ -d "/var/www/blog-admin" ]; then
+              sudo mv /var/www/blog-admin /var/www/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
+            fi
+            
+            # 创建目录
+            sudo mkdir -p /var/www/blog-admin
+            
+            # 移动新文件
+            sudo mv /tmp/blog-admin-deploy/* /var/www/blog-admin/
+            
+            # 设置权限
+            sudo chown -R www-data:www-data /var/www/blog-admin
+            sudo chmod -R 755 /var/www/blog-admin
+            
+            # 更新nginx配置（如果使用nginx）
+            if command -v nginx &> /dev/null; then
+              sudo cp /var/www/blog-admin/nginx.conf /etc/nginx/sites-available/blog-admin
+              sudo ln -sf /etc/nginx/sites-available/blog-admin /etc/nginx/sites-enabled/blog-admin
+              sudo rm -f /var/www/blog-admin/nginx.conf
+              
+              # 测试nginx配置
+              sudo nginx -t && sudo systemctl reload nginx
+            fi
+            
+            # 清理临时文件
+            rm -rf /tmp/blog-admin-deploy
+            
+            # 清理旧备份（保留最近3个）
+            cd /var/www && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
+            
+            echo "✅ Blog Admin frontend deployed successfully!"
+            echo "📦 Build completed at: $(date)"
+
+      - name: Health check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 检查文件是否部署成功
+            if [ -f "/var/www/blog-admin/index.html" ]; then
+              echo "✅ Frontend files deployed successfully"
+              echo "📁 Files in /var/www/blog-admin:"
+              ls -la /var/www/blog-admin/ | head -10
+            else
+              echo "❌ Deployment failed: index.html not found"
+              exit 1
+            fi
+            
+            # 检查nginx状态（如果使用）
+            if command -v nginx &> /dev/null; then
+              if sudo nginx -t; then
+                echo "✅ Nginx configuration is valid"
+              else
+                echo "⚠️ Nginx configuration has issues"
+              fi
+            fi
+
+      - name: Notify deployment status
+        if: always()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🚀 Deployment Summary:"
+            echo "📅 Time: $(date)"
+            echo "🌐 Project: Blog Admin Frontend"
+            echo "📋 Status: ${{ job.status }}"
+            echo "🔗 Expected URL: http://${{ secrets.SERVER_IP }}/ (配置域名后使用域名访问)"
+            echo ""
+            echo "🔧 需要的GitHub Secrets:"
+            echo "- SERVER_IP: 服务器IP地址"
+            echo "- SSH_USERNAME: SSH用户名"
+            echo "- SSH_PRIVATE_KEY: SSH私钥"
+            echo "- PROD_API_BASE_URL: 生产环境API地址 (如: http://your-server:3000)"
+            echo "- PROD_IMAGE_BASE_URL: 生产环境图片地址 (如: http://your-server:3000)"
+            echo "- PROD_WS_URL: 生产环境WebSocket地址 (如: http://your-server:3000)"
