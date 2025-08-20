@@ -19,11 +19,11 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: npm install
 
       - name: Create production environment file
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: |
           cat > .env.production << 'EOF'
           # 生产环境端口
@@ -43,25 +43,25 @@ jobs:
           EOF
 
       - name: Run type check
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: npm run type-check
 
       - name: Run linting
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: npm run lint
 
       - name: Run tests
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: npm run test:coverage
         env:
           CI: true
 
       - name: Build for production
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: npm run build:prod
 
       - name: Create deployment package
-        working-directory: ./blog-admin
+        # working-directory: ./blog-admin
         run: |
           # 创建部署包，包含构建文件和nginx配置
           mkdir -p deploy-package
