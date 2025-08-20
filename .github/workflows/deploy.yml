@@ -98,6 +98,14 @@ jobs:
           ls -la deploy-package/
           echo "📁 build目录内容:"
           ls -la build/
+          echo "🔍 检查index.html是否存在:"
+          if [ -f "deploy-package/index.html" ]; then
+            echo "✅ index.html 存在"
+            ls -la deploy-package/index.html
+          else
+            echo "❌ index.html 不存在"
+            exit 1
+          fi
 
       - name: Copy files to server
         uses: appleboy/scp-action@master
@@ -116,6 +124,9 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "🔍 检查临时文件:"
+            ls -la /tmp/blog-admin-deploy/
+            
             # 创建目标目录（使用与BlogBackend相同的模式）
             sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
             
@@ -128,10 +139,18 @@ jobs:
             # 移动新文件到目标目录
             sudo mv /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
             
-            # 创建宝塔面板网站目录的软链接
+            echo "🔍 检查目标目录文件:"
+            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
+            
+            # 创建宝塔面板网站目录
             sudo mkdir -p /www/wwwroot/blog-admin
+            
+            # 清空网站目录并复制文件
             sudo rm -rf /www/wwwroot/blog-admin/*
-            sudo ln -sf ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
+            sudo cp -r ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
+            
+            echo "🔍 检查网站目录文件:"
+            ls -la /www/wwwroot/blog-admin/
             
             # 设置权限
             sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
@@ -159,19 +178,34 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "🔍 详细检查部署状态:"
+            
+            # 检查目标目录
+            echo "📁 目标目录 ${{ secrets.TARGET_DIR }}/blog-admin:"
+            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
+            
+            # 检查网站目录
+            echo "📁 网站目录 /www/wwwroot/blog-admin:"
+            ls -la /www/wwwroot/blog-admin/
+            
             # 检查文件是否部署成功
             if [ -f "/www/wwwroot/blog-admin/index.html" ]; then
               echo "✅ Frontend files deployed successfully"
-              echo "📁 Files in /www/wwwroot/blog-admin:"
-              ls -la /www/wwwroot/blog-admin/ | head -10
+              echo "📄 index.html 内容预览:"
+              head -5 /www/wwwroot/blog-admin/index.html
             else
-              echo "❌ Deployment failed: index.html not found"
+              echo "❌ Deployment failed: index.html not found in /www/wwwroot/blog-admin/"
+              
+              # 检查目标目录是否有文件
+              if [ -f "${{ secrets.TARGET_DIR }}/blog-admin/index.html" ]; then
+                echo "⚠️ index.html exists in target dir but not in web dir"
+                echo "📄 Target dir index.html content:"
+                head -5 ${{ secrets.TARGET_DIR }}/blog-admin/index.html
+              else
+                echo "❌ index.html not found in target dir either"
+              fi
               exit 1
             fi
-            
-            # 检查目标目录
-            echo "📁 Files in ${{ secrets.TARGET_DIR }}/blog-admin:"
-            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/ | head -5
 
       - name: Notify deployment status
         if: always()
