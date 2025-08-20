@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         # working-directory: ./blog-admin
-        run: npm install
+        run: npm ci
 
       - name: Create production environment file
         # working-directory: ./blog-admin
