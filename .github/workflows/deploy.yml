@@ -178,7 +178,16 @@ jobs:
             # 清空网站目录并复制文件
             echo "🔍 复制文件到网站目录..."
             sudo rm -rf /www/wwwroot/blog-admin/*
-            sudo cp -r ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
+            
+            # 使用更详细的复制命令
+            echo "🔍 执行复制命令..."
+            sudo cp -rv ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
+            
+            # 如果复制失败，尝试使用rsync
+            if [ $? -ne 0 ]; then
+              echo "⚠️ cp命令失败，尝试使用rsync..."
+              sudo rsync -av ${{ secrets.TARGET_DIR }}/blog-admin/ /www/wwwroot/blog-admin/
+            fi
             
             echo "🔍 检查网站目录文件:"
             ls -la /www/wwwroot/blog-admin/
@@ -188,7 +197,20 @@ jobs:
               ls -la /www/wwwroot/blog-admin/index.html
             else
               echo "❌ 网站目录中没有index.html"
-              exit 1
+              echo "🔍 检查复制命令的输出和错误..."
+              echo "📁 目标目录内容:"
+              ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
+              echo "📁 网站目录内容:"
+              ls -la /www/wwwroot/blog-admin/
+              echo "🔍 尝试手动复制单个文件..."
+              sudo cp ${{ secrets.TARGET_DIR }}/blog-admin/index.html /www/wwwroot/blog-admin/
+              if [ -f "/www/wwwroot/blog-admin/index.html" ]; then
+                echo "✅ 手动复制成功"
+                ls -la /www/wwwroot/blog-admin/index.html
+              else
+                echo "❌ 手动复制也失败"
+                exit 1
+              fi
             fi
             
             # 设置权限
@@ -198,6 +220,9 @@ jobs:
             # 设置宝塔面板目录权限
             sudo chown -R www:www /www/wwwroot/blog-admin
             sudo chmod -R 755 /www/wwwroot/blog-admin
+            
+            # 确保网站目录有正确的权限
+            sudo chmod 755 /www/wwwroot/blog-admin
             
             # 清理临时文件
             rm -rf /tmp/blog-admin-deploy
