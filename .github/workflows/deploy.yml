@@ -63,7 +63,7 @@ jobs:
           server {
               listen 80;
               server_name _;
-              root /var/www/blog-admin;
+              root /www/wwwroot/blog-admin;
               index index.html;
               
               # 处理React Router的前端路由
@@ -79,7 +79,7 @@ jobs:
               
               # API代理（如果需要）
               # location /api/ {
-              #     proxy_pass ${{ secrets.PROD_API_BASE_URL }}/;
+              #     proxy_pass http://127.0.0.1:3000/;
               #     proxy_set_header Host $host;
               #     proxy_set_header X-Real-IP $remote_addr;
               #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -116,39 +116,41 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # 创建目标目录（使用与BlogBackend相同的模式）
+            sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
+            
             # 备份当前版本
-            if [ -d "/var/www/blog-admin" ]; then
-              sudo mv /var/www/blog-admin /var/www/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
+            if [ -d "${{ secrets.TARGET_DIR }}/blog-admin" ] && [ "$(ls -A ${{ secrets.TARGET_DIR }}/blog-admin)" ]; then
+              sudo mv ${{ secrets.TARGET_DIR }}/blog-admin ${{ secrets.TARGET_DIR }}/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
+              sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
             fi
             
-            # 创建目录
-            sudo mkdir -p /var/www/blog-admin
+            # 移动新文件到目标目录
+            sudo mv /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
             
-            # 移动新文件
-            sudo mv /tmp/blog-admin-deploy/* /var/www/blog-admin/
+            # 创建宝塔面板网站目录的软链接
+            sudo mkdir -p /www/wwwroot/blog-admin
+            sudo rm -rf /www/wwwroot/blog-admin/*
+            sudo ln -sf ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
             
             # 设置权限
-            sudo chown -R www-data:www-data /var/www/blog-admin
-            sudo chmod -R 755 /var/www/blog-admin
+            sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
+            sudo chmod -R 755 ${{ secrets.TARGET_DIR }}/blog-admin
             
-            # 更新nginx配置（如果使用nginx）
-            if command -v nginx &> /dev/null; then
-              sudo cp /var/www/blog-admin/nginx.conf /etc/nginx/sites-available/blog-admin
-              sudo ln -sf /etc/nginx/sites-available/blog-admin /etc/nginx/sites-enabled/blog-admin
-              sudo rm -f /var/www/blog-admin/nginx.conf
-              
-              # 测试nginx配置
-              sudo nginx -t && sudo systemctl reload nginx
-            fi
+            # 设置宝塔面板目录权限
+            sudo chown -R www:www /www/wwwroot/blog-admin
+            sudo chmod -R 755 /www/wwwroot/blog-admin
             
             # 清理临时文件
             rm -rf /tmp/blog-admin-deploy
             
             # 清理旧备份（保留最近3个）
-            cd /var/www && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
+            cd ${{ secrets.TARGET_DIR }} && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
             
             echo "✅ Blog Admin frontend deployed successfully!"
             echo "📦 Build completed at: $(date)"
+            echo "📁 Deployed to: ${{ secrets.TARGET_DIR }}/blog-admin"
+            echo "🌐 Web accessible at: /www/wwwroot/blog-admin"
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
@@ -158,23 +160,18 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # 检查文件是否部署成功
-            if [ -f "/var/www/blog-admin/index.html" ]; then
+            if [ -f "/www/wwwroot/blog-admin/index.html" ]; then
               echo "✅ Frontend files deployed successfully"
-              echo "📁 Files in /var/www/blog-admin:"
-              ls -la /var/www/blog-admin/ | head -10
+              echo "📁 Files in /www/wwwroot/blog-admin:"
+              ls -la /www/wwwroot/blog-admin/ | head -10
             else
               echo "❌ Deployment failed: index.html not found"
               exit 1
             fi
             
-            # 检查nginx状态（如果使用）
-            if command -v nginx &> /dev/null; then
-              if sudo nginx -t; then
-                echo "✅ Nginx configuration is valid"
-              else
-                echo "⚠️ Nginx configuration has issues"
-              fi
-            fi
+            # 检查目标目录
+            echo "📁 Files in ${{ secrets.TARGET_DIR }}/blog-admin:"
+            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/ | head -5
 
       - name: Notify deployment status
         if: always()
@@ -188,12 +185,15 @@ jobs:
             echo "📅 Time: $(date)"
             echo "🌐 Project: Blog Admin Frontend"
             echo "📋 Status: ${{ job.status }}"
+            echo "📁 Deployed to: ${{ secrets.TARGET_DIR }}/blog-admin"
+            echo "🌐 Web accessible at: /www/wwwroot/blog-admin"
             echo "🔗 Expected URL: http://${{ secrets.SERVER_IP }}/ (配置域名后使用域名访问)"
             echo ""
             echo "🔧 需要的GitHub Secrets:"
             echo "- SERVER_IP: 服务器IP地址"
             echo "- SSH_USERNAME: SSH用户名"
             echo "- SSH_PRIVATE_KEY: SSH私钥"
+            echo "- TARGET_DIR: 目标部署目录 (如: /www/wwwroot)"
             echo "- PROD_API_BASE_URL: 生产环境API地址 (如: http://your-server:3000)"
             echo "- PROD_IMAGE_BASE_URL: 生产环境图片地址 (如: http://your-server:3000)"
             echo "- PROD_WS_URL: 生产环境WebSocket地址 (如: http://your-server:3000)"
