@@ -102,8 +102,17 @@ jobs:
           if [ -f "deploy-package/index.html" ]; then
             echo "✅ index.html 存在"
             ls -la deploy-package/index.html
+            echo "📄 index.html 前5行内容:"
+            head -5 deploy-package/index.html
           else
             echo "❌ index.html 不存在"
+            echo "🔍 检查build目录是否有index.html:"
+            if [ -f "build/index.html" ]; then
+              echo "✅ build/index.html 存在，但复制失败"
+              ls -la build/index.html
+            else
+              echo "❌ build/index.html 也不存在，构建失败"
+            fi
             exit 1
           fi
 
@@ -126,6 +135,18 @@ jobs:
           script: |
             echo "🔍 检查临时文件:"
             ls -la /tmp/blog-admin-deploy/
+            echo "📄 检查临时目录中的index.html:"
+            if [ -f "/tmp/blog-admin-deploy/index.html" ]; then
+              echo "✅ 临时目录中有index.html"
+              ls -la /tmp/blog-admin-deploy/index.html
+              echo "📄 index.html 前5行内容:"
+              head -5 /tmp/blog-admin-deploy/index.html
+            else
+              echo "❌ 临时目录中没有index.html"
+              echo "📁 临时目录完整内容:"
+              ls -la /tmp/blog-admin-deploy/
+              exit 1
+            fi
             
             # 创建目标目录（使用与BlogBackend相同的模式）
             sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
@@ -137,20 +158,38 @@ jobs:
             fi
             
             # 移动新文件到目标目录
+            echo "🔍 移动文件到目标目录..."
             sudo mv /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
             
             echo "🔍 检查目标目录文件:"
             ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
+            echo "📄 检查目标目录中的index.html:"
+            if [ -f "${{ secrets.TARGET_DIR }}/blog-admin/index.html" ]; then
+              echo "✅ 目标目录中有index.html"
+              ls -la ${{ secrets.TARGET_DIR }}/blog-admin/index.html
+            else
+              echo "❌ 目标目录中没有index.html"
+              exit 1
+            fi
             
             # 创建宝塔面板网站目录
             sudo mkdir -p /www/wwwroot/blog-admin
             
             # 清空网站目录并复制文件
+            echo "🔍 复制文件到网站目录..."
             sudo rm -rf /www/wwwroot/blog-admin/*
             sudo cp -r ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
             
             echo "🔍 检查网站目录文件:"
             ls -la /www/wwwroot/blog-admin/
+            echo "📄 检查网站目录中的index.html:"
+            if [ -f "/www/wwwroot/blog-admin/index.html" ]; then
+              echo "✅ 网站目录中有index.html"
+              ls -la /www/wwwroot/blog-admin/index.html
+            else
+              echo "❌ 网站目录中没有index.html"
+              exit 1
+            fi
             
             # 设置权限
             sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
@@ -203,6 +242,14 @@ jobs:
                 head -5 ${{ secrets.TARGET_DIR }}/blog-admin/index.html
               else
                 echo "❌ index.html not found in target dir either"
+                echo "🔍 检查目标目录是否存在:"
+                if [ -d "${{ secrets.TARGET_DIR }}/blog-admin" ]; then
+                  echo "✅ 目标目录存在"
+                  echo "📁 目标目录内容:"
+                  ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
+                else
+                  echo "❌ 目标目录不存在"
+                fi
               fi
               exit 1
             fi
