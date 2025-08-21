@@ -133,6 +133,21 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "🔍 验证TARGET_DIR设置:"
+            echo "TARGET_DIR = ${{ secrets.TARGET_DIR }}"
+            
+            # 检查TARGET_DIR是否存在
+            if [ ! -d "${{ secrets.TARGET_DIR }}" ]; then
+              echo "❌ TARGET_DIR 目录不存在: ${{ secrets.TARGET_DIR }}"
+              echo "🔍 检查常见的网站目录:"
+              ls -la /www/wwwroot/ 2>/dev/null || echo "❌ /www/wwwroot 不存在"
+              ls -la /var/www/ 2>/dev/null || echo "❌ /var/www 不存在"
+              exit 1
+            else
+              echo "✅ TARGET_DIR 目录存在: ${{ secrets.TARGET_DIR }}"
+              ls -la ${{ secrets.TARGET_DIR }}/
+            fi
+            
             echo "🔍 检查临时文件:"
             ls -la /tmp/blog-admin-deploy/
             echo "📄 检查临时目录中的index.html:"
