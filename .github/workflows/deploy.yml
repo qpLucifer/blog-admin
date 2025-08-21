@@ -163,47 +163,36 @@ jobs:
               exit 1
             fi
             
-            # 创建目标目录（使用与BlogBackend相同的模式）
-            sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
-            
-            # 备份当前版本
-            if [ -d "${{ secrets.TARGET_DIR }}/blog-admin" ] && [ "$(ls -A ${{ secrets.TARGET_DIR }}/blog-admin)" ]; then
-              sudo mv ${{ secrets.TARGET_DIR }}/blog-admin ${{ secrets.TARGET_DIR }}/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
-            fi
-            
-            # 创建新的目标目录
-            sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
-            
-            # 复制文件到目标目录（使用cp而不是mv）
-            echo "🔍 复制文件到目标目录..."
-            sudo cp -r /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
-            
-            echo "🔍 检查目标目录文件:"
-            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
-            echo "📄 检查目标目录中的index.html:"
-            if [ -f "${{ secrets.TARGET_DIR }}/blog-admin/index.html" ]; then
-              echo "✅ 目标目录中有index.html"
-              ls -la ${{ secrets.TARGET_DIR }}/blog-admin/index.html
-              
-              # 立即设置正确的权限
-              echo "🔧 设置目标目录权限..."
-              sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
-              sudo chmod -R 755 ${{ secrets.TARGET_DIR }}/blog-admin
-            else
-              echo "❌ 目标目录中没有index.html"
-              exit 1
-            fi
-            
-            # 创建宝塔面板网站目录
+                        # 创建宝塔面板网站目录
             sudo mkdir -p /www/wwwroot/blog-admin
             
-            # 清空网站目录并复制文件
-            echo "🔍 复制文件到网站目录..."
-            sudo rm -rf /www/wwwroot/blog-admin/*
+            # 备份当前版本
+            if [ -d "/www/wwwroot/blog-admin" ] && [ "$(ls -A /www/wwwroot/blog-admin)" ]; then
+              sudo mv /www/wwwroot/blog-admin /www/wwwroot/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
+            fi
             
-            # 直接使用rsync复制文件
-            echo "🔍 使用rsync复制文件..."
-            sudo rsync -av ${{ secrets.TARGET_DIR }}/blog-admin/ /www/wwwroot/blog-admin/
+            # 创建新的网站目录
+            sudo mkdir -p /www/wwwroot/blog-admin
+            
+            # 直接复制文件到网站目录
+            echo "🔍 直接复制文件到网站目录..."
+            sudo cp -r /tmp/blog-admin-deploy/* /www/wwwroot/blog-admin/
+            
+            echo "🔍 检查网站目录文件:"
+            ls -la /www/wwwroot/blog-admin/
+            echo "📄 检查网站目录中的index.html:"
+            if [ -f "/www/wwwroot/blog-admin/index.html" ]; then
+              echo "✅ 网站目录中有index.html"
+              ls -la /www/wwwroot/blog-admin/index.html
+              
+              # 设置正确的权限
+              echo "🔧 设置网站目录权限..."
+              sudo chown -R www:www /www/wwwroot/blog-admin
+              sudo chmod -R 755 /www/wwwroot/blog-admin
+            else
+              echo "❌ 网站目录中没有index.html"
+              exit 1
+            fi
             
             echo "🔍 检查网站目录文件:"
             ls -la /www/wwwroot/blog-admin/
@@ -240,11 +229,10 @@ jobs:
             rm -rf /tmp/blog-admin-deploy
             
             # 清理旧备份（保留最近3个）
-            cd ${{ secrets.TARGET_DIR }} && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
+            cd /www/wwwroot && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
             
             echo "✅ Blog Admin frontend deployed successfully!"
             echo "📦 Build completed at: $(date)"
-            echo "📁 Deployed to: ${{ secrets.TARGET_DIR }}/blog-admin"
             echo "🌐 Web accessible at: /www/wwwroot/blog-admin"
 
       - name: Health check
@@ -255,10 +243,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "🔍 详细检查部署状态:"
-            
-            # 检查目标目录
-            echo "📁 目标目录 ${{ secrets.TARGET_DIR }}/blog-admin:"
-            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
             
             # 检查网站目录
             echo "📁 网站目录 /www/wwwroot/blog-admin:"
@@ -271,23 +255,8 @@ jobs:
               head -5 /www/wwwroot/blog-admin/index.html
             else
               echo "❌ Deployment failed: index.html not found in /www/wwwroot/blog-admin/"
-              
-              # 检查目标目录是否有文件
-              if [ -f "${{ secrets.TARGET_DIR }}/blog-admin/index.html" ]; then
-                echo "⚠️ index.html exists in target dir but not in web dir"
-                echo "📄 Target dir index.html content:"
-                head -5 ${{ secrets.TARGET_DIR }}/blog-admin/index.html
-              else
-                echo "❌ index.html not found in target dir either"
-                echo "🔍 检查目标目录是否存在:"
-                if [ -d "${{ secrets.TARGET_DIR }}/blog-admin" ]; then
-                  echo "✅ 目标目录存在"
-                  echo "📁 目标目录内容:"
-                  ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
-                else
-                  echo "❌ 目标目录不存在"
-                fi
-              fi
+              echo "📁 网站目录内容:"
+              ls -la /www/wwwroot/blog-admin/
               exit 1
             fi
 
