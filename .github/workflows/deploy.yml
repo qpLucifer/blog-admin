@@ -94,18 +94,7 @@ jobs:
           EOF
           
           # 验证部署包内容
-          echo "📦 部署包内容:"
-          ls -la deploy-package/
-          echo "📁 build目录内容:"
-          ls -la build/
-          echo "🔍 检查index.html是否存在:"
-          if [ -f "deploy-package/index.html" ]; then
-            echo "✅ index.html 存在"
-            ls -la deploy-package/index.html
-          else
-            echo "❌ index.html 不存在"
-            exit 1
-          fi
+          echo "📦 构建完成，文件已准备就绪"
 
       - name: Copy files to server
         uses: appleboy/scp-action@master
@@ -124,39 +113,24 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "🔍 检查临时文件:"
-            ls -la /tmp/blog-admin-deploy/
+            echo "🚀 开始部署..."
             
-            # 创建目标目录（使用与BlogBackend相同的模式）
-            sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
-            
-            # 备份当前版本
-            if [ -d "${{ secrets.TARGET_DIR }}/blog-admin" ] && [ "$(ls -A ${{ secrets.TARGET_DIR }}/blog-admin)" ]; then
-              sudo mv ${{ secrets.TARGET_DIR }}/blog-admin ${{ secrets.TARGET_DIR }}/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
-              sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
-            fi
-            
-            # 移动新文件到目标目录
-            sudo mv /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
-            
-            echo "🔍 检查目标目录文件:"
-            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
-            
-            # 创建宝塔面板网站目录
+                        # 创建宝塔面板网站目录
             sudo mkdir -p /www/wwwroot/blog-admin
             
-            # 清空网站目录并复制文件
-            sudo rm -rf /www/wwwroot/blog-admin/*
-            sudo cp -r ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
+            # 备份当前版本
+            if [ -d "/www/wwwroot/blog-admin" ] && [ "$(ls -A /www/wwwroot/blog-admin)" ]; then
+              sudo mv /www/wwwroot/blog-admin /www/wwwroot/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
+              echo "📦 已备份当前版本"
+            fi
             
-            echo "🔍 检查网站目录文件:"
-            ls -la /www/wwwroot/blog-admin/
+            # 创建新的网站目录
+            sudo mkdir -p /www/wwwroot/blog-admin
+            
+            # 复制文件到网站目录
+            sudo cp -r /tmp/blog-admin-deploy/* /www/wwwroot/blog-admin/
             
             # 设置权限
-            sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
-            sudo chmod -R 755 ${{ secrets.TARGET_DIR }}/blog-admin
-            
-            # 设置宝塔面板目录权限
             sudo chown -R www:www /www/wwwroot/blog-admin
             sudo chmod -R 755 /www/wwwroot/blog-admin
             
@@ -164,12 +138,9 @@ jobs:
             rm -rf /tmp/blog-admin-deploy
             
             # 清理旧备份（保留最近3个）
-            cd ${{ secrets.TARGET_DIR }} && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
+            cd /www/wwwroot && sudo ls -dt blog-admin-backup-* 2>/dev/null | tail -n +4 | sudo xargs rm -rf
             
-            echo "✅ Blog Admin frontend deployed successfully!"
-            echo "📦 Build completed at: $(date)"
-            echo "📁 Deployed to: ${{ secrets.TARGET_DIR }}/blog-admin"
-            echo "🌐 Web accessible at: /www/wwwroot/blog-admin"
+            echo "✅ 部署完成！"
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
@@ -178,32 +149,11 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "🔍 详细检查部署状态:"
-            
-            # 检查目标目录
-            echo "📁 目标目录 ${{ secrets.TARGET_DIR }}/blog-admin:"
-            ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
-            
-            # 检查网站目录
-            echo "📁 网站目录 /www/wwwroot/blog-admin:"
-            ls -la /www/wwwroot/blog-admin/
-            
             # 检查文件是否部署成功
             if [ -f "/www/wwwroot/blog-admin/index.html" ]; then
-              echo "✅ Frontend files deployed successfully"
-              echo "📄 index.html 内容预览:"
-              head -5 /www/wwwroot/blog-admin/index.html
+              echo "✅ 部署成功！文件已就绪"
             else
-              echo "❌ Deployment failed: index.html not found in /www/wwwroot/blog-admin/"
-              
-              # 检查目标目录是否有文件
-              if [ -f "${{ secrets.TARGET_DIR }}/blog-admin/index.html" ]; then
-                echo "⚠️ index.html exists in target dir but not in web dir"
-                echo "📄 Target dir index.html content:"
-                head -5 ${{ secrets.TARGET_DIR }}/blog-admin/index.html
-              else
-                echo "❌ index.html not found in target dir either"
-              fi
+              echo "❌ 部署失败：index.html 未找到"
               exit 1
             fi
 
@@ -215,19 +165,9 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "🚀 Deployment Summary:"
-            echo "📅 Time: $(date)"
-            echo "🌐 Project: Blog Admin Frontend"
-            echo "📋 Status: ${{ job.status }}"
-            echo "📁 Deployed to: ${{ secrets.TARGET_DIR }}/blog-admin"
-            echo "🌐 Web accessible at: /www/wwwroot/blog-admin"
-            echo "🔗 Expected URL: http://${{ secrets.SERVER_IP }}/ (配置域名后使用域名访问)"
-            echo ""
-            echo "🔧 需要的GitHub Secrets:"
-            echo "- SERVER_IP: 服务器IP地址"
-            echo "- SSH_USERNAME: SSH用户名"
-            echo "- SSH_PRIVATE_KEY: SSH私钥"
-            echo "- TARGET_DIR: 目标部署目录 (如: /www/wwwroot)"
-            echo "- PROD_API_BASE_URL: 生产环境API地址 (如: http://your-server:3000)"
-            echo "- PROD_IMAGE_BASE_URL: 生产环境图片地址 (如: http://your-server:3000)"
-            echo "- PROD_WS_URL: 生产环境WebSocket地址 (如: http://your-server:3000)"
+            echo "🚀 部署总结:"
+            echo "📅 时间: $(date)"
+            echo "🌐 项目: Blog Admin Frontend"
+            echo "📋 状态: ${{ job.status }}"
+            echo "🌐 访问地址: /www/wwwroot/blog-admin"
+            echo "🔗 预期URL: http://${{ secrets.SERVER_IP }}/ (配置域名后使用域名访问)"
