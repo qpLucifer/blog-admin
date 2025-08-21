@@ -169,12 +169,14 @@ jobs:
             # 备份当前版本
             if [ -d "${{ secrets.TARGET_DIR }}/blog-admin" ] && [ "$(ls -A ${{ secrets.TARGET_DIR }}/blog-admin)" ]; then
               sudo mv ${{ secrets.TARGET_DIR }}/blog-admin ${{ secrets.TARGET_DIR }}/blog-admin-backup-$(date +%Y%m%d-%H%M%S)
-              sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
             fi
             
-            # 移动新文件到目标目录
-            echo "🔍 移动文件到目标目录..."
-            sudo mv /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
+            # 创建新的目标目录
+            sudo mkdir -p ${{ secrets.TARGET_DIR }}/blog-admin
+            
+            # 复制文件到目标目录（使用cp而不是mv）
+            echo "🔍 复制文件到目标目录..."
+            sudo cp -r /tmp/blog-admin-deploy/* ${{ secrets.TARGET_DIR }}/blog-admin/
             
             echo "🔍 检查目标目录文件:"
             ls -la ${{ secrets.TARGET_DIR }}/blog-admin/
@@ -182,6 +184,11 @@ jobs:
             if [ -f "${{ secrets.TARGET_DIR }}/blog-admin/index.html" ]; then
               echo "✅ 目标目录中有index.html"
               ls -la ${{ secrets.TARGET_DIR }}/blog-admin/index.html
+              
+              # 立即设置正确的权限
+              echo "🔧 设置目标目录权限..."
+              sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
+              sudo chmod -R 755 ${{ secrets.TARGET_DIR }}/blog-admin
             else
               echo "❌ 目标目录中没有index.html"
               exit 1
@@ -194,15 +201,9 @@ jobs:
             echo "🔍 复制文件到网站目录..."
             sudo rm -rf /www/wwwroot/blog-admin/*
             
-            # 使用更详细的复制命令
-            echo "🔍 执行复制命令..."
-            sudo cp -rv ${{ secrets.TARGET_DIR }}/blog-admin/* /www/wwwroot/blog-admin/
-            
-            # 如果复制失败，尝试使用rsync
-            if [ $? -ne 0 ]; then
-              echo "⚠️ cp命令失败，尝试使用rsync..."
-              sudo rsync -av ${{ secrets.TARGET_DIR }}/blog-admin/ /www/wwwroot/blog-admin/
-            fi
+            # 直接使用rsync复制文件
+            echo "🔍 使用rsync复制文件..."
+            sudo rsync -av ${{ secrets.TARGET_DIR }}/blog-admin/ /www/wwwroot/blog-admin/
             
             echo "🔍 检查网站目录文件:"
             ls -la /www/wwwroot/blog-admin/
@@ -227,10 +228,6 @@ jobs:
                 exit 1
               fi
             fi
-            
-            # 设置权限
-            sudo chown -R www:www ${{ secrets.TARGET_DIR }}/blog-admin
-            sudo chmod -R 755 ${{ secrets.TARGET_DIR }}/blog-admin
             
             # 设置宝塔面板目录权限
             sudo chown -R www:www /www/wwwroot/blog-admin
