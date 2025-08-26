@@ -83,6 +83,8 @@ const moduleConfigs = {
   upload: { label: '文件上传', color: 'volcano' },
   logs: { label: '日志管理', color: 'geekblue' },
   system: { label: '系统', color: 'geekblue' },
+  router: { label: '路由管理', color: 'lime' },
+  unknown: { label: '未知', color: 'default' },
 };
 
 // 日志类型配置
