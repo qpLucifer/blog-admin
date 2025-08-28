@@ -8,6 +8,8 @@ import {
   updateOnlineUsers,
   updateBlogStats,
   updateErrorLogs,
+  updateBlogView,
+  updateBlogTotal,
 } from '../store/slices/statsSlice';
 
 export interface ErrorLogData {
@@ -32,6 +34,10 @@ export interface BlogViewUpdate {
   blogId: number;
   viewCount: number;
   timestamp: string;
+}
+
+export interface BlogTotal {
+  totalBlogs: number;
 }
 
 export interface StatsData {
@@ -96,15 +102,8 @@ class WebSocketManager {
     });
 
     // 错误日志推送
-    this.socket.on('log:error', (data: number) => {
-      // message.info(`您收到一条错误日志，当前错误日志数量为: ${data}`);
+    this.socket.on('stats:errorLogs', (data: number) => {
       store.dispatch(updateErrorLogs(data));
-    });
-
-    // 错误日志减少通知
-    this.socket.on('log:errorDecrease', (errorLogCount: number) => {
-      // message.success(`有一条错误日志已被标记为已读，当前错误日志数量: ${errorLogCount}`);
-      store.dispatch(updateErrorLogs(errorLogCount));
     });
 
     // 统计数据更新
@@ -124,7 +123,12 @@ class WebSocketManager {
 
     // 博客访问量更新
     this.socket.on('blog:viewUpdate', (data: BlogViewUpdate) => {
-      this.emit('blogViewUpdate', data);
+      store.dispatch(updateBlogView(data));
+    });
+
+    // 博客数量更新
+    this.socket.on('stats:blogsTotal', (data: BlogTotal) => {
+      store.dispatch(updateBlogTotal(data));
     });
 
     // 心跳响应

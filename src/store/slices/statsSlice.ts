@@ -8,6 +8,10 @@ export interface StatsState {
   errorLogs: number;
 }
 
+export interface BlogTotal {
+  totalBlogs: number;
+}
+
 const initialState: StatsState = {
   onlineUsers: 0,
   totalBlogs: 0,
@@ -41,13 +45,30 @@ const statsSlice = createSlice({
       state.errorLogs = action.payload;
     },
 
+    // 更新博客数量
+    updateBlogTotal: (state, action: PayloadAction<BlogTotal>) => {
+      state.totalBlogs = action.payload.totalBlogs;
+    },
+
+    // 更新博客访问量
+    updateBlogView: (state, action: PayloadAction<{ blogId: number; viewCount: number }>) => {
+      state.totalViews = action.payload.viewCount;
+    },
+
     // 重置统计数据
     resetStats: () => initialState,
   },
 });
 
-export const { setStats, updateOnlineUsers, updateBlogStats, updateErrorLogs, resetStats } =
-  statsSlice.actions;
+export const {
+  setStats,
+  updateOnlineUsers,
+  updateBlogStats,
+  updateErrorLogs,
+  resetStats,
+  updateBlogTotal,
+  updateBlogView,
+} = statsSlice.actions;
 
 export const selectStats = (state: { stats: StatsState }) => state.stats;
 export const selectOnlineUsers = (state: { stats: StatsState }) => state.stats.onlineUsers;
