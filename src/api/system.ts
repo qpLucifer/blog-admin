@@ -1,36 +1,5 @@
 import api from './index';
-
-export interface RateLimitSettings {
-  windowMs: number;
-  max: number;
-  loginWindowMs: number;
-  loginMax: number;
-  uploadWindowMs: number;
-  uploadMax: number;
-}
-
-export interface ValidationSettings {
-  usernameMin: number;
-  usernameMax: number;
-  passwordMin: number;
-  passwordMax: number;
-  enforceStrongPassword: boolean;
-  uploadEnabled: boolean;
-  commentsEnabled: boolean;
-  registrationEnabled: boolean;
-}
-
-export interface SecuritySettings {
-  corsOrigins: string[];
-  helmetEnabled: boolean;
-}
-
-export interface SystemSettings {
-  rateLimit: RateLimitSettings;
-  validation: ValidationSettings;
-  security: SecuritySettings;
-  _updatedAt?: string;
-}
+import { SystemSettings } from '../types';
 
 export const getSystemSettings = () => api.get('/api/system/settings');
 

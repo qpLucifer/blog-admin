@@ -144,13 +144,14 @@ export interface UpdateMenuData {
   order?: number;
 }
 
-// 认证状态类型
+// 认证状态接口
 export interface AuthState {
   user: UserInfo | null;
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  userMenus: Menu[] | [];
 }
 
 // Redux认证状态类型

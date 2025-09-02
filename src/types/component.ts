@@ -167,22 +167,6 @@ export interface IconSelectorProps {
   placeholder?: string;
 }
 
-// 路由加载组件Props
-export interface RouteLoadingProps {
-  tip?: string;
-}
-
-// 私有路由组件Props
-export interface PrivateRouteProps {
-  children: React.ReactNode;
-  requiredPermission?: string;
-}
-
-// 公共路由组件Props
-export interface PublicRouteProps {
-  children: React.ReactNode;
-}
-
 // CRUD Hook相关类型
 export interface UseCrudOptions<T = any> {
   // API 函数
@@ -219,4 +203,49 @@ export interface UseCrudReturn<T = any> {
   handleCreate: (values: any) => Promise<void>;
   handleUpdate: (values: any) => Promise<void>;
   handleDelete: () => Promise<void>;
+}
+
+// 博客列配置相关
+export interface BlogColumnsProps {
+  hasPermission: (key: string) => boolean;
+  handleEdit: (record: any) => void;
+  handleDelete: (record: any) => void;
+}
+
+// 菜单项相关
+export interface IMenuItem {
+  key: string;
+  icon: React.ReactNode;
+  label: React.ReactNode;
+  onClick?: () => void;
+  danger?: boolean;
+}
+
+// 图标选择器相关
+export interface IconSelectorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  placeholder?: string;
+}
+
+// 路由相关
+export interface PrivateRouteProps {
+  children: React.ReactNode;
+}
+
+export interface PublicRouteProps {
+  children: React.ReactNode;
+}
+
+// 路由加载相关
+export interface RouteLoadingProps {
+  tip?: string;
+  showProgress?: boolean;
+  progress?: number;
+}
+
+// 错误边界状态相关
+export interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
 }

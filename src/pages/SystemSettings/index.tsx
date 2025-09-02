@@ -1,12 +1,8 @@
 import React, { useEffect } from 'react';
 import { Input } from 'antd';
 import { Card, Form, InputNumber, Switch, Button, Space, message, Popconfirm } from 'antd';
-import {
-  getSystemSettings,
-  updateSystemSettings,
-  SystemSettings,
-  resetSystemSettings,
-} from '../../api/system';
+import { getSystemSettings, updateSystemSettings, resetSystemSettings } from '../../api/system';
+import { SystemSettings } from '../../types';
 import pageStyles from '../../styles/page-layout.module.css';
 
 const SystemSettingsPage: React.FC = () => {

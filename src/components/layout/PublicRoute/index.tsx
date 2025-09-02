@@ -2,10 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import { selectIsAuthenticated } from '../../../store/slices/authSlice';
-
-interface PublicRouteProps {
-  children: React.ReactNode;
-}
+import { PublicRouteProps } from '../../../types';
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);

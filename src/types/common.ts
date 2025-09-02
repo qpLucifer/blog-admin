@@ -87,3 +87,11 @@ export interface DownloadFileOptions {
   blob: Blob;
   filename: string;
 }
+
+// 导出相关类型
+export interface ExportConfig {
+  api: (params: any) => Promise<any>;
+  filename: string;
+  params?: any;
+  permission?: string;
+}

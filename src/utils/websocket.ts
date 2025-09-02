@@ -11,42 +11,8 @@ import {
   updateBlogView,
   updateBlogTotal,
 } from '../store/slices/statsSlice';
-
-export interface ErrorLogData {
-  id: number;
-  username: string;
-  action: string;
-  module: string;
-  target_name: string;
-  ip_address: string;
-  status: string;
-  details: string;
-  created_at: string;
-  timestamp: string;
-}
-
-export interface BlogStats {
-  totalBlogs: number;
-  totalViews: number;
-}
-
-export interface BlogViewUpdate {
-  blogId: number;
-  viewCount: number;
-  timestamp: string;
-}
-
-export interface BlogTotal {
-  totalBlogs: number;
-}
-
-export interface StatsData {
-  onlineUsers: number;
-  totalBlogs: number;
-  totalViews: number;
-  pendingComments: number;
-  errorLogs: number;
-}
+import { StatsData } from '../types';
+import { BlogStats, BlogViewUpdate, BlogTotal } from '../types';
 
 class WebSocketManager {
   private socket: Socket | null = null;

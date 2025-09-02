@@ -152,3 +152,19 @@ export interface BlogStats {
   totalLikes: number;
   totalComments: number;
 }
+
+// WebSocket博客相关类型
+export interface BlogStats {
+  totalBlogs: number;
+  totalViews: number;
+}
+
+export interface BlogViewUpdate {
+  blogId: number;
+  viewCount: number;
+  timestamp: string;
+}
+
+export interface BlogTotal {
+  totalBlogs: number;
+}

@@ -1,20 +1,15 @@
 import React, { Component, ErrorInfo } from 'react';
 import { Result, Button } from 'antd';
 import { ReloadOutlined, HomeOutlined } from '@ant-design/icons';
-import { ErrorBoundaryProps } from '../../../types';
+import { ErrorBoundaryProps, ErrorBoundaryState } from '../../../types';
 
-interface State {
-  hasError: boolean;
-  error?: Error;
-}
-
-class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
   }
 

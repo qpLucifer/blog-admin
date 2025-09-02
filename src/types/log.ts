@@ -144,3 +144,43 @@ export interface LogSearchSuggestion {
   count: number;
   description?: string;
 }
+
+// 错误日志相关
+export interface FailedModuleStat {
+  module: string;
+  count: number;
+}
+
+export interface FailedStatsResponse {
+  totalFailed: number;
+  unreadFailed: number;
+  moduleStats: FailedModuleStat[];
+}
+
+export interface ErrorLogModalProps {
+  open: boolean;
+  onClose: () => void;
+  onHandled?: () => void; // 回调：一键处理后
+}
+
+// WebSocket相关类型
+export interface ErrorLogData {
+  id: number;
+  username: string;
+  action: string;
+  module: string;
+  target_name: string;
+  ip_address: string;
+  status: string;
+  details: string;
+  created_at: string;
+  timestamp: string;
+}
+
+export interface StatsData {
+  onlineUsers: number;
+  totalBlogs: number;
+  totalViews: number;
+  pendingComments: number;
+  errorLogs: number;
+}

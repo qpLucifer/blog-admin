@@ -1,13 +1,8 @@
 import React from 'react';
 import { Spin, Progress } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { RouteLoadingProps } from '../../../types';
 import styles from './index.module.css';
-
-interface RouteLoadingProps {
-  tip?: string;
-  showProgress?: boolean;
-  progress?: number;
-}
 
 const RouteLoading: React.FC<RouteLoadingProps> = ({
   tip = '页面加载中...',

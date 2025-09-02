@@ -3,10 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import { selectIsAuthenticated, selectUserMenus } from '../../../store/slices/authSlice';
 import { hasRoutePermission } from '../../../utils/menuUtils';
-
-interface PrivateRouteProps {
-  children: React.ReactNode;
-}
+import { PrivateRouteProps } from '../../../types';
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const location = useLocation();

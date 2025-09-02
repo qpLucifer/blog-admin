@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { BlogTotal } from '../../types';
 
 export interface StatsState {
   onlineUsers: number;
@@ -6,10 +7,6 @@ export interface StatsState {
   totalViews: number;
   pendingComments: number;
   errorLogs: number;
-}
-
-export interface BlogTotal {
-  totalBlogs: number;
 }
 
 const initialState: StatsState = {

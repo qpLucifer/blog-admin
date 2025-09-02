@@ -8,18 +8,10 @@ import {
   SettingOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
-import { TableToolbarProps } from '../../../types';
+import { TableToolbarProps, IMenuItem } from '../../../types';
 import styles from './index.module.css';
 
 const { Title } = Typography;
-
-interface IMenuItem {
-  key: string;
-  icon: React.ReactNode;
-  label: React.ReactNode;
-  onClick?: () => void;
-  danger?: boolean;
-}
 
 const TableToolbar: React.FC<TableToolbarProps> = ({
   title,

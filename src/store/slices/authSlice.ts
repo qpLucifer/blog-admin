@@ -1,17 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { login as loginApi, logout } from '../../api/login';
 import { handleLogin, clearAuth } from '../../utils/auth';
-import { UserInfo, LoginCredentials, LoginResponse, Menu } from '../../types';
-
-// 认证状态接口
-interface AuthState {
-  user: UserInfo | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  error: string | null;
-  userMenus: Menu[] | [];
-}
+import { UserInfo, LoginCredentials, LoginResponse, Menu, AuthState } from '../../types';
 
 // 初始状态
 const initialState: AuthState = {

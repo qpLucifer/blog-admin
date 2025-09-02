@@ -3,15 +3,10 @@ import { Select, Input, Space, Card, Row, Col } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import * as AllIcons from '@ant-design/icons';
 import { ICON_LIST, filterIcons } from '../../../constants/icons';
+import { IconSelectorProps } from '../../../types';
 import styles from './index.module.css';
 
 const { Search } = Input;
-
-interface IconSelectorProps {
-  value?: string;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-}
 
 const IconSelector: React.FC<IconSelectorProps> = ({
   value,

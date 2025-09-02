@@ -1,13 +1,7 @@
-import { TableColumn, BlogData, TagData } from '../../types';
+import { TableColumn, BlogData, TagData, BlogColumnsProps } from '../../types';
 import { Tag, Space, Image } from 'antd';
 import { tagColor } from '../../constants';
 import { ActionButtons } from '../../components';
-
-interface BlogColumnsProps {
-  hasPermission: (key: string) => boolean;
-  handleEdit: (record: BlogData) => void;
-  handleDelete: (record: BlogData) => void;
-}
 
 export function getBlogColumns({
   hasPermission,

@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import { ExportParams } from '../types';
+import { ExportConfig } from '../types';
 
 /**
  * 文件下载处理
@@ -114,16 +115,6 @@ export const handleBatchExport = async (
     hideLoading();
   }
 };
-
-/**
- * 导出配置类型
- */
-export interface ExportConfig {
-  api: (params: any) => Promise<any>;
-  filename: string;
-  params?: any;
-  permission?: string;
-}
 
 /**
  * 创建导出处理函数

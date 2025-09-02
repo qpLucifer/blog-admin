@@ -21,5 +21,8 @@ export * from './component';
 // 导出日志相关类型
 export * from './log';
 
+// 导出系统相关类型
+export * from './system';
+
 // 为了向后兼容，保留一些常用的类型别名
 export type { AuthReducer as authReducer } from './user';

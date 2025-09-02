@@ -4,23 +4,7 @@ import { getFailedLogStats, markFailedLogsRead } from '../../api/logs';
 import { useApi } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-
-interface FailedModuleStat {
-  module: string;
-  count: number;
-}
-
-interface FailedStatsResponse {
-  totalFailed: number;
-  unreadFailed: number;
-  moduleStats: FailedModuleStat[];
-}
-
-interface ErrorLogModalProps {
-  open: boolean;
-  onClose: () => void;
-  onHandled?: () => void; // 回调：一键处理后
-}
+import { FailedStatsResponse, ErrorLogModalProps } from '../../types';
 
 const ErrorLogModal: React.FC<ErrorLogModalProps> = ({ open, onClose, onHandled }) => {
   const navigate = useNavigate();
