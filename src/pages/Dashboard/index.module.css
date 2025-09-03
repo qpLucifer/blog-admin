@@ -1,5 +1,7 @@
 .root {
-  padding: 0 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
   font-family: var(
     --font-family,
     'Segoe UI',
@@ -10,20 +12,574 @@
     sans-serif
   );
 }
-.title {
+
+/* 加载状态 */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 16px;
+}
+
+/* 头部区域 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 32px;
-  font-size: 26px;
-  font-weight: bold;
-  color: var(--text-title, #2d2350);
-  text-align: left;
-  letter-spacing: 1px;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+  color: white;
 }
-.card {
-  border-radius: var(--card-radius, 12px);
-  box-shadow: var(--card-shadow, 0 2px 16px rgba(160, 140, 209, 0.08));
-  background: #fff;
-  transition: box-shadow 0.2s;
+
+.welcomeSection {
+  flex: 1;
 }
-.card:hover {
-  box-shadow: 0 8px 32px rgba(106, 75, 198, 0.12);
+
+.welcomeTitle {
+  color: white !important;
+  margin: 0 !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcomeIcon {
+  font-size: 32px;
+  color: #ffd700;
+  animation: pulse 2s infinite;
+}
+
+.welcomeSubtitle {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 16px;
+  margin-top: 8px;
+  display: block;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+/* 统计卡片行 */
+.statsRow {
+  margin-bottom: 32px;
+}
+
+.statCard {
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: none !important;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  padding: 24px !important;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.statCard:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.statCard :global(.ant-statistic-title) {
+  margin-bottom: 16px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #666 !important;
+}
+
+.statCard :global(.ant-statistic-content) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+}
+
+.statCard :global(.ant-statistic-content-value) {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #2d2350 !important;
+  line-height: 1.2 !important;
+}
+
+.usersCard::before {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.blogsCard::before {
+  background: linear-gradient(90deg, #52c41a, #73d13d);
+}
+
+.commentsCard::before {
+  background: linear-gradient(90deg, #faad14, #ffc53d);
+}
+
+.tagsCard::before {
+  background: linear-gradient(90deg, #722ed1, #9254de);
+}
+
+/* 统计卡片内容布局优化 */
+.statCard :global(.ant-statistic) {
+  width: 100%;
+}
+
+.statCard :global(.ant-statistic-title) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.statCard :global(.ant-statistic-content-suffix) {
+  width: 100% !important;
+  margin-top: 16px !important;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .statCard {
+    padding: 20px !important;
+  }
+
+  .statCard :global(.ant-statistic-content-value) {
+    font-size: 28px !important;
+  }
+
+  .statSuffix {
+    padding: 10px 12px;
+  }
+
+  .todayChange {
+    font-size: 14px;
+  }
+
+  .changeLabel {
+    font-size: 12px;
+  }
+}
+
+.statIcon {
+  font-size: 24px;
+  color: #6a4bc6;
+  margin-right: 8px;
+}
+
+.statSuffix {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border-left: 4px solid #52c41a;
+}
+
+.todayChange {
+  color: #52c41a !important;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.changeLabel {
+  color: #8c8c8c !important;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* 图表行 */
+.chartsRow {
+  margin-bottom: 32px;
+}
+
+.chartCard {
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  border: none !important;
+  overflow: hidden;
+}
+
+.chartCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 24px 16px;
+}
+
+.chartCard :global(.ant-card-head-title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d2350;
+}
+
+.chart {
+  border-radius: 16px;
+}
+
+/* 内容行 */
+.contentRow {
+  margin-bottom: 32px;
+}
+
+.contentCard {
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  border: none !important;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentCard :global(.ant-card-body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 24px 16px;
+}
+
+.contentCard :global(.ant-card-head-title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d2350;
+}
+
+.blogItem,
+.userItem {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.blogItem:hover,
+.userItem:hover {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px !important;
+  margin: 0 -16px;
+}
+
+.blogItem:last-child,
+.userItem:last-child {
+  border-bottom: none;
+}
+
+/* 让列表容器填充剩余空间 */
+.contentCard :global(.ant-list),
+.systemCard :global(.ant-list),
+.activityCard :global(.ant-list) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.contentCard :global(.ant-list-items),
+.systemCard :global(.ant-list-items),
+.activityCard :global(.ant-list-items) {
+  flex: 1;
+}
+
+/* 内容列表滚动设置 */
+.contentCard :global(.ant-list-items),
+.activityCard :global(.ant-list-items) {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.contentCard :global(.ant-list-items)::-webkit-scrollbar,
+.activityCard :global(.ant-list-items)::-webkit-scrollbar {
+  width: 6px;
+}
+
+.contentCard :global(.ant-list-items)::-webkit-scrollbar-track,
+.activityCard :global(.ant-list-items)::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.contentCard :global(.ant-list-items)::-webkit-scrollbar-thumb,
+.activityCard :global(.ant-list-items)::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.contentCard :global(.ant-list-items)::-webkit-scrollbar-thumb:hover,
+.activityCard :global(.ant-list-items)::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.rankBadge {
+  margin-right: 16px;
+}
+
+.rankBadge :global(.ant-badge-count) {
+  background: #6a4bc6;
+  box-shadow: 0 2px 8px rgba(106, 75, 198, 0.3);
+}
+
+.rankAvatar {
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.rankAvatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.userAvatar {
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.userAvatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.blogTitle {
+  font-size: 16px;
+  color: #2d2350;
+  max-width: 300px;
+  display: block;
+}
+
+/* 系统行 */
+.systemRow {
+  margin-bottom: 32px;
+}
+
+.systemCard,
+.activityCard {
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  border: none !important;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.systemCard :global(.ant-card-body),
+.activityCard :global(.ant-card-body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.systemCard :global(.ant-card-head),
+.activityCard :global(.ant-card-head) {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 24px 16px;
+}
+
+.systemCard :global(.ant-card-head-title),
+.activityCard :global(.ant-card-head-title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d2350;
+}
+
+.systemStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  min-height: 400px;
+  justify-content: space-between;
+}
+
+.statusItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statusItem :global(.ant-progress) {
+  margin-bottom: 0;
+}
+
+.statusItem :global(.ant-progress-bg) {
+  border-radius: 10px;
+}
+
+.onlineUsersBadge :global(.ant-badge-count) {
+  background: #52c41a;
+  box-shadow: 0 2px 8px rgba(82, 196, 26, 0.3);
+  font-size: 14px;
+  height: 24px;
+  line-height: 24px;
+  padding: 0 8px;
+}
+
+.activityItem {
+  padding: 16px 0 !important;
+  border-bottom: 1px solid #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.activityItem:hover {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px !important;
+  margin: 0 -16px;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityAvatar {
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.activityAvatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.activityTime {
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* 快速操作卡片 */
+.quickActionsCard {
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+  border: none !important;
+  overflow: hidden;
+}
+
+.quickActionsCard :global(.ant-card-body) {
+  padding: 24px;
+}
+
+.quickActionBtn {
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.quickActionBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.quickActionBtn:global(.ant-btn-primary) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+}
+
+.quickActionBtn:global(.ant-btn-primary):hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  border-color: transparent;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .root {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .welcomeTitle {
+    font-size: 24px !important;
+    justify-content: center;
+  }
+
+  .headerActions {
+    justify-content: center;
+  }
+
+  .statCard {
+    margin-bottom: 16px;
+  }
+}
+
+/* 动画效果 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 滚动条样式 */
+.chartCard :global(.echarts-for-react),
+.contentCard :global(.ant-list),
+.systemCard :global(.ant-card-body),
+.activityCard :global(.ant-card-body) {
+  scrollbar-width: thin;
+  scrollbar-color: #6a4bc6 #f0f0f0;
+}
+
+.chartCard :global(.echarts-for-react)::-webkit-scrollbar,
+.contentCard :global(.ant-list)::-webkit-scrollbar,
+.systemCard :global(.ant-card-body)::-webkit-scrollbar,
+.activityCard :global(.ant-card-body)::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chartCard :global(.echarts-for-react)::-webkit-scrollbar-track,
+.contentCard :global(.ant-list)::-webkit-scrollbar-track,
+.systemCard :global(.ant-card-body)::-webkit-scrollbar-track,
+.activityCard :global(.ant-card-body)::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+.chartCard :global(.echarts-for-react)::-webkit-scrollbar-thumb,
+.contentCard :global(.ant-list)::-webkit-scrollbar-thumb,
+.systemCard :global(.ant-card-body)::-webkit-scrollbar-thumb,
+.activityCard :global(.ant-card-body)::-webkit-scrollbar-thumb {
+  background: #6a4bc6;
+  border-radius: 3px;
+}
+
+.chartCard :global(.echarts-for-react)::-webkit-scrollbar-thumb:hover,
+.contentCard :global(.ant-list)::-webkit-scrollbar-thumb:hover,
+.systemCard :global(.ant-card-body)::-webkit-scrollbar-thumb:hover,
+.activityCard :global(.ant-card-body)::-webkit-scrollbar-thumb:hover {
+  background: #5a3db8;
 }
