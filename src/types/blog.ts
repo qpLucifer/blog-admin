@@ -68,6 +68,7 @@ export interface CommentData extends BaseEntity {
   content: string;
   parent_id?: number;
   reply_count?: number; // 回复数量（仅主评论有此字段）
+  is_replied?: boolean; // 是否已回复
 }
 
 // 创建评论数据

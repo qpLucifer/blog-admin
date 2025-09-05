@@ -12,6 +12,7 @@ import {
   Drawer,
   Descriptions,
   Spin,
+  message,
 } from 'antd';
 import styles from './index.module.css';
 import pageStyles from '../../styles/page-layout.module.css';
@@ -21,6 +22,7 @@ import {
   updateComment,
   deleteComment,
   exportComments,
+  markCommentAsReplied,
 } from '../../api/comment';
 import {
   CommentData,
@@ -46,6 +48,7 @@ import {
   EyeOutlined,
   CommentOutlined,
   FileTextOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { createExportHandler } from '../../utils/exportUtils';
@@ -200,6 +203,18 @@ const Comments: React.FC = () => {
   };
   const handleDeleteConfirmAction = async () => {
     await handleDeleteConfirm();
+  };
+
+  // 标记评论为已回复
+  const handleMarkAsReplied = async (comment: CommentData) => {
+    try {
+      await markCommentAsReplied(comment.id!);
+      message.success('标记为已回复成功');
+      fetchComments(); // 刷新评论列表
+      // WebSocket会自动推送待处理评论数量更新
+    } catch (error) {
+      message.error('标记失败，请重试');
+    }
   };
   // 处理分页变化
   const handleTableChange = (page: number, pageSize: number) => {
@@ -376,6 +391,14 @@ const Comments: React.FC = () => {
                   回复: {getReplyTargetContent(reply.parent_id)}
                 </span>
               )}
+              {/* 显示回复状态 */}
+              {reply.is_replied ? (
+                <Tag color='blue' icon={<CheckOutlined />}>
+                  已回复
+                </Tag>
+              ) : (
+                <Tag color='orange'>待回复</Tag>
+              )}
               {hasChildren && (
                 <Button
                   type='link'
@@ -393,6 +416,16 @@ const Comments: React.FC = () => {
               {hasPermission('create') && (
                 <Button type='link' size='small' onClick={() => handleReply(reply)}>
                   回复
+                </Button>
+              )}
+              {!reply.is_replied && hasPermission('update') && (
+                <Button
+                  type='link'
+                  size='small'
+                  onClick={() => handleMarkAsReplied(reply)}
+                  style={{ color: '#52c41a' }}
+                >
+                  标记已回复
                 </Button>
               )}
               {hasPermission('update') && (
@@ -492,6 +525,13 @@ const Comments: React.FC = () => {
             <Tag color='green' icon={<MessageOutlined />}>
               主评论
             </Tag>
+            {record.is_replied ? (
+              <Tag color='blue' icon={<CheckOutlined />}>
+                已回复
+              </Tag>
+            ) : (
+              <Tag color='orange'>待回复</Tag>
+            )}
             <span className={styles.commentTime}>
               {dayjs(record.created_at).format('YYYY-MM-DD HH:mm')}
             </span>
@@ -548,6 +588,17 @@ const Comments: React.FC = () => {
               style={{ color: '#1890ff' }}
             />
           </Tooltip>
+          {!record.is_replied && hasPermission('update') && (
+            <Tooltip title='标记为已回复'>
+              <Button
+                type='text'
+                size='small'
+                icon={<CheckOutlined />}
+                onClick={() => handleMarkAsReplied(record)}
+                style={{ color: '#52c41a' }}
+              />
+            </Tooltip>
+          )}
           {hasPermission('update') && (
             <Tooltip title='编辑'>
               <Button
@@ -729,6 +780,18 @@ const Comments: React.FC = () => {
 
               <div style={{ marginTop: 24, textAlign: 'right' }}>
                 <Space>
+                  {!selectedComment.is_replied && hasPermission('update') && (
+                    <Button
+                      type='default'
+                      icon={<CheckOutlined />}
+                      onClick={() => {
+                        setDetailDrawerVisible(false);
+                        handleMarkAsReplied(selectedComment);
+                      }}
+                    >
+                      标记为已回复
+                    </Button>
+                  )}
                   {hasPermission('update') && (
                     <Button
                       type='primary'

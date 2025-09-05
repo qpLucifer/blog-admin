@@ -52,6 +52,11 @@ const statsSlice = createSlice({
       state.totalViews = action.payload.viewCount;
     },
 
+    // 更新待处理评论数量
+    updatePendingComments: (state, action: PayloadAction<number>) => {
+      state.pendingComments = action.payload;
+    },
+
     // 重置统计数据
     resetStats: () => initialState,
   },
@@ -65,6 +70,7 @@ export const {
   resetStats,
   updateBlogTotal,
   updateBlogView,
+  updatePendingComments,
 } = statsSlice.actions;
 
 export const selectStats = (state: { stats: StatsState }) => state.stats;

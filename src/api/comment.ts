@@ -35,3 +35,13 @@ export const exportComments = (data: { content?: string; user_id?: string; blog_
     },
   });
 };
+
+// 获取待处理评论数量
+export const getPendingCommentsCount = () => {
+  return api.get('/api/comments/pending-count');
+};
+
+// 标记评论为已回复
+export const markCommentAsReplied = (id: number | string) => {
+  return api.put(`/api/comments/mark-replied/${id}`);
+};

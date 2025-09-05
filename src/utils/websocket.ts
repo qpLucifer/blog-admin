@@ -10,6 +10,7 @@ import {
   updateErrorLogs,
   updateBlogView,
   updateBlogTotal,
+  updatePendingComments,
 } from '../store/slices/statsSlice';
 import { StatsData } from '../types';
 import { BlogStats, BlogViewUpdate, BlogTotal } from '../types';
@@ -95,6 +96,11 @@ class WebSocketManager {
     // 博客数量更新
     this.socket.on('stats:blogsTotal', (data: BlogTotal) => {
       store.dispatch(updateBlogTotal(data));
+    });
+
+    // 待处理评论数量更新
+    this.socket.on('stats:pendingComments', (count: number) => {
+      store.dispatch(updatePendingComments(count));
     });
 
     // 心跳响应
